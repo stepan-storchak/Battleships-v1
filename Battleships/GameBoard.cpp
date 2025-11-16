@@ -1,4 +1,5 @@
 #include "GameBoard.hpp"
+#include "Color.hpp"
 #include <iostream>
 
 GameBoard::GameBoard() : grid(BOARD_SIZE, std::vector<CellState>(BOARD_SIZE, CellState::Empty)) {}
@@ -58,21 +59,60 @@ ShotResult GameBoard::receiveShot(const Coordinate& coord) {
 }
 
 void GameBoard::display(bool showShips) const {
-    std::cout << "  A B C D E F G H I J" << std::endl;
+    std::cout << "  ";
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        Color::setColor(Color::YELLOW);
+        std::cout << static_cast<char>('A' + i) << " ";
+        Color::resetColor();
+    }
+    std::cout << std::endl;
+
     for (int y = 0; y < BOARD_SIZE; ++y) {
-        std::cout << (y + 1) << " ";
+        Color::setColor(Color::YELLOW);
+        std::cout << (y + 1);
+        if (y < 9) std::cout << " ";
+        Color::resetColor();
+        std::cout << " ";
+
         for (int x = 0; x < BOARD_SIZE; ++x) {
+            CellState state = grid[y][x];
             char symbol = '.';
-            switch (grid[y][x]) {
-            case CellState::Empty: symbol = '.'; break;
-            case CellState::Miss: symbol = 'O'; break;
-            case CellState::Hit: symbol = 'X'; break;
-            case CellState::Ship1: symbol = showShips ? '1' : '.'; break;
-            case CellState::Ship2: symbol = showShips ? '2' : '.'; break;
-            case CellState::Ship3: symbol = showShips ? '3' : '.'; break;
-            case CellState::Ship4: symbol = showShips ? '4' : '.'; break;
+            int color = Color::WHITE;
+
+            switch (state) {
+            case CellState::Empty:
+                symbol = '~';
+                color = Color::BLUE;
+                break;
+            case CellState::Miss:
+                symbol = 'O';
+                color = Color::BLUE;
+                break;
+            case CellState::Hit:
+                symbol = 'X';
+                color = Color::RED;
+                break;
+            case CellState::Ship1:
+                symbol = showShips ? '1' : '~';
+                color = showShips ? Color::GREEN : Color::BLUE;
+                break;
+            case CellState::Ship2:
+                symbol = showShips ? '2' : '~';
+                color = showShips ? Color::GREEN : Color::BLUE;
+                break;
+            case CellState::Ship3:
+                symbol = showShips ? '3' : '~';
+                color = showShips ? Color::GREEN : Color::BLUE;
+                break;
+            case CellState::Ship4:
+                symbol = showShips ? '4' : '~';
+                color = showShips ? Color::GREEN : Color::BLUE;
+                break;
             }
+
+            Color::setColor(color);
             std::cout << symbol << " ";
+            Color::resetColor();
         }
         std::cout << std::endl;
     }
