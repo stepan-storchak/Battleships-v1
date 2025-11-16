@@ -10,7 +10,24 @@ void HumanPlayer::placeShips() {
 
 void HumanPlayer::makeMove(Player& enemy) {
     std::cout << "Ход игрока " << name << std::endl;
-    // Заглушка для хода
+
+    // Простой ввод координат
+    char letter;
+    int number;
+    std::cout << "Введите координаты (например A5): ";
+    std::cin >> letter >> number;
+
+    int x = toupper(letter) - 'A';
+    int y = number - 1;
+
+    Coordinate target(x, y);
+    ShotResult result = enemy.getShotResult(target);
+
+    switch (result) {
+    case ShotResult::Miss: std::cout << "Промах!" << std::endl; break;
+    case ShotResult::Hit: std::cout << "Попадание!" << std::endl; break;
+    case ShotResult::Sunk: std::cout << "Уничтожен корабль!" << std::endl; break;
+    }
 }
 
 void HumanPlayer::manualPlacement() {
