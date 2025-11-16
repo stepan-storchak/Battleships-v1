@@ -23,52 +23,63 @@ namespace SeaBattleCSharp
 
         public void Run()
         {
-            while (gameState != GameState.GameOver)
+            try
             {
-                switch (gameState)
+                while (gameState != GameState.GameOver)
                 {
-                    case GameState.Menu:
-                        ShowMainMenu();
-                        break;
-                    case GameState.Placement:
-                        player1.PlaceShips();
-                        player2.PlaceShips();
-                        gameState = GameState.Battle;
-                        currentPlayer = player1;
-                        break;
-                    case GameState.Battle:
-                        if (CheckWinCondition())
-                        {
-                            gameState = GameState.AfterGame;
-                        }
-                        else
-                        {
-                            Player opponent = GetOpponent();
-                            bool wasHit = false;
-
-                            if (currentPlayer is HumanPlayer human)
+                    switch (gameState)
+                    {
+                        case GameState.Menu:
+                            ShowMainMenu();
+                            break;
+                        case GameState.Placement:
+                            player1.PlaceShips();
+                            player2.PlaceShips();
+                            gameState = GameState.Battle;
+                            currentPlayer = player1;
+                            break;
+                        case GameState.Battle:
+                            if (CheckWinCondition())
                             {
-                                wasHit = human.MakeMoveWithResult(opponent);
-                            }
-                            else if (currentPlayer is AIPlayer ai)
-                            {
-                                wasHit = ai.MakeMoveWithResult(opponent);
-                            }
-
-                            if (!wasHit)
-                            {
-                                SwitchTurn();
+                                gameState = GameState.AfterGame;
                             }
                             else
                             {
-                                Console.WriteLine($"Попадание! {currentPlayer.GetName()} продолжает ход.");
+                                Player opponent = GetOpponent();
+                                bool wasHit = false;
+
+                                if (currentPlayer is HumanPlayer human)
+                                {
+                                    wasHit = human.MakeMoveWithResult(opponent);
+                                }
+                                else if (currentPlayer is AIPlayer ai)
+                                {
+                                    wasHit = ai.MakeMoveWithResult(opponent);
+                                }
+
+                                if (!wasHit)
+                                {
+                                    SwitchTurn();
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Попадание! {currentPlayer.GetName()} продолжает ход.");
+                                }
                             }
-                        }
-                        break;
-                    case GameState.AfterGame:
-                        ShowAfterGameMenu();
-                        break;
+                            break;
+                        case GameState.AfterGame:
+                            ShowAfterGameMenu();
+                            break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Color.Red();
+                Console.WriteLine($"Критическая ошибка в игре: {ex.Message}");
+                Color.ResetColor();
+                Console.WriteLine("Нажмите Enter для выхода...");
+                Console.ReadLine();
             }
         }
 
@@ -87,14 +98,21 @@ namespace SeaBattleCSharp
             Console.WriteLine("3. Выход");
             Console.Write("Выберите опцию: ");
 
-            if (int.TryParse(Console.ReadLine(), out int choice))
+            try
             {
-                ProcessMenuInput(choice);
+                if (int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    ProcessMenuInput(choice);
+                }
+                else
+                {
+                    throw new FormatException("Неверный формат ввода");
+                }
             }
-            else
+            catch (FormatException ex)
             {
                 Color.Red();
-                Console.WriteLine("Неверный ввод!");
+                Console.WriteLine($"Ошибка ввода: {ex.Message}");
                 Color.ResetColor();
             }
         }
@@ -108,7 +126,6 @@ namespace SeaBattleCSharp
             Color.Yellow();
             Console.WriteLine($"Победитель: {winnerName}!");
             Color.ResetColor();
-
             Console.WriteLine("\nВыберите действие:");
             Color.Green();
             Console.WriteLine("1. Сохранить результат и выйти в меню");
@@ -119,9 +136,22 @@ namespace SeaBattleCSharp
             Color.ResetColor();
             Console.Write("Ваш выбор: ");
 
-            if (int.TryParse(Console.ReadLine(), out int choice))
+            try
             {
-                ProcessAfterGameInput(choice);
+                if (int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    ProcessAfterGameInput(choice);
+                }
+                else
+                {
+                    throw new FormatException("Неверный формат ввода");
+                }
+            }
+            catch (FormatException ex)
+            {
+                Color.Red();
+                Console.WriteLine($"Ошибка ввода: {ex.Message}");
+                Color.ResetColor();
             }
         }
 
@@ -148,10 +178,7 @@ namespace SeaBattleCSharp
                     Color.ResetColor();
                     break;
                 default:
-                    Color.Red();
-                    Console.WriteLine("Неверный выбор! Попробуйте снова.");
-                    Color.ResetColor();
-                    break;
+                    throw new ArgumentOutOfRangeException("Неверный выбор в меню после игры");
             }
         }
 
@@ -183,7 +210,6 @@ namespace SeaBattleCSharp
             Color.Green();
             Console.WriteLine("=== ИГРА ОКОНЧЕНА ===");
             Color.ResetColor();
-
             if (winner == "Computer")
             {
                 Color.Red();
@@ -195,13 +221,11 @@ namespace SeaBattleCSharp
                 Console.WriteLine($"Победил {winner}!");
             }
             Color.ResetColor();
-
             Console.WriteLine("\nФинальное состояние полей:");
             Color.Green();
             Console.WriteLine("Ваше поле:");
             Color.ResetColor();
             player1.GetMyBoard().Display(true);
-
             Color.Blue();
             Console.WriteLine("\nПоле противника:");
             Color.ResetColor();
@@ -224,19 +248,20 @@ namespace SeaBattleCSharp
                     Color.ResetColor();
                     break;
                 default:
-                    Color.Red();
-                    Console.WriteLine("Неверный выбор!");
-                    Color.ResetColor();
-                    break;
+                    throw new ArgumentOutOfRangeException("Неверный выбор в главном меню");
             }
         }
 
         private void StartNewGame()
         {
             ResetGame();
-
             Console.Write("Введите ваше имя: ");
             string playerName = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(playerName))
+            {
+                throw new ArgumentException("Имя игрока не может быть пустым");
+            }
 
             player1 = new HumanPlayer(playerName);
             player2 = new AIPlayer();

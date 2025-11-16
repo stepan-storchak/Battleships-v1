@@ -12,11 +12,30 @@ namespace SeaBattleCSharp
         private List<Coordinate> possibleTargets;
         private Random random;
 
+        // Статическое поле для подсчета созданных экземпляров AI
+        private static int aiInstanceCount = 0;
+
+        // Статическое свойство с get/set
+        public static int AiInstanceCount
+        {
+            get { return aiInstanceCount; }
+            private set { aiInstanceCount = value; }
+        }
+
         public AIPlayer(string name = "Computer") : base(name)
         {
             huntMode = false;
             possibleTargets = new List<Coordinate>();
             random = new Random();
+
+            // Увеличиваем счетчик экземпляров
+            AiInstanceCount++;
+        }
+
+        // Статический метод
+        public static void ResetAiInstanceCount()
+        {
+            AiInstanceCount = 0;
         }
 
         public override void PlaceShips()
@@ -44,6 +63,7 @@ namespace SeaBattleCSharp
                             Orientation.Horizontal : Orientation.Vertical;
 
                         Ship ship = new Ship(size, new Coordinate(x, y), orientation);
+
                         if (myBoard.IsValidPlacement(ship))
                         {
                             if (myBoard.PlaceShip(ship))
@@ -79,9 +99,9 @@ namespace SeaBattleCSharp
         public override bool MakeMoveWithResult(Player enemy)
         {
             Console.WriteLine("\n=== Ход компьютера ===");
-
             Color.Yellow();
             Console.Write("Компьютер думает");
+
             for (int i = 0; i < 3; i++)
             {
                 Console.Write(".");
@@ -92,6 +112,7 @@ namespace SeaBattleCSharp
             Color.ResetColor();
 
             Coordinate target;
+
             if (huntMode && possibleTargets.Count > 0)
             {
                 target = GenerateSmartMove();
@@ -111,76 +132,103 @@ namespace SeaBattleCSharp
             Console.WriteLine($"Компьютер стреляет в {(char)('A' + target.X)}{target.Y + 1}");
             Color.ResetColor();
 
-            ShotResult result = enemy.GetShotResult(target);
-            UpdateStrategy(result, target);
-            bool wasHit = false;
-
-            switch (result)
+            // Обработка исключений при выстреле
+            try
             {
-                case ShotResult.Miss:
-                    enemyBoard.SetCellState(target, CellState.Miss);
-                    Color.Blue();
-                    Console.WriteLine("Промах!");
-                    Color.ResetColor();
-                    wasHit = false;
-                    break;
-                case ShotResult.Hit:
-                    enemyBoard.SetCellState(target, CellState.Hit);
-                    Color.Yellow();
-                    Console.WriteLine("Попадание!");
-                    Color.ResetColor();
-                    wasHit = true;
-                    break;
-                case ShotResult.Sunk:
-                    enemyBoard.SetCellState(target, CellState.Hit);
-                    Color.Red();
-                    Console.WriteLine("Уничтожен корабль!");
-                    Color.ResetColor();
-                    wasHit = true;
-                    // Закрашиваем область вокруг уничтоженного корабля на поле противника
-                    MarkAreaAroundDestroyedShip(enemy, target);
-                    break;
-            }
+                if (target.X < 0 || target.X >= GameBoard.GetBoardSize() ||
+                    target.Y < 0 || target.Y >= GameBoard.GetBoardSize())
+                {
+                    throw new ArgumentOutOfRangeException("Недопустимые координаты выстрела");
+                }
 
-            return wasHit;
+                ShotResult result = enemy.GetShotResult(target);
+                UpdateStrategy(result, target);
+                bool wasHit = false;
+
+                switch (result)
+                {
+                    case ShotResult.Miss:
+                        enemyBoard.SetCellState(target, CellState.Miss);
+                        Color.Blue();
+                        Console.WriteLine("Промах!");
+                        Color.ResetColor();
+                        wasHit = false;
+                        break;
+                    case ShotResult.Hit:
+                        enemyBoard.SetCellState(target, CellState.Hit);
+                        Color.Yellow();
+                        Console.WriteLine("Попадание!");
+                        Color.ResetColor();
+                        wasHit = true;
+                        break;
+                    case ShotResult.Sunk:
+                        enemyBoard.SetCellState(target, CellState.Hit);
+                        Color.Red();
+                        Console.WriteLine("Уничтожен корабль!");
+                        Color.ResetColor();
+                        wasHit = true;
+                        MarkAreaAroundDestroyedShip(enemy, target);
+                        break;
+                }
+                return wasHit;
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Color.Red();
+                Console.WriteLine($"Ошибка: {ex.Message}");
+                Color.ResetColor();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Color.Red();
+                Console.WriteLine($"Неожиданная ошибка: {ex.Message}");
+                Color.ResetColor();
+                return false;
+            }
         }
 
         public override void MarkAreaAroundDestroyedShip(Player enemy, Coordinate hitCoord)
         {
-            // Находим уничтоженный корабль противника
-            var enemyShips = enemy.GetShips();
-            Ship destroyedShip = null;
-
-            foreach (var ship in enemyShips)
+            try
             {
-                if (ship.Coordinates.Exists(c => c.X == hitCoord.X && c.Y == hitCoord.Y) && ship.IsSunk())
-                {
-                    destroyedShip = ship;
-                    break;
-                }
-            }
+                var enemyShips = enemy.GetShips();
+                Ship destroyedShip = null;
 
-            if (destroyedShip != null)
-            {
-                // Закрашиваем область вокруг всего уничтоженного корабля
-                foreach (var shipCoord in destroyedShip.Coordinates)
+                foreach (var ship in enemyShips)
                 {
-                    for (int dy = -1; dy <= 1; dy++)
+                    if (ship.Coordinates.Exists(c => c.X == hitCoord.X && c.Y == hitCoord.Y) && ship.IsSunk())
                     {
-                        for (int dx = -1; dx <= 1; dx++)
+                        destroyedShip = ship;
+                        break;
+                    }
+                }
+
+                if (destroyedShip != null)
+                {
+                    foreach (var shipCoord in destroyedShip.Coordinates)
+                    {
+                        for (int dy = -1; dy <= 1; dy++)
                         {
-                            Coordinate around = new Coordinate(shipCoord.X + dx, shipCoord.Y + dy);
-                            if (around.X >= 0 && around.X < GameBoard.GetBoardSize() &&
-                                around.Y >= 0 && around.Y < GameBoard.GetBoardSize())
+                            for (int dx = -1; dx <= 1; dx++)
                             {
-                                if (enemyBoard.GetCellState(around) == CellState.Empty)
+                                Coordinate around = new Coordinate(shipCoord.X + dx, shipCoord.Y + dy);
+                                if (around.X >= 0 && around.X < GameBoard.GetBoardSize() &&
+                                    around.Y >= 0 && around.Y < GameBoard.GetBoardSize())
                                 {
-                                    enemyBoard.SetCellState(around, CellState.Miss);
+                                    if (enemyBoard.GetCellState(around) == CellState.Empty)
+                                    {
+                                        enemyBoard.SetCellState(around, CellState.Miss);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при отметке области вокруг корабля: {ex.Message}");
             }
         }
 

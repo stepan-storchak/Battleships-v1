@@ -1,9 +1,35 @@
+using System;
+
 namespace SeaBattleCSharp
 {
     public class Coordinate
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        // Приватные поля
+        private int x;
+        private int y;
+
+        // Свойства с get и set
+        public int X
+        {
+            get { return x; }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("Координата X не может быть отрицательной");
+                x = value;
+            }
+        }
+
+        public int Y
+        {
+            get { return y; }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("Координата Y не может быть отрицательной");
+                y = value;
+            }
+        }
 
         public Coordinate(int x = 0, int y = 0)
         {
