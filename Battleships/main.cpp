@@ -1,17 +1,18 @@
 #include <iostream>
-#include "GameBoard.hpp"
-#include "Ship.hpp"
+#include "HumanPlayer.hpp"
+#include "AIPlayer.hpp"
 #include <Windows.h>
 
 int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
+    std::cout << "Морской бой - добавлена иерархия игроков" << std::endl;
 
-    std::cout << "Морской бой - начало разработки" << std::endl;
+    // Демонстрация создания объектов
+    HumanPlayer human("Игрок");
+    AIPlayer computer;
 
-    // Тест базовых структур
-    GameBoard board;
-    board.display(true);
+    std::cout << "Созданы игроки: " << human.getName() << " и " << computer.getName() << std::endl;
 
     return 0;
 }
