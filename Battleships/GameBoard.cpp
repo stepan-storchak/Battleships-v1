@@ -131,7 +131,7 @@ void GameBoard::markAreaAroundSunkShip(const Ship& ship) {
  */
 void GameBoard::display(bool showShips) const {
     // Вывод заголовка с буквами
-    std::cout << "  ";
+    std::cout << "   ";
     for (int i = 0; i < BOARD_SIZE; ++i) {
         Color::setColor(Color::YELLOW);
         std::cout << static_cast<char>('A' + i) << " ";

@@ -1,5 +1,4 @@
-#ifndef SHIP_HPP
-#define SHIP_HPP
+#pragma once
 
 #include "Coordinate.hpp"
 #include <vector>
@@ -51,5 +50,3 @@ public:
     int getSize() const { return size; }
     Orientation getOrientation() const { return orientation; }
 };
-
-#endif

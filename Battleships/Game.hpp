@@ -1,5 +1,4 @@
-#ifndef GAME_HPP
-#define GAME_HPP
+#pragma once
 
 #include "Player.hpp"
 #include "HumanPlayer.hpp"
@@ -94,5 +93,3 @@ public:
      */
     void processAfterGameInput(int choice);
 };
-
-#endif

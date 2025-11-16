@@ -1,5 +1,4 @@
-#ifndef CELLSTATE_HPP
-#define CELLSTATE_HPP
+#pragma once
 
 /**
  * @enum CellState
@@ -17,5 +16,3 @@ enum class CellState {
     Ship3,      ///< Трехпалубный корабль - '3'
     Ship4       ///< Четырехпалубный корабль - '4'
 };
-
-#endif

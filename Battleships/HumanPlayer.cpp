@@ -10,6 +10,14 @@
  */
 HumanPlayer::HumanPlayer(const std::string& name) : Player(name) {}
 
+
+namespace {
+    const int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
+    const int BOARD_SIZE = 10;
+    const int MAX_SINGLE_PLACEMENT_TRIES = 100;
+    const int AROUND_OFFSET = 1;
+}
+
 /**
  * @brief Реализация интерфейса расстановки кораблей
  *
@@ -117,44 +125,36 @@ bool HumanPlayer::makeMoveWithResult(Player& enemy) {
 }
 
 /**
- * @brief Маркирует область вокруг уничтоженного корабля на поле противника
- *
- * Реализует визуальную обратную связь для игрока, показывая
- * зоны, где не осталось кораблей противника.
+ * @brief Вспомогательная функция — закрашивает клетки вокруг точки
  */
-void HumanPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) {
-    // Находим уничтоженный корабль и закрашиваем область вокруг него
-    for (int dy = -1; dy <= 1; ++dy) {
-        for (int dx = -1; dx <= 1; ++dx) {
-            Coordinate around(hitCoord.x + dx, hitCoord.y + dy);
-            if (around.x >= 0 && around.x < 10 && around.y >= 0 && around.y < 10) {
-                // Помечаем клетку как промах на поле противника
+void HumanPlayer::markSurroundingCells(const Coordinate& center) {
+    for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
+        for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
+            Coordinate around(center.x + dx, center.y + dy);
+            if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
                 if (enemyBoard.getCellState(around) == CellState::Empty) {
                     enemyBoard.setCellState(around, CellState::Miss);
                 }
             }
         }
     }
+}
 
-    // Дополнительно ищем все клетки уничтоженного корабля и закрашиваем вокруг них
+/**
+ * @brief Маркирует область вокруг уничтоженного корабля на поле противника
+ */
+void HumanPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) {
+    // Сначала помечаем клетки вокруг самой точки попадания
+    markSurroundingCells(hitCoord);
+
+    // Затем ищем все части уничтоженного корабля и тоже обводим их
     for (int radius = 1; radius <= 3; radius++) {
         for (int dy = -radius; dy <= radius; ++dy) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 Coordinate around(hitCoord.x + dx, hitCoord.y + dy);
-                if (around.x >= 0 && around.x < 10 && around.y >= 0 && around.y < 10) {
-                    CellState state = enemyBoard.getCellState(around);
-                    if (state == CellState::Hit) {
-                        // Нашли часть корабля, закрашиваем вокруг нее
-                        for (int dy2 = -1; dy2 <= 1; ++dy2) {
-                            for (int dx2 = -1; dx2 <= 1; ++dx2) {
-                                Coordinate around2(around.x + dx2, around.y + dy2);
-                                if (around2.x >= 0 && around2.x < 10 && around2.y >= 0 && around2.y < 10) {
-                                    if (enemyBoard.getCellState(around2) == CellState::Empty) {
-                                        enemyBoard.setCellState(around2, CellState::Miss);
-                                    }
-                                }
-                            }
-                        }
+                if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
+                    if (enemyBoard.getCellState(around) == CellState::Hit) {
+                        markSurroundingCells(around);
                     }
                 }
             }
@@ -183,7 +183,7 @@ Coordinate HumanPlayer::inputCoordinate() const {
         int x = toupper(letter) - 'A';
         int y = number - 1;
 
-        if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+        if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE) {
             Coordinate coord(x, y);
 
             // Проверяем, не стреляли ли уже в эту клетку
@@ -212,12 +212,11 @@ Coordinate HumanPlayer::inputCoordinate() const {
  * обратной связью и проверкой правильности размещения.
  */
 void HumanPlayer::manualPlacement() {
-    int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
     const char* shipNames[] = { "четырехпалубный", "трехпалубный", "трехпалубный",
                               "двухпалубный", "двухпалубный", "двухпалубный",
                               "однопалубный", "однопалубный", "однопалубный", "однопалубный" };
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < BOARD_SIZE; ++i) {
         int size = shipSizes[i];
         bool placed = false;
 
@@ -296,16 +295,15 @@ bool HumanPlayer::automaticPlacement() {
         myBoard.clearBoard();
         ships.clear();
 
-        int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
         bool success = true;
 
         for (int size : shipSizes) {
             bool placed = false;
             int placementAttempts = 0;
 
-            while (!placed && placementAttempts < 100) {
-                int x = std::rand() % 10;
-                int y = std::rand() % 10;
+            while (!placed && placementAttempts < MAX_SINGLE_PLACEMENT_TRIES) {
+                int x = std::rand() % BOARD_SIZE;
+                int y = std::rand() % BOARD_SIZE;
                 Orientation orientation = (std::rand() % 2 == 0) ? Orientation::Horizontal : Orientation::Vertical;
 
                 Ship ship(size, Coordinate(x, y), orientation);

@@ -1,5 +1,4 @@
-#ifndef COORDINATE_HPP
-#define COORDINATE_HPP
+#pragma once
 
 /**
  * @class Coordinate
@@ -8,7 +7,8 @@
  * »нкапсулирует пару координат (x, y) и предоставл€ет оператор сравнени€
  * дл€ удобства работы с координатами в контейнерах STL
  */
-struct Coordinate {
+class Coordinate {
+public:
     int x; ///<  оордината по горизонтали (0-9)
     int y; ///<  оордината по вертикали (0-9)
 
@@ -16,12 +16,8 @@ struct Coordinate {
 
     /**
      * @brief ќператор сравнени€ координат
-     * @param other ƒруга€ координата дл€ сравнени€
-     * @return true если координаты идентичны
      */
     bool operator==(const Coordinate& other) const {
         return x == other.x && y == other.y;
-    }
+    } 
 };
-
-#endif

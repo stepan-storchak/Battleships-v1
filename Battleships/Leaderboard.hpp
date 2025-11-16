@@ -1,5 +1,4 @@
-#ifndef LEADERBOARD_HPP
-#define LEADERBOARD_HPP
+#pragma once
 
 #include <string>
 #include <map>
@@ -42,5 +41,3 @@ public:
      */
     void display() const;
 };
-
-#endif

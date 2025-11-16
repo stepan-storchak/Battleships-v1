@@ -1,5 +1,4 @@
-#ifndef COLOR_HPP
-#define COLOR_HPP
+#pragma once
 
 #include <iostream>
 
@@ -29,5 +28,3 @@ public:
     static const int WHITE = 15;  ///< Белый цвет
     static const int GRAY = 8;    ///< Серый цвет
 };
-
-#endif

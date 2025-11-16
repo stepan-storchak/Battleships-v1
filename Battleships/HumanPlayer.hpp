@@ -1,5 +1,4 @@
-#ifndef HUMANPLAYER_HPP
-#define HUMANPLAYER_HPP
+#pragma once
 
 #include "Player.hpp"
 
@@ -63,6 +62,11 @@ private:
     bool automaticPlacement();
 
     /**
+    * @brief Вспомогательная функция — закрашивает клетки вокруг точки
+    */
+    void markSurroundingCells(const Coordinate& center);
+
+    /**
      * @brief Проверяет возможность размещения корабля
      * @param size Размер корабля
      * @param start Начальная координата
@@ -71,5 +75,3 @@ private:
      */
     bool isValidShipPlacement(int size, const Coordinate& start, Orientation orientation) const;
 };
-
-#endif

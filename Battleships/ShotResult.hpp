@@ -1,5 +1,4 @@
-#ifndef SHOTRESULT_HPP
-#define SHOTRESULT_HPP
+#pragma once
 
 /**
  * @enum ShotResult
@@ -13,5 +12,3 @@ enum class ShotResult {
     Hit,        ///< Попадание - выстрел в корабль
     Sunk        ///< Уничтожение - полное уничтожение корабля
 };
-
-#endif

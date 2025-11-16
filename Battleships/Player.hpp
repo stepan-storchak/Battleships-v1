@@ -1,5 +1,4 @@
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#pragma once
 
 #include "GameBoard.hpp"
 #include "Coordinate.hpp"
@@ -81,5 +80,3 @@ public:
      */
     virtual void markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) = 0;
 };
-
-#endif

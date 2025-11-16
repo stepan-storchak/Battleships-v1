@@ -14,6 +14,17 @@ AIPlayer::AIPlayer(const std::string& name) : Player(name), huntMode(false) {
     std::srand(std::time(0));
 }
 
+namespace {
+    int attempts = 0;
+    const int MAX_ATTEMPTS = 10;
+    const int BOARD_SIZE = 10;
+    const int MAX_SINGLE_PLACEMENT_TRIES = 100;
+    const int THINKING_DOTS = 3;
+    const int MARK_RADIUS = 3;
+    const int THINKING_DELAY_MS = 500;
+    const int AROUND_OFFSET = 1;
+    const int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
+}
 /**
  * @brief Реализация алгоритма автоматической расстановки кораблей
  *
@@ -22,24 +33,23 @@ AIPlayer::AIPlayer(const std::string& name) : Player(name), huntMode(false) {
  * алгоритма за простым интерфейсом.
  */
 void AIPlayer::placeShips() {
-    int attempts = 0;
-    const int MAX_ATTEMPTS = 10;
+    
 
     while (attempts < MAX_ATTEMPTS) {
         // Очищаем доску и корабли
         myBoard.clearBoard();
         ships.clear();
 
-        int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
+
         bool success = true;
 
         for (int size : shipSizes) {
             bool placed = false;
             int placementAttempts = 0;
 
-            while (!placed && placementAttempts < 100) {
-                int x = std::rand() % 10;
-                int y = std::rand() % 10;
+            while (!placed && placementAttempts < MAX_SINGLE_PLACEMENT_TRIES) {
+                int x = std::rand() % BOARD_SIZE;
+                int y = std::rand() % BOARD_SIZE;
                 Orientation orientation = (std::rand() % 2 == 0) ? Orientation::Horizontal : Orientation::Vertical;
 
                 Ship ship(size, Coordinate(x, y), orientation);
@@ -90,10 +100,10 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
     // Имитация "размышления" компьютера
     Color::setColor(Color::YELLOW);
     std::cout << "Компьютер думает";
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < THINKING_DOTS; ++i) {
         std::cout << ".";
         std::cout.flush();
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(THINKING_DELAY_MS));
     }
     std::cout << std::endl;
     Color::resetColor();
@@ -105,8 +115,8 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
     else {
         // Случайный выстрел
         do {
-            target.x = std::rand() % 10;
-            target.y = std::rand() % 10;
+            target.x = std::rand() % BOARD_SIZE;
+            target.y = std::rand() % BOARD_SIZE;
         } while (enemyBoard.getCellState(target) != CellState::Empty);
     }
 
@@ -158,10 +168,10 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
  */
 void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) {
     // Находим уничтоженный корабль и закрашиваем область вокруг него
-    for (int dy = -1; dy <= 1; ++dy) {
-        for (int dx = -1; dx <= 1; ++dx) {
+    for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
+        for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
             Coordinate around(hitCoord.x + dx, hitCoord.y + dy);
-            if (around.x >= 0 && around.x < 10 && around.y >= 0 && around.y < 10) {
+            if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
                 // Помечаем клетку как промах на поле противника
                 if (enemyBoard.getCellState(around) == CellState::Empty) {
                     enemyBoard.setCellState(around, CellState::Miss);
@@ -171,18 +181,18 @@ void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitC
     }
 
     // Дополнительно ищем все клетки уничтоженного корабля и закрашиваем вокруг них
-    for (int radius = 1; radius <= 3; radius++) {
+    for (int radius = 1; radius <= MARK_RADIUS; radius++) {
         for (int dy = -radius; dy <= radius; ++dy) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 Coordinate around(hitCoord.x + dx, hitCoord.y + dy);
-                if (around.x >= 0 && around.x < 10 && around.y >= 0 && around.y < 10) {
+                if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
                     CellState state = enemyBoard.getCellState(around);
                     if (state == CellState::Hit) {
                         // Нашли часть корабля, закрашиваем вокруг нее
-                        for (int dy2 = -1; dy2 <= 1; ++dy2) {
-                            for (int dx2 = -1; dx2 <= 1; ++dx2) {
+                        for (int dy2 = -AROUND_OFFSET; dy2 <= AROUND_OFFSET; ++dy2) {
+                            for (int dx2 = -AROUND_OFFSET; dx2 <= AROUND_OFFSET; ++dx2) {
                                 Coordinate around2(around.x + dx2, around.y + dy2);
-                                if (around2.x >= 0 && around2.x < 10 && around2.y >= 0 && around2.y < 10) {
+                                if (around2.x >= 0 && around2.x < BOARD_SIZE && around2.y >= 0 && around2.y < BOARD_SIZE) {
                                     if (enemyBoard.getCellState(around2) == CellState::Empty) {
                                         enemyBoard.setCellState(around2, CellState::Miss);
                                     }
@@ -209,8 +219,8 @@ Coordinate AIPlayer::generateSmartMove() {
         // Если нет приоритетных целей, возвращаем случайную
         Coordinate target;
         do {
-            target.x = std::rand() % 10;
-            target.y = std::rand() % 10;
+            target.x = std::rand() % BOARD_SIZE;
+            target.y = std::rand() % BOARD_SIZE;
         } while (enemyBoard.getCellState(target) != CellState::Empty);
         return target;
     }
@@ -240,10 +250,10 @@ void AIPlayer::updateStrategy(const ShotResult& result, const Coordinate& coord)
         possibleTargets.clear();
 
         // Помечаем область вокруг уничтоженного корабля
-        for (int dy = -1; dy <= 1; ++dy) {
-            for (int dx = -1; dx <= 1; ++dx) {
+        for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
+            for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
                 Coordinate around(coord.x + dx, coord.y + dy);
-                if (around.x >= 0 && around.x < 10 && around.y >= 0 && around.y < 10) {
+                if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
                     if (enemyBoard.getCellState(around) == CellState::Empty) {
                         enemyBoard.setCellState(around, CellState::Miss);
                     }
@@ -267,7 +277,7 @@ void AIPlayer::generatePossibleTargets(const Coordinate& hitCoord) {
 
     for (const auto& dir : directions) {
         Coordinate newTarget(hitCoord.x + dir.x, hitCoord.y + dir.y);
-        if (newTarget.x >= 0 && newTarget.x < 10 && newTarget.y >= 0 && newTarget.y < 10) {
+        if (newTarget.x >= 0 && newTarget.x < BOARD_SIZE && newTarget.y >= 0 && newTarget.y < BOARD_SIZE) {
             if (enemyBoard.getCellState(newTarget) == CellState::Empty) {
                 possibleTargets.push_back(newTarget);
             }

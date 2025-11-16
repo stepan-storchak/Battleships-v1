@@ -1,5 +1,4 @@
-#ifndef GAMEBOARD_HPP
-#define GAMEBOARD_HPP
+#pragma once
 
 #include "CellState.hpp"
 #include "Coordinate.hpp"
@@ -83,5 +82,3 @@ public:
 
     static int getBoardSize() { return BOARD_SIZE; } ///< Геттер размера поля
 };
-
-#endif

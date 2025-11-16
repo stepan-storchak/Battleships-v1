@@ -1,5 +1,4 @@
-#ifndef AIPLAYER_HPP
-#define AIPLAYER_HPP
+#pragma once
 
 #include "Player.hpp"
 #include <vector>
@@ -70,5 +69,3 @@ private:
      */
     void generatePossibleTargets(const Coordinate& hitCoord);
 };
-
-#endif
