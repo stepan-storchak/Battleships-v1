@@ -9,31 +9,40 @@ Game::~Game() {
 }
 
 void Game::run() {
-    std::cout << "=== МОРСКОЙ БОЙ ===" << std::endl;
-
     while (true) {
-        std::cout << "\n1. Новая игра" << std::endl;
-        std::cout << "2. Выход" << std::endl;
-        std::cout << "Выберите: ";
+        showMainMenu();
+    }
+}
 
-        int choice;
-        std::cin >> choice;
+void Game::showMainMenu() {
+    std::cout << "\n=== МОРСКОЙ БОЙ ===" << std::endl;
+    std::cout << "1. Новая игра" << std::endl;
+    std::cout << "2. Таблица лидеров" << std::endl;
+    std::cout << "3. Выход" << std::endl;
+    std::cout << "Выберите: ";
 
-        if (choice == 1) {
-            startNewGame();
-        }
-        else {
-            break;
-        }
+    int choice;
+    std::cin >> choice;
+
+    switch (choice) {
+    case 1:
+        startNewGame();
+        break;
+    case 2:
+        showLeaderboard();
+        break;
+    case 3:
+        std::cout << "Выход из игры..." << std::endl;
+        exit(0);
+    default:
+        std::cout << "Неверный выбор!" << std::endl;
     }
 }
 
 void Game::startNewGame() {
-    // Очистка предыдущих игроков
     delete player1;
     delete player2;
 
-    // Создание новых игроков
     std::string playerName;
     std::cout << "Введите ваше имя: ";
     std::cin >> playerName;
@@ -43,13 +52,10 @@ void Game::startNewGame() {
     currentPlayer = player1;
 
     // Фаза расстановки
-    std::cout << "\n=== РАССТАНОВКА КОРАБЛЕЙ ===" << std::endl;
     player1->placeShips();
     player2->placeShips();
 
     // Боевая фаза
-    std::cout << "\n=== НАЧАЛО БОЯ ===" << std::endl;
-
     while (!player1->allShipsSunk() && !player2->allShipsSunk()) {
         if (currentPlayer == player1) {
             player1->makeMove(*player2);
@@ -65,11 +71,20 @@ void Game::startNewGame() {
         }
     }
 
-    // Определение победителя
+    // Определение победителя и сохранение результата
     if (player1->allShipsSunk()) {
         std::cout << "\nПобедил компьютер!" << std::endl;
+        leaderboard.addWin("Computer");
     }
     else {
         std::cout << "\nПобедил " << player1->getName() << "!" << std::endl;
+        leaderboard.addWin(player1->getName());
     }
+}
+
+void Game::showLeaderboard() {
+    leaderboard.display();
+    std::cout << "\nНажмите Enter для продолжения...";
+    std::cin.ignore();
+    std::cin.get();
 }
