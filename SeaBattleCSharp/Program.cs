@@ -4,10 +4,10 @@ namespace SeaBattleCSharp
 {
     class Program
     {
+        /// Точка входа в приложение "Морской бой" на C#
         static void Main()
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.WriteLine("Морской бой - запуск...");
 
             Game game = new Game();
             game.Run();
