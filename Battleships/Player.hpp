@@ -2,6 +2,9 @@
 #define PLAYER_HPP
 
 #include "GameBoard.hpp"
+#include "Coordinate.hpp"
+#include "ShotResult.hpp"
+#include "Ship.hpp"
 #include <string>
 #include <vector>
 
@@ -18,6 +21,9 @@ public:
     virtual void placeShips() = 0;
     virtual void makeMove(Player& enemy) = 0;
     bool allShipsSunk() const;
+    ShotResult getShotResult(const Coordinate& coord);
+    const std::string& getName() const { return name; }
+    void addShip(const Ship& ship);
 };
 
 #endif

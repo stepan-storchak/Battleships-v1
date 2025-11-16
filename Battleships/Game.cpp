@@ -10,38 +10,66 @@ Game::~Game() {
 
 void Game::run() {
     std::cout << "=== МОРСКОЙ БОЙ ===" << std::endl;
-    startNewGame();
+
+    while (true) {
+        std::cout << "\n1. Новая игра" << std::endl;
+        std::cout << "2. Выход" << std::endl;
+        std::cout << "Выберите: ";
+
+        int choice;
+        std::cin >> choice;
+
+        if (choice == 1) {
+            startNewGame();
+        }
+        else {
+            break;
+        }
+    }
 }
 
 void Game::startNewGame() {
-    // Создание игроков
+    // Очистка предыдущих игроков
+    delete player1;
+    delete player2;
+
+    // Создание новых игроков
     std::string playerName;
     std::cout << "Введите ваше имя: ";
     std::cin >> playerName;
 
     player1 = new HumanPlayer(playerName);
     player2 = new AIPlayer();
-
     currentPlayer = player1;
 
     // Фаза расстановки
-    std::cout << "\n=== ФАЗА РАССТАНОВКИ ===" << std::endl;
+    std::cout << "\n=== РАССТАНОВКА КОРАБЛЕЙ ===" << std::endl;
     player1->placeShips();
     player2->placeShips();
 
-    std::cout << "\n=== ИГРА НАЧИНАЕТСЯ ===" << std::endl;
+    // Боевая фаза
+    std::cout << "\n=== НАЧАЛО БОЯ ===" << std::endl;
 
-    // Простой игровой цикл
-    for (int turn = 0; turn < 5; ++turn) { // Ограничим для теста
+    while (!player1->allShipsSunk() && !player2->allShipsSunk()) {
         if (currentPlayer == player1) {
             player1->makeMove(*player2);
-            currentPlayer = player2;
+            if (!player2->allShipsSunk()) {
+                currentPlayer = player2;
+            }
         }
         else {
             player2->makeMove(*player1);
-            currentPlayer = player1;
+            if (!player1->allShipsSunk()) {
+                currentPlayer = player1;
+            }
         }
     }
 
-    std::cout << "Демонстрация завершена!" << std::endl;
+    // Определение победителя
+    if (player1->allShipsSunk()) {
+        std::cout << "\nПобедил компьютер!" << std::endl;
+    }
+    else {
+        std::cout << "\nПобедил " << player1->getName() << "!" << std::endl;
+    }
 }
