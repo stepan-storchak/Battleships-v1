@@ -23,7 +23,6 @@ void Leaderboard::loadFromFile() {
     if (!file.is_open()) {
         return;
     }
-
     std::string name;
     int wins;
     while (file >> name >> wins) {
@@ -44,7 +43,6 @@ void Leaderboard::saveToFile() {
         std::cout << "Ошибка сохранения таблицы лидеров!" << std::endl;
         return;
     }
-
     for (const auto& record : records) {
         file << record.first << " " << record.second << std::endl;
     }
@@ -61,12 +59,9 @@ void Leaderboard::saveToFile() {
 void Leaderboard::addWin(const std::string& playerName) {
     records[playerName]++;
     saveToFile();
-
     Color::setColor(Color::GREEN);
     std::cout << "Победа игрока " << playerName << " сохранена в таблице лидеров!" << std::endl;
     Color::resetColor();
-
-    // Показываем обновленную таблицу
     display();
 }
 
@@ -81,18 +76,15 @@ void Leaderboard::display() const {
     Color::setColor(Color::YELLOW);
     std::cout << "=== ТАБЛИЦА ЛИДЕРОВ ===" << std::endl;
     Color::resetColor();
-
     if (records.empty()) {
         std::cout << "Пока нет записей." << std::endl;
         return;
     }
-
     // Создаем вектор для сортировки
     std::vector<std::pair<std::string, int>> sortedRecords;
     for (const auto& record : records) {
         sortedRecords.push_back(record);
     }
-
     // Сортируем по количеству побед (по убыванию)
     for (size_t i = 0; i < sortedRecords.size() - 1; ++i) {
         for (size_t j = i + 1; j < sortedRecords.size(); ++j) {
@@ -101,28 +93,24 @@ void Leaderboard::display() const {
             }
         }
     }
-
-    std::cout << "-------------------------" << std::endl;
+    std::cout << "------------------------------" << std::endl;
     std::cout << "Игрок\t\tПобеды" << std::endl;
-    std::cout << "-------------------------" << std::endl;
-
+    std::cout << "------------------------------" << std::endl;
     for (size_t i = 0; i < sortedRecords.size(); ++i) {
         const auto& record = sortedRecords[i];
-
         // Разные цвета для первых трех мест
         if (i == 0) {
-            Color::setColor(Color::YELLOW); // Золото
+            Color::setColor(Color::YELLOW);  // Золото
         }
         else if (i == 1) {
-            Color::setColor(Color::GRAY);   // Серебро  
+            Color::setColor(Color::GRAY);    // Серебро
         }
         else if (i == 2) {
-            Color::setColor(Color::RED);    // Бронза
+            Color::setColor(Color::RED);     // Бронза
         }
         else {
-            Color::setColor(Color::WHITE);  // Обычный
+            Color::setColor(Color::WHITE);   // Обычный
         }
-
         std::cout << record.first;
         if (record.first.length() < 8) {
             std::cout << "\t\t";
@@ -133,5 +121,5 @@ void Leaderboard::display() const {
         std::cout << record.second << std::endl;
         Color::resetColor();
     }
-    std::cout << "-------------------------" << std::endl;
+    std::cout << "------------------------------" << std::endl;
 }

@@ -4,6 +4,7 @@
 #include "HumanPlayer.hpp"
 #include "AIPlayer.hpp"
 #include "Leaderboard.hpp"
+#include <memory>
 
 /**
  * @enum GameState
@@ -25,71 +26,29 @@ enum class GameState { Menu, Placement, Battle, GameOver, AfterGame };
  * Реализует паттерн Controller в архитектуре MVC - управляет
  * взаимодействием между моделью (игроки) и представлением (консоль).
  * Координирует переходы между состояниями игры.
+ * Демонстрирует использование умных указателей (требование лабораторной).
  */
 class Game {
 private:
-    Player* player1;            ///< Указатель на первого игрока (человек)
-    Player* player2;            ///< Указатель на второго игрока (компьютер)
-    Player* currentPlayer;      ///< Указатель на текущего активного игрока
-    GameState gameState;        ///< Текущее состояние игрового процесса
-    Leaderboard leaderboard;    ///< Объект для управления таблицей лидеров
-    std::string winnerName;     ///< Имя победителя текущей игры
-
-    /**
-     * @brief Возвращает указатель на противника текущего игрока
-     * @return Указатель на игрока-оппонента
-     */
-    Player* getOpponent() const;
+    std::unique_ptr<Player> player1;  ///< Умный указатель на первого игрока (человек)
+    std::unique_ptr<Player> player2;  ///< Умный указатель на второго игрока (компьютер)
+    Player* currentPlayer;            ///< Указатель на текущего активного игрока
+    GameState gameState;              ///< Текущее состояние игрового процесса
+    Leaderboard leaderboard;          ///< Объект для управления таблицей лидеров
+    std::string winnerName;           ///< Имя победителя текущей игры
 
 public:
     Game();
-    ~Game();
+    ~Game() = default;  // Деструктор не нужен благодаря умным указателям
 
-    /**
-     * @brief Главный игровой цикл приложения
-     */
+    Player* getOpponent() const;
     void run();
-
-    /**
-     * @brief Отображает главное меню игры
-     */
     void showMainMenu();
-
-    /**
-     * @brief Переключает активного игрока
-     */
     void switchTurn();
-
-    /**
-     * @brief Проверяет условия завершения игры
-     * @return true если один из игроков победил
-     */
     bool checkWinCondition();
-
-    /**
-     * @brief Обрабатывает выбор пользователя в главном меню
-     * @param choice Числовой выбор пользователя
-     */
     void processMenuInput(int choice);
-
-    /**
-     * @brief Инициализирует новую игровую сессию
-     */
     void startNewGame();
-
-    /**
-     * @brief Отображает таблицу лидеров
-     */
     void showLeaderboard();
-
-    /**
-     * @brief Отображает меню после завершения игры
-     */
     void showAfterGameMenu();
-
-    /**
-     * @brief Обрабатывает выбор пользователя после игры
-     * @param choice Числовой выбор пользователя
-     */
     void processAfterGameInput(int choice);
 };

@@ -1,52 +1,51 @@
 #pragma once
-
 #include "Coordinate.hpp"
+#include "Orientation.hpp"
 #include <vector>
-
-/**
- * @enum Orientation
- * @brief Перечисление ориентаций корабля
- */
-enum class Orientation { Horizontal, Vertical };
+#include <string>
 
 /**
  * @class Ship
  * @brief Класс для представления корабля в игре
  *
- * Инкапсулирует состояние корабля: размер, координаты, ориентацию и попадания.
- * Реализует логику проверки уничтожения корабля и обработки попаданий.
+ * Инкапсулирует логику корабля: размер, координаты, состояние попаданий.
+ * Демонстрирует перегрузку операторов и конструктор копирования.
  */
 class Ship {
 private:
-    int size;                           ///< Количество палуб корабля
-    std::vector<Coordinate> coordinates;///< Координаты всех палуб корабля
-    std::vector<bool> hits;             ///< Вектор попаданий по палубам
-    Orientation orientation;            ///< Ориентация корабля
+    int size;                           ///< Размер корабля (1-4)
+    std::vector<Coordinate> coordinates; ///< Координаты всех палуб корабля
+    std::vector<bool> hits;             ///< Состояние попаданий в палубы
+    std::string name;                   ///< Имя корабля (используем std::string)
 
 public:
-    /**
-     * @brief Конструктор корабля
-     * @param size Размер корабля (1-4 палубы)
-     * @param startCoord Начальная координата корабля
-     * @param orientation Ориентация корабля
-     */
-    Ship(int size, const Coordinate& startCoord, Orientation orientation);
+    Ship(int size, const Coordinate& start, Orientation orientation, const std::string& name = "");
 
-    /**
-     * @brief Проверяет, уничтожен ли корабль
-     * @return true если все палубы подбиты
-     */
-    bool isSunk() const;
+    // Конструктор копирования (требование лабораторной)
+    Ship(const Ship& other);
 
-    /**
-     * @brief Обрабатывает попадание в корабль
-     * @param coord Координата попадания
-     * @return true если попадание привело к уничтожению корабля
-     */
-    bool takeHit(const Coordinate& coord);
+    // Перегрузка операторов (требование лабораторной)
+    bool operator==(const Ship& other) const;
+    Ship& operator=(const Ship& other);
 
-    // Геттеры для доступа к приватным полям
+    // Дружественная функция (требование лабораторной)
+    friend std::string getShipInfo(const Ship& ship);
+
+    // Геттеры
     const std::vector<Coordinate>& getCoordinates() const { return coordinates; }
     int getSize() const { return size; }
-    Orientation getOrientation() const { return orientation; }
+    const std::string& getName() const { return name; }
+
+    bool isSunk() const;
+    bool takeHit(const Coordinate& coord);
+
+    // Работа со std::string - конкатенация (требование лабораторной)
+    std::string getFullInfo() const {
+        return name + " (размер: " + std::to_string(size) + ")";
+    }
 };
+
+// Дружественная функция для вывода информации о корабле
+inline std::string getShipInfo(const Ship& ship) {
+    return ship.getFullInfo();
+}
