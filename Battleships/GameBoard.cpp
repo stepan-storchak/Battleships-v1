@@ -78,3 +78,16 @@ void GameBoard::display(bool showShips) const {
     }
 }
 
+CellState GameBoard::getCellState(const Coordinate& coord) const {
+    if (coord.x < 0 || coord.x >= BOARD_SIZE || coord.y < 0 || coord.y >= BOARD_SIZE) {
+        return CellState::Empty;
+    }
+    return grid[coord.y][coord.x];
+}
+
+void GameBoard::setCellState(const Coordinate& coord, CellState state) {
+    if (coord.x >= 0 && coord.x < BOARD_SIZE && coord.y >= 0 && coord.y < BOARD_SIZE) {
+        grid[coord.y][coord.x] = state;
+    }
+}
+

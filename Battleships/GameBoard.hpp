@@ -19,6 +19,8 @@ public:
     ShotResult receiveShot(const Coordinate& coord);
     void display(bool showShips) const;
     static int getBoardSize() { return BOARD_SIZE; }
+    CellState getCellState(const Coordinate& coord) const;
+    void setCellState(const Coordinate& coord, CellState state);
 };
 
 #endif
