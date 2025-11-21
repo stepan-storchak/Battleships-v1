@@ -4,9 +4,8 @@
 
 int Player::playerCount = 0;
 
-
 Player::Player(const std::string& name) : name(name), myBoard(), enemyBoard() {
-    playerCount++;  
+    playerCount++;
 }
 
 bool Player::allShipsSunk() const {
@@ -18,15 +17,14 @@ bool Player::allShipsSunk() const {
     return true;
 }
 
-
 ShotResult Player::getShotResult(const Coordinate& coord) {
-    try {      
+    try {
         ShotResult result = this->myBoard.receiveShot(coord);
 
         if (result == ShotResult::Hit) {
             for (auto& ship : this->ships) {
                 for (const auto& shipCoord : ship.getCoordinates()) {
-                    if (shipCoord == coord) { 
+                    if (shipCoord == coord) {
                         bool wasSunk = ship.takeHit(coord);
                         if (wasSunk) {
                             result = ShotResult::Sunk;
@@ -48,4 +46,18 @@ ShotResult Player::getShotResult(const Coordinate& coord) {
 
 void Player::addShip(const Ship& ship) {
     this->ships.push_back(ship);
+}
+
+void Player::displayInfo() const {
+    std::cout << "Информация об игроке:" << std::endl;
+    std::cout << "Имя: " << this->name << std::endl;
+    std::cout << "Тип: " << getPlayerType() << std::endl;
+    std::cout << "Количество кораблей: " << this->ships.size() << std::endl;
+    std::cout << "Уничтожено кораблей: " << [this]() {
+        int count = 0;
+        for (const auto& ship : this->ships) {
+            if (ship.isSunk()) count++;
+        }
+        return count;
+        }() << std::endl;
 }

@@ -3,23 +3,25 @@
 #include "Player.hpp"
 #include "HumanPlayer.hpp"
 #include "AIPlayer.hpp"
+#include "AdvancedAIPlayer.hpp"
 #include "Leaderboard.hpp"
 #include <memory>
+#include <vector>
 
 enum class GameState { Menu, Placement, Battle, GameOver, AfterGame };
 
 class Game {
 private:
-    std::unique_ptr<Player> player1; 
-    std::unique_ptr<Player> player2; 
-    Player* currentPlayer;          
-    GameState gameState;           
-    Leaderboard leaderboard;          
-    std::string winnerName;          
+    std::unique_ptr<Player> player1;
+    std::unique_ptr<Player> player2;
+    Player* currentPlayer;
+    GameState gameState;
+    Leaderboard leaderboard;
+    std::string winnerName;
 
 public:
     Game();
-    ~Game() = default;  
+    ~Game() = default;
 
     Player* getOpponent() const;
     void run();
@@ -31,4 +33,9 @@ public:
     void showLeaderboard();
     void showAfterGameMenu();
     void processAfterGameInput(int choice);
+
+    void demonstrateOOPFeatures();
+    void demonstrateVirtualFunctions();
+    void demonstrateCloning();
+    void demonstrateAbstractClass();
 };

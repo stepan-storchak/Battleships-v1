@@ -4,10 +4,10 @@
 #include <vector>
 
 class AIPlayer : public Player {
-private:
-    Coordinate lastHit;                
-    bool huntMode;                      
-    std::vector<Coordinate> possibleTargets; 
+protected:
+    Coordinate lastHit;
+    bool huntMode;
+    std::vector<Coordinate> possibleTargets;
 
 public:
     AIPlayer(const std::string& name = "Computer");
@@ -17,7 +17,11 @@ public:
     bool makeMoveWithResult(Player& enemy) override;
     void markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) override;
 
-private:
+    std::string getPlayerType() const override { return "AI Player"; }
+
+    AIPlayer& operator=(const AIPlayer& other);
+
+protected:
     Coordinate generateSmartMove();
     void updateStrategy(const ShotResult& result, const Coordinate& coord);
     void generatePossibleTargets(const Coordinate& hitCoord);

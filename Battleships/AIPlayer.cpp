@@ -7,7 +7,6 @@
 #include <thread>
 #include <chrono>
 
-
 AIPlayer::AIPlayer(const std::string& name) : Player(name), huntMode(false) {
     std::srand(std::time(0));
 }
@@ -24,13 +23,24 @@ namespace {
     const int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
 }
 
-void AIPlayer::placeShips() {
-    
+AIPlayer& AIPlayer::operator=(const AIPlayer& other) {
+    if (this != &other) {
+        this->name = other.name;
+        this->myBoard = other.myBoard;
+        this->enemyBoard = other.enemyBoard;
+        this->ships = other.ships;
 
+        this->lastHit = other.lastHit;
+        this->huntMode = other.huntMode;
+        this->possibleTargets = other.possibleTargets;
+    }
+    return *this;
+}
+
+void AIPlayer::placeShips() {
     while (attempts < MAX_ATTEMPTS) {
         myBoard.clearBoard();
         ships.clear();
-
 
         bool success = true;
 
@@ -73,7 +83,6 @@ void AIPlayer::makeMove(Player& enemy) {
     makeMoveWithResult(enemy);
 }
 
-
 bool AIPlayer::makeMoveWithResult(Player& enemy) {
     std::cout << "\n=== Ход компьютера ===" << std::endl;
 
@@ -92,7 +101,6 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
         target = generateSmartMove();
     }
     else {
-        
         do {
             target.x = std::rand() % BOARD_SIZE;
             target.y = std::rand() % BOARD_SIZE;
@@ -137,7 +145,6 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
     return wasHit;
 }
 
-
 void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) {
     for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
         for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
@@ -173,7 +180,6 @@ void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitC
         }
     }
 }
-
 
 Coordinate AIPlayer::generateSmartMove() {
     if (possibleTargets.empty()) {
@@ -213,7 +219,6 @@ void AIPlayer::updateStrategy(const ShotResult& result, const Coordinate& coord)
         }
     }
 }
-
 
 void AIPlayer::generatePossibleTargets(const Coordinate& hitCoord) {
     std::vector<Coordinate> directions = {

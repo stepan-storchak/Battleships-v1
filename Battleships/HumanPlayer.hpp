@@ -12,6 +12,8 @@ public:
     bool makeMoveWithResult(Player& enemy) override;
     void markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) override;
 
+    std::string getPlayerType() const override { return "Human Player"; }
+
 private:
     Coordinate inputCoordinate() const;
     void manualPlacement();

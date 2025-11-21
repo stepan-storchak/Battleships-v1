@@ -10,14 +10,15 @@
 
 class Player {
 protected:
-    std::string name;           
-    GameBoard myBoard;          
-    GameBoard enemyBoard;       
-    std::vector<Ship> ships;    
-    static int playerCount;     
+    std::string name;
+    GameBoard myBoard;
+    GameBoard enemyBoard;
+    std::vector<Ship> ships;
+    static int playerCount;
 
 public:
     Player(const std::string& name);
+
     virtual ~Player() = default;
 
     static int getPlayerCount() { return playerCount; }
@@ -26,6 +27,9 @@ public:
     virtual void makeMove(Player& enemy) = 0;
     virtual bool makeMoveWithResult(Player& enemy) = 0;
     virtual void markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) = 0;
+
+    virtual std::string getPlayerType() const { return "Base Player"; }
+    virtual void displayInfo() const;
 
     bool allShipsSunk() const;
     ShotResult getShotResult(const Coordinate& coord);

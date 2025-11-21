@@ -17,18 +17,8 @@ Ship::Ship(int size, const Coordinate& start, Orientation orientation, const std
     }
 }
 
-
 Ship::Ship(const Ship& other)
-    : size(other.size), coordinates(other.coordinates),
-    hits(other.hits), name(other.name) {
-}
-
-bool Ship::operator==(const Ship& other) const {
-    if (this->coordinates.size() != other.coordinates.size()) return false;
-    for (size_t i = 0; i < this->coordinates.size(); ++i) {
-        if (this->coordinates[i] != other.coordinates[i]) return false;
-    }
-    return this->size == other.size;
+    : size(other.size), coordinates(other.coordinates), hits(other.hits), name(other.name) {
 }
 
 Ship& Ship::operator=(const Ship& other) {
@@ -41,6 +31,11 @@ Ship& Ship::operator=(const Ship& other) {
     return *this;
 }
 
+Ship& Ship::operator=(const IShip& other) {
+    this->name = other.getName() + " (assigned)";
+    return *this;
+}
+
 bool Ship::isSunk() const {
     for (bool hit : hits) {
         if (!hit) return false;
@@ -50,10 +45,18 @@ bool Ship::isSunk() const {
 
 bool Ship::takeHit(const Coordinate& coord) {
     for (int i = 0; i < size; ++i) {
-        if (coordinates[i] == coord) {  
+        if (coordinates[i] == coord) {
             hits[i] = true;
             return isSunk();
         }
     }
     return false;
+}
+
+Ship* Ship::clone() const {
+    return new Ship(*this);
+}
+
+std::string Ship::getFullInfo() const {
+    return getDescription();
 }

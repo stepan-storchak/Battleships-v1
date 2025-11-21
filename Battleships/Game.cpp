@@ -1,11 +1,13 @@
 #include "Game.hpp"
 #include "Color.hpp"
+#include "IShip.hpp"
 #include <iostream>
 #include <limits>
 #include <thread>
 #include <chrono>
 #include <stdexcept>
 #include <memory>
+#include <vector>
 
 Game::Game() : player1(nullptr), player2(nullptr), currentPlayer(nullptr),
 gameState(GameState::Menu), winnerName("") {
@@ -22,6 +24,8 @@ Player* Game::getOpponent() const {
 
 void Game::run() {
     try {
+        demonstrateOOPFeatures();
+
         while (gameState != GameState::GameOver) {
             switch (gameState) {
             case GameState::Menu:
@@ -44,6 +48,10 @@ void Game::run() {
                     if (dynamic_cast<HumanPlayer*>(currentPlayer)) {
                         HumanPlayer* human = dynamic_cast<HumanPlayer*>(currentPlayer);
                         wasHit = human->makeMoveWithResult(*opponent);
+                    }
+                    else if (dynamic_cast<AdvancedAIPlayer*>(currentPlayer)) {
+                        AdvancedAIPlayer* advancedAI = dynamic_cast<AdvancedAIPlayer*>(currentPlayer);
+                        wasHit = advancedAI->makeMoveWithResult(*opponent);
                     }
                     else {
                         AIPlayer* ai = dynamic_cast<AIPlayer*>(currentPlayer);
@@ -78,7 +86,8 @@ void Game::showMainMenu() {
     Color::resetColor();
     std::cout << "1. Начать новую игру" << std::endl;
     std::cout << "2. Показать таблицу лидеров" << std::endl;
-    std::cout << "3. Выход" << std::endl;
+    std::cout << "3. Демонстрация ООП функций" << std::endl;
+    std::cout << "4. Выход" << std::endl;
     std::cout << "Выберите опцию: ";
     int choice;
     std::cin >> choice;
@@ -199,6 +208,9 @@ void Game::processMenuInput(int choice) {
         showLeaderboard();
         break;
     case 3:
+        demonstrateOOPFeatures();
+        break;
+    case 4:
         gameState = GameState::GameOver;
         std::cout << "Выход из игры..." << std::endl;
         break;
@@ -219,8 +231,19 @@ void Game::startNewGame() {
         std::cout << "Введите ваше имя: ";
         std::cin >> playerName;
 
+        int gameType;
+        std::cout << "Выберите тип игры:\n1. Против обычного ИИ\n2. Против продвинутого ИИ\nВаш выбор: ";
+        std::cin >> gameType;
+
         player1 = std::make_unique<HumanPlayer>(playerName);
-        player2 = std::make_unique<AIPlayer>();
+
+        if (gameType == 2) {
+            player2 = std::make_unique<AdvancedAIPlayer>("Advanced AI", 3);
+        }
+        else {
+            player2 = std::make_unique<AIPlayer>();
+        }
+
         currentPlayer = player1.get();
         gameState = GameState::Placement;
         winnerName = "";
@@ -240,4 +263,59 @@ void Game::showLeaderboard() {
     std::cout << "\nНажмите Enter для продолжения...";
     std::cin.ignore();
     std::cin.get();
+}
+
+void Game::demonstrateOOPFeatures() {
+    std::cout << "\n=== ДЕМОНСТРАЦИЯ ООП ВОЗМОЖНОСТЕЙ ===" << std::endl;
+
+    demonstrateVirtualFunctions();
+    demonstrateCloning();
+    demonstrateAbstractClass();
+
+    std::cout << "\nНажмите Enter для продолжения...";
+    std::cin.ignore();
+    std::cin.get();
+}
+
+void Game::demonstrateVirtualFunctions() {
+    std::cout << "\n--- Демонстрация виртуальных функций ---" << std::endl;
+
+    HumanPlayer human("Тестовый Игрок");
+    AIPlayer ai("Тестовый ИИ");
+    AdvancedAIPlayer advancedAI("Продвинутый ИИ", 2);
+
+    std::vector<Player*> players = { &human, &ai, &advancedAI };
+
+    for (Player* player : players) {
+        player->displayInfo();
+        std::cout << "---" << std::endl;
+    }
+
+    std::cout << "Демонстрация присваивания указателей:" << std::endl;
+    Player* basePtr = &advancedAI;
+    std::cout << "Тип через базовый указатель: " << basePtr->getPlayerType() << std::endl;
+}
+
+void Game::demonstrateCloning() {
+    std::cout << "\n--- Демонстрация клонирования ---" << std::endl;
+
+    Ship originalShip(3, Coordinate(0, 0), Orientation::Horizontal, "Тестовый корабль");
+
+    Ship* clonedShip = originalShip.clone();
+    std::cout << "Клонирование: " << clonedShip->getDescription() << std::endl;
+
+    delete clonedShip;
+}
+
+void Game::demonstrateAbstractClass() {
+    std::cout << "\n--- Демонстрация абстрактного класса ---" << std::endl;
+
+    Ship concreteShip(2, Coordinate(1, 1), Orientation::Vertical, "Интерфейсный корабль");
+    IShip* shipPtr = &concreteShip;
+
+    std::cout << "Использование через абстрактный интерфейс:" << std::endl;
+    std::cout << "Имя: " << shipPtr->getName() << std::endl;
+    std::cout << "Размер: " << shipPtr->getSize() << std::endl;
+    std::cout << "Тип: " << shipPtr->getType() << std::endl;
+    std::cout << "Полная информация: " << shipPtr->getFullInfo() << std::endl;
 }
