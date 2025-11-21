@@ -25,19 +25,22 @@ namespace SeaBattleCSharp
 
             try
             {
-                string[] lines = File.ReadAllLines(filename);
-                foreach (string line in lines)
+                using (StreamReader file = new StreamReader(filename))
                 {
-                    string[] parts = line.Split(' ');
-                    if (parts.Length == 2 && int.TryParse(parts[1], out int wins))
+                    string line;
+                    while ((line = file.ReadLine()) != null)
                     {
-                        records[parts[0]] = wins;
+                        string[] parts = line.Split(' ');
+                        if (parts.Length == 2 && int.TryParse(parts[1], out int wins))
+                        {
+                            records[parts[0]] = wins;
+                        }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Если файл поврежден, начинаем с пустой таблицы
+                Console.WriteLine($"Ошибка загрузки таблицы лидеров: {ex.Message}");
             }
         }
 
@@ -45,34 +48,45 @@ namespace SeaBattleCSharp
         {
             try
             {
-                using StreamWriter file = new StreamWriter(filename);
-                foreach (var record in records)
+                using (StreamWriter file = new StreamWriter(filename))
                 {
-                    file.WriteLine($"{record.Key} {record.Value}");
+                    foreach (var record in records)
+                    {
+                        file.WriteLine($"{record.Key} {record.Value}");
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Console.WriteLine("Ошибка сохранения таблицы лидеров!");
+                throw new IOException($"Ошибка сохранения таблицы лидеров: {ex.Message}");
             }
         }
 
         public void AddWin(string playerName)
         {
-            if (records.ContainsKey(playerName))
+            try
             {
-                records[playerName]++;
-            }
-            else
-            {
-                records[playerName] = 1;
-            }
-            SaveToFile();
+                if (records.ContainsKey(playerName))
+                {
+                    records[playerName]++;
+                }
+                else
+                {
+                    records[playerName] = 1;
+                }
+                SaveToFile();
 
-            Color.Green();
-            Console.WriteLine($"Победа игрока {playerName} сохранена в таблице лидеров!");
-            Color.ResetColor();
-            Display();
+                Color.Green();
+                Console.WriteLine($"Победа игрока {playerName} сохранена в таблице лидеров!");
+                Color.ResetColor();
+                Display();
+            }
+            catch (Exception ex)
+            {
+                Color.Red();
+                Console.WriteLine($"Ошибка при сохранении победы: {ex.Message}");
+                Color.ResetColor();
+            }
         }
 
         public void Display()
@@ -89,7 +103,6 @@ namespace SeaBattleCSharp
             }
 
             var sortedRecords = records.OrderByDescending(r => r.Value).ToList();
-
             Console.WriteLine("------------------------------");
             Console.WriteLine("Игрок\t\tПобеды");
             Console.WriteLine("------------------------------");
@@ -97,7 +110,6 @@ namespace SeaBattleCSharp
             for (int i = 0; i < sortedRecords.Count; i++)
             {
                 var record = sortedRecords[i];
-
                 if (i == 0)
                 {
                     Color.Yellow();
@@ -125,7 +137,6 @@ namespace SeaBattleCSharp
                     Console.Write("\t");
                 }
                 Console.WriteLine(record.Value);
-
                 Color.ResetColor();
             }
             Console.WriteLine("------------------------------");

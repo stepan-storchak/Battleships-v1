@@ -1,14 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SeaBattleCSharp
 {
     public class Ship
     {
-        public int Size { get; }
-        public Coordinate Start { get; }
-        public Orientation Orientation { get; }
-        public List<Coordinate> Coordinates { get; }
+        // Приватные поля
+        private int size;
+        private Coordinate start;
+        private Orientation orientation;
+
+        // Свойства с get и private set
+        public int Size
+        {
+            get { return size; }
+            private set
+            {
+                if (value <= 0 || value > 4)
+                    throw new ArgumentException("Размер корабля должен быть от 1 до 4");
+                size = value;
+            }
+        }
+
+        public Coordinate Start
+        {
+            get { return start; }
+            private set
+            {
+                start = value ?? throw new ArgumentNullException("Начальная координата не может быть null");
+            }
+        }
+
+        public Orientation Orientation
+        {
+            get { return orientation; }
+            private set { orientation = value; }
+        }
+
+        public List<Coordinate> Coordinates { get; private set; }
         public List<Coordinate> Hits { get; } = new List<Coordinate>();
 
         public Ship(int size, Coordinate start, Orientation orientation)
@@ -22,17 +52,26 @@ namespace SeaBattleCSharp
         private List<Coordinate> CalculateCoordinates()
         {
             var coords = new List<Coordinate>();
-            for (int i = 0; i < Size; i++)
+
+            try
             {
-                if (Orientation == Orientation.Horizontal)
+                for (int i = 0; i < Size; i++)
                 {
-                    coords.Add(new Coordinate(Start.X + i, Start.Y));
-                }
-                else
-                {
-                    coords.Add(new Coordinate(Start.X, Start.Y + i));
+                    if (Orientation == Orientation.Horizontal)
+                    {
+                        coords.Add(new Coordinate(Start.X + i, Start.Y));
+                    }
+                    else
+                    {
+                        coords.Add(new Coordinate(Start.X, Start.Y + i));
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Ошибка при расчете координат корабля: {ex.Message}");
+            }
+
             return coords;
         }
 
