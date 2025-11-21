@@ -12,10 +12,8 @@ namespace SeaBattleCSharp
         private List<Coordinate> possibleTargets;
         private Random random;
 
-        // Статическое поле для подсчета созданных экземпляров AI
         private static int aiInstanceCount = 0;
 
-        // Статическое свойство с get/set
         public static int AiInstanceCount
         {
             get { return aiInstanceCount; }
@@ -28,11 +26,9 @@ namespace SeaBattleCSharp
             possibleTargets = new List<Coordinate>();
             random = new Random();
 
-            // Увеличиваем счетчик экземпляров
             AiInstanceCount++;
         }
 
-        // Статический метод
         public static void ResetAiInstanceCount()
         {
             AiInstanceCount = 0;
@@ -132,7 +128,6 @@ namespace SeaBattleCSharp
             Console.WriteLine($"Компьютер стреляет в {(char)('A' + target.X)}{target.Y + 1}");
             Color.ResetColor();
 
-            // Обработка исключений при выстреле
             try
             {
                 if (target.X < 0 || target.X >= GameBoard.GetBoardSize() ||

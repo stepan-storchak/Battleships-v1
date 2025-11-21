@@ -44,17 +44,13 @@ namespace SeaBattleCSharp
             {
                 foreach (var ship in ships)
                 {
-                    // Проверяем, принадлежит ли координата этому кораблю
                     if (ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y))
                     {
-                        // Попадание в корабль
                         bool wasHit = ship.TakeHit(coord);
 
-                        // Проверяем, был ли корабль уничтожен этим попаданием
                         if (wasHit && ship.IsSunk())
                         {
                             result = ShotResult.Sunk;
-                            // Помечаем область вокруг уничтоженного корабля на СВОЕМ поле
                             myBoard.MarkAreaAroundSunkShip(ship);
                         }
                         break;
@@ -75,7 +71,6 @@ namespace SeaBattleCSharp
         public GameBoard GetEnemyBoard() => enemyBoard;
         public List<Ship> GetShips() => ships;
 
-        // Метод для поиска корабля по координате
         protected Ship FindShipByCoordinate(Coordinate coord)
         {
             return ships.FirstOrDefault(ship => ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y));

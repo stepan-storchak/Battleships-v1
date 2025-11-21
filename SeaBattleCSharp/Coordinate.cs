@@ -4,11 +4,9 @@ namespace SeaBattleCSharp
 {
     public class Coordinate
     {
-        // Приватные поля
         private int x;
         private int y;
 
-        // Свойства с get и set
         public int X
         {
             get { return x; }

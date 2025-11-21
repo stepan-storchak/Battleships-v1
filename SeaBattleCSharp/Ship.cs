@@ -6,12 +6,10 @@ namespace SeaBattleCSharp
 {
     public class Ship
     {
-        // Приватные поля
         private int size;
         private Coordinate start;
         private Orientation orientation;
 
-        // Свойства с get и private set
         public int Size
         {
             get { return size; }
