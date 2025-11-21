@@ -3,18 +3,8 @@
 #include "Color.hpp"
 #include <iostream>
 
-/**
- * @class HumanPlayer
- * @brief Класс для представления игрока-человека
- *
- * Наследует от Player и реализует интерфейс для взаимодействия
- * с пользователем через консоль. Реализует паттерн Strategy
- * для различных стратегий расстановки кораблей.
- * Демонстрирует вызов конструктора базового класса.
- */
 class HumanPlayer : public Player {
 public:
-    // Вызов конструктора базового класса (требование лабораторной)
     HumanPlayer(const std::string& name) : Player(name) {}
 
     void placeShips() override;

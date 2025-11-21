@@ -1,12 +1,7 @@
 #pragma once
 
-/**
- * @enum Orientation
- * @brief Перечисление для ориентации корабля
- *
- * Добавлено для устранения ошибок компиляции и лучшей организации кода
- */
+
 enum class Orientation {
-    Horizontal,  ///< Горизонтальная ориентация
-    Vertical     ///< Вертикальная ориентация
+    Horizontal,  
+    Vertical   
 };

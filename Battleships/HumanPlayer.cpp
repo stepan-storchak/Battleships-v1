@@ -13,13 +13,6 @@ namespace {
     const int AROUND_OFFSET = 1;
 }
 
-/**
- * @brief Реализация интерфейса расстановки кораблей
- *
- * Предоставляет пользователю выбор стратегии расстановки:
- * автоматическая (быстрая) или ручная (полный контроль).
- * Реализует паттерн Strategy через условную логику.
- */
 void HumanPlayer::placeShips() {
     std::cout << "Расстановка кораблей для игрока: " << this->name << std::endl;
     int choice;
@@ -58,17 +51,10 @@ void HumanPlayer::makeMove(Player& enemy) {
     makeMoveWithResult(enemy);
 }
 
-/**
- * @brief Реализация хода человека с полным пользовательским интерфейсом
- *
- * Отображает текущее состояние полей, запрашивает координаты,
- * обрабатывает выстрел и обновляет визуальное представление.
- * Демонстрирует использование this для ясности.
- */
+
 bool HumanPlayer::makeMoveWithResult(Player& enemy) {
     std::cout << "\n=== Ход игрока " << this->name << " ===" << std::endl;
 
-    // Использование this для явного указания на члены класса
     Color::setColor(Color::GREEN);
     std::cout << "Ваше поле:" << std::endl;
     Color::resetColor();
@@ -83,7 +69,6 @@ bool HumanPlayer::makeMoveWithResult(Player& enemy) {
     ShotResult result = enemy.getShotResult(target);
     bool wasHit = false;
 
-    // Обновляем поле противника на основе результата выстрела
     switch (result) {
     case ShotResult::Miss:
         this->enemyBoard.setCellState(target, CellState::Miss);
@@ -111,10 +96,6 @@ bool HumanPlayer::makeMoveWithResult(Player& enemy) {
     return wasHit;
 }
 
-/**
- * @brief Вспомогательная функция - закрашивает клетки вокруг точки
- * @param center Центральная координата
- */
 void HumanPlayer::markSurroundingCells(const Coordinate& center) {
     for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
         for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
@@ -144,16 +125,6 @@ void HumanPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& h
     }
 }
 
-/**
- * @brief Ввод и валидация координат от пользователя
- * @return Валидные координаты для выстрела
- *
- * Реализует защитное программирование с проверкой:
- * - формата ввода
- * - границ поля
- * - повторных выстрелов в ту же клетку
- * Демонстрирует работу с std::string и обработку пользовательского ввода.
- */
 Coordinate HumanPlayer::inputCoordinate() const {
     char letter;
     int number;
@@ -182,12 +153,6 @@ Coordinate HumanPlayer::inputCoordinate() const {
     }
 }
 
-/**
- * @brief Ручная расстановка кораблей с пошаговым руководством
- *
- * Реализует интерактивный процесс расстановки с визуальной
- * обратной связью и проверкой правильности размещения.
- */
 void HumanPlayer::manualPlacement() {
     const char* shipNames[] = { "четырехпалубный", "трехпалубный", "трехпалубный",
                               "двухпалубный", "двухпалубный", "двухпалубный",
@@ -235,7 +200,6 @@ void HumanPlayer::manualPlacement() {
                 }
             }
             else {
-                // Однопалубный корабль
                 Ship ship(size, Coordinate(x, y), Orientation::Horizontal);
                 if (isValidShipPlacement(size, Coordinate(x, y), Orientation::Horizontal)) {
                     if (myBoard.placeShip(ship)) {
@@ -256,19 +220,11 @@ void HumanPlayer::manualPlacement() {
     }
 }
 
-/**
- * @brief Автоматическая расстановка кораблей алгоритмическим способом
- * @return true если расстановка успешна
- *
- * Реализует алгоритм случайной расстановки с повторными попытками
- * при неудаче. Демонстрирует принцип разделения ответственности.
- */
 bool HumanPlayer::automaticPlacement() {
     int attempts = 0;
     const int MAX_ATTEMPTS = 5;
 
     while (attempts < MAX_ATTEMPTS) {
-        // Очищаем доску и корабли
         myBoard.clearBoard();
         ships.clear();
 
@@ -321,9 +277,6 @@ bool HumanPlayer::automaticPlacement() {
     return false;
 }
 
-/**
- * @brief Валидация размещения корабля без фактического размещения
- */
 bool HumanPlayer::isValidShipPlacement(int size, const Coordinate& start, Orientation orientation) const {
     Ship tempShip(size, start, orientation);
     return myBoard.isValidPlacement(tempShip);
