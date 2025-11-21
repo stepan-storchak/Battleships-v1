@@ -4,12 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <thread>
-
-/**
- * @brief Конструктор игрока-человека
- */
-HumanPlayer::HumanPlayer(const std::string& name) : Player(name) {}
-
+#include <stdexcept>
 
 namespace {
     const int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
@@ -26,8 +21,7 @@ namespace {
  * Реализует паттерн Strategy через условную логику.
  */
 void HumanPlayer::placeShips() {
-    std::cout << "Расстановка кораблей для игрока: " << name << std::endl;
-
+    std::cout << "Расстановка кораблей для игрока: " << this->name << std::endl;
     int choice;
     while (true) {
         std::cout << "Выберите способ расстановки:\n";
@@ -38,7 +32,6 @@ void HumanPlayer::placeShips() {
         Color::resetColor();
         std::cout << "Ваш выбор: ";
         std::cin >> choice;
-
         if (choice == 1) {
             if (automaticPlacement()) {
                 break;
@@ -61,9 +54,6 @@ void HumanPlayer::placeShips() {
     }
 }
 
-/**
- * @brief Делегирует выполнение хода методу с возвратом результата
- */
 void HumanPlayer::makeMove(Player& enemy) {
     makeMoveWithResult(enemy);
 }
@@ -73,87 +63,79 @@ void HumanPlayer::makeMove(Player& enemy) {
  *
  * Отображает текущее состояние полей, запрашивает координаты,
  * обрабатывает выстрел и обновляет визуальное представление.
+ * Демонстрирует использование this для ясности.
  */
 bool HumanPlayer::makeMoveWithResult(Player& enemy) {
-    std::cout << "\n=== Ход игрока " << name << " ===" << std::endl;
+    std::cout << "\n=== Ход игрока " << this->name << " ===" << std::endl;
 
-    // Показываем поля
+    // Использование this для явного указания на члены класса
     Color::setColor(Color::GREEN);
     std::cout << "Ваше поле:" << std::endl;
     Color::resetColor();
-    myBoard.display(true);
+    this->myBoard.display(true);
 
     Color::setColor(Color::BLUE);
     std::cout << "\nПоле противника:" << std::endl;
     Color::resetColor();
-    enemyBoard.display(false);
+    this->enemyBoard.display(false);
 
     Coordinate target = inputCoordinate();
     ShotResult result = enemy.getShotResult(target);
-
     bool wasHit = false;
 
-    // Обновляем поле противника
+    // Обновляем поле противника на основе результата выстрела
     switch (result) {
     case ShotResult::Miss:
-        enemyBoard.setCellState(target, CellState::Miss);
+        this->enemyBoard.setCellState(target, CellState::Miss);
         Color::setColor(Color::BLUE);
         std::cout << "Промах!" << std::endl;
         Color::resetColor();
         wasHit = false;
         break;
     case ShotResult::Hit:
-        enemyBoard.setCellState(target, CellState::Hit);
+        this->enemyBoard.setCellState(target, CellState::Hit);
         Color::setColor(Color::YELLOW);
         std::cout << "Попадание!" << std::endl;
         Color::resetColor();
         wasHit = true;
         break;
     case ShotResult::Sunk:
-        enemyBoard.setCellState(target, CellState::Hit);
+        this->enemyBoard.setCellState(target, CellState::Hit);
         Color::setColor(Color::RED);
         std::cout << "Уничтожен корабль!" << std::endl;
         Color::resetColor();
         wasHit = true;
-
-        // Закрашиваем область вокруг уничтоженного корабля на поле противника
         markAreaAroundDestroyedShip(enemy, target);
         break;
     }
-
     return wasHit;
 }
 
 /**
- * @brief Вспомогательная функция — закрашивает клетки вокруг точки
+ * @brief Вспомогательная функция - закрашивает клетки вокруг точки
+ * @param center Центральная координата
  */
 void HumanPlayer::markSurroundingCells(const Coordinate& center) {
     for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
         for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
             Coordinate around(center.x + dx, center.y + dy);
             if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
-                if (enemyBoard.getCellState(around) == CellState::Empty) {
-                    enemyBoard.setCellState(around, CellState::Miss);
+                if (this->enemyBoard.getCellState(around) == CellState::Empty) {
+                    this->enemyBoard.setCellState(around, CellState::Miss);
                 }
             }
         }
     }
 }
 
-/**
- * @brief Маркирует область вокруг уничтоженного корабля на поле противника
- */
 void HumanPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) {
-    // Сначала помечаем клетки вокруг самой точки попадания
     markSurroundingCells(hitCoord);
-
-    // Затем ищем все части уничтоженного корабля и тоже обводим их
     for (int radius = 1; radius <= 3; radius++) {
         for (int dy = -radius; dy <= radius; ++dy) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 Coordinate around(hitCoord.x + dx, hitCoord.y + dy);
                 if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
-                    if (enemyBoard.getCellState(around) == CellState::Hit) {
+                    if (this->enemyBoard.getCellState(around) == CellState::Hit) {
                         markSurroundingCells(around);
                     }
                 }
@@ -170,24 +152,19 @@ void HumanPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& h
  * - формата ввода
  * - границ поля
  * - повторных выстрелов в ту же клетку
+ * Демонстрирует работу с std::string и обработку пользовательского ввода.
  */
 Coordinate HumanPlayer::inputCoordinate() const {
     char letter;
     int number;
-
     while (true) {
         std::cout << "Введите координаты для выстрела (например, A1): ";
         std::cin >> letter >> number;
-
-        // Преобразование буквы в число
         int x = toupper(letter) - 'A';
         int y = number - 1;
-
         if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE) {
             Coordinate coord(x, y);
-
-            // Проверяем, не стреляли ли уже в эту клетку
-            CellState state = enemyBoard.getCellState(coord);
+            CellState state = this->enemyBoard.getCellState(coord);
             if (state == CellState::Empty) {
                 return coord;
             }

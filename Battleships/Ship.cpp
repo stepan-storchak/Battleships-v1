@@ -1,28 +1,71 @@
 #include "Ship.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 /**
- * @brief  онструктор корабл€ - инициализирует координаты на основе размера и ориентации
+ * @brief  онструктор корабл€
+ * @param size –азмер корабл€
+ * @param start Ќачальна€ координата
+ * @param orientation ќриентаци€ корабл€
+ * @param name »м€ корабл€
  */
-Ship::Ship(int size, const Coordinate& startCoord, Orientation orientation)
-    : size(size), orientation(orientation) {
-    coordinates.reserve(size);
+Ship::Ship(int size, const Coordinate& start, Orientation orientation, const std::string& name)
+    : size(size), name(name) {
+
+    coordinates.resize(size);
     hits.resize(size, false);
 
-    // √енераци€ координат всех палуб корабл€
+    // ќпредел€ем направление размещени€ корабл€
+    int dx = 0, dy = 0;
+    if (orientation == Orientation::Horizontal) dx = 1;
+    else dy = 1;
+
+    // «аполн€ем координаты всех палуб корабл€
     for (int i = 0; i < size; ++i) {
-        if (orientation == Orientation::Horizontal) {
-            coordinates.push_back(Coordinate(startCoord.x + i, startCoord.y));
-        }
-        else {
-            coordinates.push_back(Coordinate(startCoord.x, startCoord.y + i));
-        }
+        coordinates[i] = start + Coordinate(dx * i, dy * i);
     }
 }
 
 /**
- * @brief ѕровер€ет состо€ние корабл€ - уничтожен или нет
- * @return true если все палубы получили попадани€
+ * @brief  онструктор копировани€ (требование лабораторной)
+ * @param other  орабль дл€ копировани€
+ */
+Ship::Ship(const Ship& other)
+    : size(other.size), coordinates(other.coordinates),
+    hits(other.hits), name(other.name) {
+}
+
+/**
+ * @brief ѕерегрузка оператора сравнени€ (требование лабораторной)
+ * @param other ƒругой корабль дл€ сравнени€
+ * @return true если корабли идентичны
+ */
+bool Ship::operator==(const Ship& other) const {
+    if (this->coordinates.size() != other.coordinates.size()) return false;
+    for (size_t i = 0; i < this->coordinates.size(); ++i) {
+        if (this->coordinates[i] != other.coordinates[i]) return false;
+    }
+    return this->size == other.size;
+}
+
+/**
+ * @brief ѕерегрузка оператора присваивани€ (требование лабораторной)
+ * @param other  орабль дл€ копировани€
+ * @return —сылка на текущий объект
+ */
+Ship& Ship::operator=(const Ship& other) {
+    if (this != &other) {
+        size = other.size;
+        coordinates = other.coordinates;
+        hits = other.hits;
+        name = other.name;
+    }
+    return *this;
+}
+
+/**
+ * @brief ѕровер€ет, уничтожен ли корабль
+ * @return true если все палубы поражены
  */
 bool Ship::isSunk() const {
     for (bool hit : hits) {
@@ -33,12 +76,12 @@ bool Ship::isSunk() const {
 
 /**
  * @brief ќбрабатывает попадание в корабль
- * @param coord  оордината, по которой произведен выстрел
- * @return true если это попадание привело к уничтожению корабл€
+ * @param coord  оордината попадани€
+ * @return true если корабль уничтожен после этого попадани€
  */
 bool Ship::takeHit(const Coordinate& coord) {
-    for (size_t i = 0; i < coordinates.size(); ++i) {
-        if (coordinates[i] == coord) {
+    for (int i = 0; i < size; ++i) {
+        if (coordinates[i] == coord) {  // »спользуем перегруженный оператор ==
             hits[i] = true;
             return isSunk();
         }
