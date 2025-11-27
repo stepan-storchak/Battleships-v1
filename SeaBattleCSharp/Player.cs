@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SeaBattleCSharp
 {
-    public abstract class Player
+    public abstract class Player : IPlayer, ICloneableEntity
     {
         protected string name;
         protected GameBoard myBoard;
@@ -23,6 +23,20 @@ namespace SeaBattleCSharp
         public abstract void MakeMove(Player enemy);
         public abstract bool MakeMoveWithResult(Player enemy);
         public abstract void MarkAreaAroundDestroyedShip(Player enemy, Coordinate hitCoord);
+
+        public virtual void DisplayPlayerInfo()
+        {
+            Console.WriteLine($"Игрок: {name}");
+        }
+
+        public virtual void DisplayPlayerInfo(bool showShips)
+        {
+            Console.WriteLine($"Игрок: {name}");
+            if (showShips)
+            {
+                myBoard.Display(true);
+            }
+        }
 
         public bool AllShipsSunk()
         {
@@ -74,6 +88,24 @@ namespace SeaBattleCSharp
         protected Ship FindShipByCoordinate(Coordinate coord)
         {
             return ships.FirstOrDefault(ship => ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y));
+        }
+
+        public virtual object Clone()
+        {
+            var cloned = (Player)this.MemberwiseClone();
+            cloned.myBoard = (GameBoard)myBoard.Clone();
+            cloned.enemyBoard = (GameBoard)enemyBoard.Clone();
+            cloned.ships = new List<Ship>(ships.Select(s => (Ship)s.Clone()));
+            return cloned;
+        }
+
+        public virtual object DeepClone()
+        {
+            var cloned = (Player)this.MemberwiseClone();
+            cloned.myBoard = (GameBoard)myBoard.DeepClone();
+            cloned.enemyBoard = (GameBoard)enemyBoard.DeepClone();
+            cloned.ships = new List<Ship>(ships.Select(s => (Ship)s.DeepClone()));
+            return cloned;
         }
     }
 }

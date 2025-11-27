@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SeaBattleCSharp
 {
-    public class GameBoard
+    public class GameBoard : ICloneable
     {
         private const int BOARD_SIZE = 10;
         private CellState[,] grid;
@@ -12,6 +12,11 @@ namespace SeaBattleCSharp
         {
             grid = new CellState[BOARD_SIZE, BOARD_SIZE];
             ClearBoard();
+        }
+
+        protected GameBoard(CellState[,] sourceGrid)
+        {
+            grid = (CellState[,])sourceGrid.Clone();
         }
 
         public bool IsValidPlacement(Ship ship)
@@ -217,5 +222,23 @@ namespace SeaBattleCSharp
         }
 
         public static int GetBoardSize() => BOARD_SIZE;
+
+        public object Clone()
+        {
+            return new GameBoard(this.grid);
+        }
+
+        public object DeepClone()
+        {
+            var cloned = new GameBoard();
+            for (int y = 0; y < BOARD_SIZE; y++)
+            {
+                for (int x = 0; x < BOARD_SIZE; x++)
+                {
+                    cloned.grid[y, x] = this.grid[y, x];
+                }
+            }
+            return cloned;
+        }
     }
 }

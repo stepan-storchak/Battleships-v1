@@ -25,7 +25,6 @@ namespace SeaBattleCSharp
             huntMode = false;
             possibleTargets = new List<Coordinate>();
             random = new Random();
-
             AiInstanceCount++;
         }
 

@@ -63,7 +63,7 @@ namespace SeaBattleCSharp
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"Попадание! {currentPlayer.GetName()} продолжает ход.");
+                                    Console.WriteLine($"Успех! {currentPlayer.GetName()} продолжает ход.");
                                 }
                             }
                             break;
@@ -76,9 +76,9 @@ namespace SeaBattleCSharp
             catch (Exception ex)
             {
                 Color.Red();
-                Console.WriteLine($"Критическая ошибка в игре: {ex.Message}");
+                Console.WriteLine($"Непредвиденная ошибка в игре: {ex.Message}");
                 Color.ResetColor();
-                Console.WriteLine("Нажмите Enter для выхода...");
+                Console.WriteLine("Нажмите Enter для продолжения...");
                 Console.ReadLine();
             }
         }
@@ -91,12 +91,13 @@ namespace SeaBattleCSharp
         private void ShowMainMenu()
         {
             Color.Green();
-            Console.WriteLine("\n=== МОРСКОЙ БОЙ ===");
+            Console.WriteLine("\n=== Морской бой ===");
             Color.ResetColor();
             Console.WriteLine("1. Начать новую игру");
             Console.WriteLine("2. Показать таблицу лидеров");
-            Console.WriteLine("3. Выход");
-            Console.Write("Выберите опцию: ");
+            Console.WriteLine("3. Демонстрация возможностей ООП");
+            Console.WriteLine("4. Выход");
+            Console.Write("Выберите пункт: ");
 
             try
             {
@@ -121,18 +122,18 @@ namespace SeaBattleCSharp
         {
             Console.WriteLine();
             Color.Green();
-            Console.WriteLine("=== ИГРА ЗАВЕРШЕНА ===");
+            Console.WriteLine("=== Игра завершена ===");
             Color.ResetColor();
             Color.Yellow();
             Console.WriteLine($"Победитель: {winnerName}!");
             Color.ResetColor();
-            Console.WriteLine("\nВыберите действие:");
+            Console.WriteLine("\nДоступные действия:");
             Color.Green();
-            Console.WriteLine("1. Сохранить результат и выйти в меню");
+            Console.WriteLine("1. Сохранить результат в таблицу лидеров");
             Color.Blue();
-            Console.WriteLine("2. Продолжить играть (новая игра)");
+            Console.WriteLine("2. Начать новую игру (тот же режим)");
             Color.Red();
-            Console.WriteLine("3. Выйти из игры");
+            Console.WriteLine("3. Выход в меню");
             Color.ResetColor();
             Console.Write("Ваш выбор: ");
 
@@ -174,11 +175,11 @@ namespace SeaBattleCSharp
                 case 3:
                     gameState = GameState.GameOver;
                     Color.Red();
-                    Console.WriteLine("Выход из игры...");
+                    Console.WriteLine("Выход в меню...");
                     Color.ResetColor();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Неверный выбор в меню после игры");
+                    throw new ArgumentOutOfRangeException("Выбранный пункт не существует");
             }
         }
 
@@ -191,8 +192,8 @@ namespace SeaBattleCSharp
         {
             if (player1.AllShipsSunk())
             {
-                ShowGameOver("Computer");
-                winnerName = "Computer";
+                ShowGameOver(player2.GetName());
+                winnerName = player2.GetName();
                 return true;
             }
             else if (player2.AllShipsSunk())
@@ -208,12 +209,12 @@ namespace SeaBattleCSharp
         {
             Console.WriteLine();
             Color.Green();
-            Console.WriteLine("=== ИГРА ОКОНЧЕНА ===");
+            Console.WriteLine("=== Игра завершена ===");
             Color.ResetColor();
-            if (winner == "Computer")
+            if (winner == "Computer" || winner == "Advanced Computer")
             {
                 Color.Red();
-                Console.WriteLine("Победил компьютер!");
+                Console.WriteLine("Компьютер победил!");
             }
             else
             {
@@ -221,13 +222,13 @@ namespace SeaBattleCSharp
                 Console.WriteLine($"Победил {winner}!");
             }
             Color.ResetColor();
-            Console.WriteLine("\nФинальное состояние полей:");
+            Console.WriteLine("\nФинальное состояние доски:");
             Color.Green();
-            Console.WriteLine("Ваше поле:");
+            Console.WriteLine("Ваша доска:");
             Color.ResetColor();
             player1.GetMyBoard().Display(true);
             Color.Blue();
-            Console.WriteLine("\nПоле противника:");
+            Console.WriteLine("\nДоска противника:");
             Color.ResetColor();
             player1.GetEnemyBoard().Display(false);
         }
@@ -243,12 +244,15 @@ namespace SeaBattleCSharp
                     ShowLeaderboard();
                     break;
                 case 3:
+                    DemonstrateOOPFeatures();
+                    break;
+                case 4:
                     gameState = GameState.GameOver;
-                    Console.WriteLine("Выход из игры...");
+                    Console.WriteLine("Выход...");
                     Color.ResetColor();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Неверный выбор в главном меню");
+                    throw new ArgumentOutOfRangeException("Выбранный пункт не существует");
             }
         }
 
@@ -260,17 +264,41 @@ namespace SeaBattleCSharp
 
             if (string.IsNullOrWhiteSpace(playerName))
             {
-                throw new ArgumentException("Имя игрока не может быть пустым");
+                throw new ArgumentException("Имя не может быть пустым");
+            }
+
+            Console.WriteLine("\nВыберите тип противника:");
+            Console.WriteLine("1 - Обычный компьютер");
+            Console.WriteLine("2 - Продвинутый компьютер");
+            Console.Write("Ваш выбор: ");
+
+            if (int.TryParse(Console.ReadLine(), out int aiType))
+            {
+                if (aiType == 1)
+                {
+                    player2 = new AIPlayer();
+                }
+                else if (aiType == 2)
+                {
+                    player2 = new AdvancedAIPlayer();
+                }
+                else
+                {
+                    player2 = new AIPlayer();
+                }
+            }
+            else
+            {
+                player2 = new AIPlayer();
             }
 
             player1 = new HumanPlayer(playerName);
-            player2 = new AIPlayer();
             currentPlayer = player1;
             gameState = GameState.Placement;
             winnerName = "";
 
             Color.Green();
-            Console.WriteLine($"\nНовая игра началась! Удачи, {playerName}!");
+            Console.WriteLine($"\nИгра началась! Удачи, {playerName}!");
             Color.ResetColor();
         }
 
@@ -285,6 +313,43 @@ namespace SeaBattleCSharp
         private void ShowLeaderboard()
         {
             leaderboard.Display();
+            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.ReadLine();
+        }
+
+        private void DemonstrateOOPFeatures()
+        {
+            Console.WriteLine("\n=== Демонстрация возможностей ООП ===");
+
+            // 1. Демонстрация клонирования
+            Console.WriteLine("\n--- Клонирование ---");
+            var originalCoord = new Coordinate(5, 5);
+            var shallowClone = (Coordinate)originalCoord.Clone();
+            var deepClone = originalCoord.DeepClone();
+
+            Console.WriteLine($"Оригинал: X={originalCoord.X}, Y={originalCoord.Y}");
+            Console.WriteLine($"Поверхностный клон: X={shallowClone.X}, Y={shallowClone.Y}");
+            Console.WriteLine($"Глубокий клон: X={deepClone.X}, Y={deepClone.Y}");
+
+            // 2. Демонстрация виртуальных функций
+            Console.WriteLine("\n--- Виртуальные функции ---");
+            Player human = new HumanPlayer("Тестовый игрок");
+            Player ai = new AIPlayer();
+            Player advancedAI = new AdvancedAIPlayer();
+
+            Console.WriteLine("\nИнформация об игроках:");
+            human.DisplayPlayerInfo();
+            ai.DisplayPlayerInfo();
+            advancedAI.DisplayPlayerInfo();
+
+            // 3. Демонстрация наследования и полиморфизма
+            Console.WriteLine("\n--- Наследование и полиморфизм ---");
+            Player[] players = { human, ai, advancedAI };
+            foreach (var player in players)
+            {
+                Console.WriteLine($"Тип: {player.GetType().Name}, Имя: {player.GetName()}");
+            }
+
             Console.WriteLine("\nНажмите Enter для продолжения...");
             Console.ReadLine();
         }

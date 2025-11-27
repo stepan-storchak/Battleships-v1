@@ -15,8 +15,8 @@ namespace SeaBattleCSharp
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Критическая ошибка: {ex.Message}");
-                Console.WriteLine($"Детали: {ex.StackTrace}");
+                Console.WriteLine($"Непредвиденная ошибка: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 Console.ResetColor();
                 Console.WriteLine("Нажмите Enter для выхода...");
                 Console.ReadLine();

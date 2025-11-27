@@ -2,7 +2,7 @@ using System;
 
 namespace SeaBattleCSharp
 {
-    public class Coordinate
+    public class Coordinate : ICloneable
     {
         private int x;
         private int y;
@@ -45,6 +45,16 @@ namespace SeaBattleCSharp
         public override int GetHashCode()
         {
             return HashCode.Combine(X, Y);
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        public Coordinate DeepClone()
+        {
+            return new Coordinate(X, Y);
         }
     }
 }
