@@ -13,18 +13,18 @@ int main() {
         auto game = std::make_unique<Game>();
         game->run();
 
-        std::cout << "\nÑòàòèñòèêà èãğû:" << std::endl;
-        std::cout << "Êîëè÷åñòâî èãğîêîâ: " << Player::getPlayerCount() << std::endl;
-        std::cout << "Èñïîëüçîâàíèå öâåòîâ: " << Color::getUsageCount() << " ğàç" << std::endl;
+        std::cout << "\nĞ¡Ñ‚Ğ°Ñ‚Ğ¸ÑÑ‚Ğ¸ĞºĞ° Ğ¸Ğ³Ñ€Ñ‹:" << std::endl;
+        std::cout << "ĞšĞ¾Ğ»Ğ¸Ñ‡ĞµÑÑ‚Ğ²Ğ¾ Ğ¸Ğ³Ñ€Ğ¾ĞºĞ¾Ğ²: " << Player::getPlayerCount() << std::endl;
+        std::cout << "Ğ˜ÑĞ¿Ğ¾Ğ»ÑŒĞ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ñ†Ğ²ĞµÑ‚Ğ¾Ğ²: " << Color::getUsageCount() << " Ñ€Ğ°Ğ·" << std::endl;
 
         return 0;
     }
     catch (const std::exception& e) {
-        std::cerr << "Êğèòè÷åñêàÿ îøèáêà: " << e.what() << std::endl;
+        std::cerr << "ĞšÑ€Ğ¸Ñ‚Ğ¸Ñ‡ĞµÑĞºĞ°Ñ Ğ¾ÑˆĞ¸Ğ±ĞºĞ°: " << e.what() << std::endl;
         return 1;
     }
     catch (...) {
-        std::cerr << "Íåèçâåñòíàÿ êğèòè÷åñêàÿ îøèáêà" << std::endl;
+        std::cerr << "ĞĞµĞ¸Ğ·Ğ²ĞµÑÑ‚Ğ½Ğ°Ñ ĞºÑ€Ğ¸Ñ‚Ğ¸Ñ‡ĞµÑĞºĞ°Ñ Ğ¾ÑˆĞ¸Ğ±ĞºĞ°" << std::endl;
         return 1;
     }
 }

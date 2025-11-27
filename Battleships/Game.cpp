@@ -62,8 +62,8 @@ void Game::run() {
                         switchTurn();
                     }
                     else {
-                        std::cout << "Ïîïàäàíèå! " << currentPlayer->getName()
-                            << " ïðîäîëæàåò õîä." << std::endl;
+                        std::cout << "ÄŽÃ®ÄÅ•Ã¤Å•Ã­ÄÄº! " << currentPlayer->getName()
+                            << " ÄÄ‘Ã®Ã¤Ã®Ã«Ä‡Å•ÄºÅˆ Å‘Ã®Ã¤." << std::endl;
                     }
                 }
                 break;
@@ -76,19 +76,19 @@ void Game::run() {
         }
     }
     catch (const std::exception& e) {
-        std::cerr << "Êðèòè÷åñêàÿ îøèáêà â èãðîâîì öèêëå: " << e.what() << std::endl;
+        std::cerr << "Ä˜Ä‘ÄÅˆÄÃ·ÄºÅ„Ä™Å•Ë™ Ã®Å™ÄÃ¡Ä™Å• Ã¢ ÄÄƒÄ‘Ã®Ã¢Ã®Ä› Ã¶ÄÄ™Ã«Äº: " << e.what() << std::endl;
     }
 }
 
 void Game::showMainMenu() {
     Color::setColor(Color::GREEN);
-    std::cout << "\n=== ÌÎÐÑÊÎÉ ÁÎÉ ===" << std::endl;
+    std::cout << "\n=== ÄšÃŽÄÅƒÄ˜ÃŽÃ‰ ÃÃŽÃ‰ ===" << std::endl;
     Color::resetColor();
-    std::cout << "1. Íà÷àòü íîâóþ èãðó" << std::endl;
-    std::cout << "2. Ïîêàçàòü òàáëèöó ëèäåðîâ" << std::endl;
-    std::cout << "3. Äåìîíñòðàöèÿ ÎÎÏ ôóíêöèé" << std::endl;
-    std::cout << "4. Âûõîä" << std::endl;
-    std::cout << "Âûáåðèòå îïöèþ: ";
+    std::cout << "1. ÃÅ•Ã·Å•ÅˆÃ¼ Ã­Ã®Ã¢Ã³Å£ ÄÄƒÄ‘Ã³" << std::endl;
+    std::cout << "2. ÄŽÃ®Ä™Å•Ã§Å•ÅˆÃ¼ ÅˆÅ•Ã¡Ã«ÄÃ¶Ã³ Ã«ÄÃ¤ÄºÄ‘Ã®Ã¢" << std::endl;
+    std::cout << "3. Ã„ÄºÄ›Ã®Ã­Å„ÅˆÄ‘Å•Ã¶ÄË™ ÃŽÃŽÄŽ Ã´Ã³Ã­Ä™Ã¶ÄÃ©" << std::endl;
+    std::cout << "4. Ã‚Å±Å‘Ã®Ã¤" << std::endl;
+    std::cout << "Ã‚Å±Ã¡ÄºÄ‘ÄÅˆÄº Ã®ÄÃ¶ÄÅ£: ";
     int choice;
     std::cin >> choice;
     processMenuInput(choice);
@@ -97,20 +97,20 @@ void Game::showMainMenu() {
 void Game::showAfterGameMenu() {
     std::cout << "\n";
     Color::setColor(Color::GREEN);
-    std::cout << "=== ÈÃÐÀ ÇÀÂÅÐØÅÍÀ ===" << std::endl;
+    std::cout << "=== ÄŒÄ‚ÄÅ” Ã‡Å”Ã‚Ä¹ÄÅ˜Ä¹ÃÅ” ===" << std::endl;
     Color::resetColor();
     Color::setColor(Color::YELLOW);
-    std::cout << "Ïîáåäèòåëü: " << winnerName << "!" << std::endl;
+    std::cout << "ÄŽÃ®Ã¡ÄºÃ¤ÄÅˆÄºÃ«Ã¼: " << winnerName << "!" << std::endl;
     Color::resetColor();
-    std::cout << "\nÂûáåðèòå äåéñòâèå:" << std::endl;
+    std::cout << "\nÃ‚Å±Ã¡ÄºÄ‘ÄÅˆÄº Ã¤ÄºÃ©Å„ÅˆÃ¢ÄÄº:" << std::endl;
     Color::setColor(Color::GREEN);
-    std::cout << "1. Ñîõðàíèòü ðåçóëüòàò è âûéòè â ìåíþ" << std::endl;
+    std::cout << "1. ÅƒÃ®Å‘Ä‘Å•Ã­ÄÅˆÃ¼ Ä‘ÄºÃ§Ã³Ã«Ã¼ÅˆÅ•Åˆ Ä Ã¢Å±Ã©ÅˆÄ Ã¢ Ä›ÄºÃ­Å£" << std::endl;
     Color::setColor(Color::BLUE);
-    std::cout << "2. Ïðîäîëæèòü èãðàòü (íîâàÿ èãðà)" << std::endl;
+    std::cout << "2. ÄŽÄ‘Ã®Ã¤Ã®Ã«Ä‡ÄÅˆÃ¼ ÄÄƒÄ‘Å•ÅˆÃ¼ (Ã­Ã®Ã¢Å•Ë™ ÄÄƒÄ‘Å•)" << std::endl;
     Color::setColor(Color::RED);
-    std::cout << "3. Âûéòè èç èãðû" << std::endl;
+    std::cout << "3. Ã‚Å±Ã©ÅˆÄ ÄÃ§ ÄÄƒÄ‘Å±" << std::endl;
     Color::resetColor();
-    std::cout << "Âàø âûáîð: ";
+    std::cout << "Ã‚Å•Å™ Ã¢Å±Ã¡Ã®Ä‘: ";
     int choice;
     std::cin >> choice;
     processAfterGameInput(choice);
@@ -121,7 +121,7 @@ void Game::processAfterGameInput(int choice) {
     case 1:
         leaderboard.addWin(winnerName);
         Color::setColor(Color::GREEN);
-        std::cout << "Ðåçóëüòàò ñîõðàíåí â òàáëèöå ëèäåðîâ!" << std::endl;
+        std::cout << "ÄÄºÃ§Ã³Ã«Ã¼ÅˆÅ•Åˆ Å„Ã®Å‘Ä‘Å•Ã­ÄºÃ­ Ã¢ ÅˆÅ•Ã¡Ã«ÄÃ¶Äº Ã«ÄÃ¤ÄºÄ‘Ã®Ã¢!" << std::endl;
         Color::resetColor();
         player1.reset();
         player2.reset();
@@ -131,7 +131,7 @@ void Game::processAfterGameInput(int choice) {
         break;
     case 2:
         Color::setColor(Color::BLUE);
-        std::cout << "Íà÷èíàåì íîâóþ èãðó!" << std::endl;
+        std::cout << "ÃÅ•Ã·ÄÃ­Å•ÄºÄ› Ã­Ã®Ã¢Ã³Å£ ÄÄƒÄ‘Ã³!" << std::endl;
         Color::resetColor();
         player1.reset();
         player2.reset();
@@ -140,12 +140,12 @@ void Game::processAfterGameInput(int choice) {
     case 3:
         gameState = GameState::GameOver;
         Color::setColor(Color::RED);
-        std::cout << "Âûõîä èç èãðû..." << std::endl;
+        std::cout << "Ã‚Å±Å‘Ã®Ã¤ ÄÃ§ ÄÄƒÄ‘Å±..." << std::endl;
         Color::resetColor();
         break;
     default:
         Color::setColor(Color::RED);
-        std::cout << "Íåâåðíûé âûáîð! Ïîïðîáóéòå ñíîâà." << std::endl;
+        std::cout << "ÃÄºÃ¢ÄºÄ‘Ã­Å±Ã© Ã¢Å±Ã¡Ã®Ä‘! ÄŽÃ®ÄÄ‘Ã®Ã¡Ã³Ã©ÅˆÄº Å„Ã­Ã®Ã¢Å•." << std::endl;
         Color::resetColor();
         break;
     }
@@ -159,19 +159,19 @@ bool Game::checkWinCondition() {
     if (player1->allShipsSunk()) {
         std::cout << "\n";
         Color::setColor(Color::GREEN);
-        std::cout << "=== ÈÃÐÀ ÎÊÎÍ×ÅÍÀ ===" << std::endl;
+        std::cout << "=== ÄŒÄ‚ÄÅ” ÃŽÄ˜ÃŽÃÃ—Ä¹ÃÅ” ===" << std::endl;
         Color::resetColor();
         Color::setColor(Color::RED);
-        std::cout << "Ïîáåäèë êîìïüþòåð!" << std::endl;
+        std::cout << "ÄŽÃ®Ã¡ÄºÃ¤ÄÃ« Ä™Ã®Ä›ÄÃ¼Å£ÅˆÄºÄ‘!" << std::endl;
         Color::resetColor();
         winnerName = "Computer";
-        std::cout << "\nÔèíàëüíîå ñîñòîÿíèå ïîëåé:" << std::endl;
+        std::cout << "\nÃ”ÄÃ­Å•Ã«Ã¼Ã­Ã®Äº Å„Ã®Å„ÅˆÃ®Ë™Ã­ÄÄº ÄÃ®Ã«ÄºÃ©:" << std::endl;
         Color::setColor(Color::GREEN);
-        std::cout << "Âàøå ïîëå:" << std::endl;
+        std::cout << "Ã‚Å•Å™Äº ÄÃ®Ã«Äº:" << std::endl;
         Color::resetColor();
         player1->getMyBoard().display(true);
         Color::setColor(Color::BLUE);
-        std::cout << "\nÏîëå ïðîòèâíèêà:" << std::endl;
+        std::cout << "\nÄŽÃ®Ã«Äº ÄÄ‘Ã®ÅˆÄÃ¢Ã­ÄÄ™Å•:" << std::endl;
         Color::resetColor();
         player1->getEnemyBoard().display(false);
         return true;
@@ -179,19 +179,19 @@ bool Game::checkWinCondition() {
     else if (player2->allShipsSunk()) {
         std::cout << "\n";
         Color::setColor(Color::GREEN);
-        std::cout << "=== ÈÃÐÀ ÎÊÎÍ×ÅÍA ===" << std::endl;
+        std::cout << "=== ÄŒÄ‚ÄÅ” ÃŽÄ˜ÃŽÃÃ—Ä¹ÃA ===" << std::endl;
         Color::resetColor();
         Color::setColor(Color::GREEN);
-        std::cout << "Ïîáåäèë " << player1->getName() << "!" << std::endl;
+        std::cout << "ÄŽÃ®Ã¡ÄºÃ¤ÄÃ« " << player1->getName() << "!" << std::endl;
         Color::resetColor();
         winnerName = player1->getName();
-        std::cout << "\nÔèíàëüíîå ñîñòîÿíèå ïîëåé:" << std::endl;
+        std::cout << "\nÃ”ÄÃ­Å•Ã«Ã¼Ã­Ã®Äº Å„Ã®Å„ÅˆÃ®Ë™Ã­ÄÄº ÄÃ®Ã«ÄºÃ©:" << std::endl;
         Color::setColor(Color::GREEN);
-        std::cout << "Âàøå ïîëå:" << std::endl;
+        std::cout << "Ã‚Å•Å™Äº ÄÃ®Ã«Äº:" << std::endl;
         Color::resetColor();
         player1->getMyBoard().display(true);
         Color::setColor(Color::BLUE);
-        std::cout << "\nÏîëå ïðîòèâíèêà:" << std::endl;
+        std::cout << "\nÄŽÃ®Ã«Äº ÄÄ‘Ã®ÅˆÄÃ¢Ã­ÄÄ™Å•:" << std::endl;
         Color::resetColor();
         player1->getEnemyBoard().display(false);
         return true;
@@ -212,11 +212,11 @@ void Game::processMenuInput(int choice) {
         break;
     case 4:
         gameState = GameState::GameOver;
-        std::cout << "Âûõîä èç èãðû..." << std::endl;
+        std::cout << "Ã‚Å±Å‘Ã®Ã¤ ÄÃ§ ÄÄƒÄ‘Å±..." << std::endl;
         break;
     default:
         Color::setColor(Color::RED);
-        std::cout << "Íåâåðíûé âûáîð!" << std::endl;
+        std::cout << "ÃÄºÃ¢ÄºÄ‘Ã­Å±Ã© Ã¢Å±Ã¡Ã®Ä‘!" << std::endl;
         Color::resetColor();
         break;
     }
@@ -228,11 +228,11 @@ void Game::startNewGame() {
         player2.reset();
 
         std::string playerName;
-        std::cout << "Ââåäèòå âàøå èìÿ: ";
+        std::cout << "Ã‚Ã¢ÄºÃ¤ÄÅˆÄº Ã¢Å•Å™Äº ÄÄ›Ë™: ";
         std::cin >> playerName;
 
         int gameType;
-        std::cout << "Âûáåðèòå òèï èãðû:\n1. Ïðîòèâ îáû÷íîãî ÈÈ\n2. Ïðîòèâ ïðîäâèíóòîãî ÈÈ\nÂàø âûáîð: ";
+        std::cout << "Ã‚Å±Ã¡ÄºÄ‘ÄÅˆÄº ÅˆÄÄ ÄÄƒÄ‘Å±:\n1. ÄŽÄ‘Ã®ÅˆÄÃ¢ Ã®Ã¡Å±Ã·Ã­Ã®ÄƒÃ® ÄŒÄŒ\n2. ÄŽÄ‘Ã®ÅˆÄÃ¢ ÄÄ‘Ã®Ã¤Ã¢ÄÃ­Ã³ÅˆÃ®ÄƒÃ® ÄŒÄŒ\nÃ‚Å•Å™ Ã¢Å±Ã¡Ã®Ä‘: ";
         std::cin >> gameType;
 
         player1 = std::make_unique<HumanPlayer>(playerName);
@@ -249,40 +249,40 @@ void Game::startNewGame() {
         winnerName = "";
 
         Color::setColor(Color::GREEN);
-        std::cout << "\nÍîâàÿ èãðà íà÷àëàñü! Óäà÷è, " << playerName << "!" << std::endl;
+        std::cout << "\nÃÃ®Ã¢Å•Ë™ ÄÄƒÄ‘Å• Ã­Å•Ã·Å•Ã«Å•Å„Ã¼! Ã“Ã¤Å•Ã·Ä, " << playerName << "!" << std::endl;
         Color::resetColor();
     }
     catch (const std::exception& e) {
-        std::cerr << "Îøèáêà ïðè ñîçäàíèè íîâîé èãðû: " << e.what() << std::endl;
+        std::cerr << "ÃŽÅ™ÄÃ¡Ä™Å• ÄÄ‘Ä Å„Ã®Ã§Ã¤Å•Ã­ÄÄ Ã­Ã®Ã¢Ã®Ã© ÄÄƒÄ‘Å±: " << e.what() << std::endl;
         gameState = GameState::Menu;
     }
 }
 
 void Game::showLeaderboard() {
     leaderboard.display();
-    std::cout << "\nÍàæìèòå Enter äëÿ ïðîäîëæåíèÿ...";
+    std::cout << "\nÃÅ•Ä‡Ä›ÄÅˆÄº Enter Ã¤Ã«Ë™ ÄÄ‘Ã®Ã¤Ã®Ã«Ä‡ÄºÃ­ÄË™...";
     std::cin.ignore();
     std::cin.get();
 }
 
 void Game::demonstrateOOPFeatures() {
-    std::cout << "\n=== ÄÅÌÎÍÑÒÐÀÖÈß ÎÎÏ ÂÎÇÌÎÆÍÎÑÒÅÉ ===" << std::endl;
+    std::cout << "\n=== Ã„Ä¹ÄšÃŽÃÅƒÅ‡ÄÅ”Ã–ÄŒÃŸ ÃŽÃŽÄŽ Ã‚ÃŽÃ‡ÄšÃŽÄ†ÃÃŽÅƒÅ‡Ä¹Ã‰ ===" << std::endl;
 
     demonstrateVirtualFunctions();
     demonstrateCloning();
     demonstrateAbstractClass();
 
-    std::cout << "\nÍàæìèòå Enter äëÿ ïðîäîëæåíèÿ...";
+    std::cout << "\nÃÅ•Ä‡Ä›ÄÅˆÄº Enter Ã¤Ã«Ë™ ÄÄ‘Ã®Ã¤Ã®Ã«Ä‡ÄºÃ­ÄË™...";
     std::cin.ignore();
     std::cin.get();
 }
 
 void Game::demonstrateVirtualFunctions() {
-    std::cout << "\n--- Äåìîíñòðàöèÿ âèðòóàëüíûõ ôóíêöèé ---" << std::endl;
+    std::cout << "\n--- Ã„ÄºÄ›Ã®Ã­Å„ÅˆÄ‘Å•Ã¶ÄË™ Ã¢ÄÄ‘ÅˆÃ³Å•Ã«Ã¼Ã­Å±Å‘ Ã´Ã³Ã­Ä™Ã¶ÄÃ© ---" << std::endl;
 
-    HumanPlayer human("Òåñòîâûé Èãðîê");
-    AIPlayer ai("Òåñòîâûé ÈÈ");
-    AdvancedAIPlayer advancedAI("Ïðîäâèíóòûé ÈÈ", 2);
+    HumanPlayer human("Å‡ÄºÅ„ÅˆÃ®Ã¢Å±Ã© ÄŒÄƒÄ‘Ã®Ä™");
+    AIPlayer ai("Å‡ÄºÅ„ÅˆÃ®Ã¢Å±Ã© ÄŒÄŒ");
+    AdvancedAIPlayer advancedAI("ÄŽÄ‘Ã®Ã¤Ã¢ÄÃ­Ã³ÅˆÅ±Ã© ÄŒÄŒ", 2);
 
     std::vector<Player*> players = { &human, &ai, &advancedAI };
 
@@ -291,31 +291,31 @@ void Game::demonstrateVirtualFunctions() {
         std::cout << "---" << std::endl;
     }
 
-    std::cout << "Äåìîíñòðàöèÿ ïðèñâàèâàíèÿ óêàçàòåëåé:" << std::endl;
+    std::cout << "Ã„ÄºÄ›Ã®Ã­Å„ÅˆÄ‘Å•Ã¶ÄË™ ÄÄ‘ÄÅ„Ã¢Å•ÄÃ¢Å•Ã­ÄË™ Ã³Ä™Å•Ã§Å•ÅˆÄºÃ«ÄºÃ©:" << std::endl;
     Player* basePtr = &advancedAI;
-    std::cout << "Òèï ÷åðåç áàçîâûé óêàçàòåëü: " << basePtr->getPlayerType() << std::endl;
+    std::cout << "Å‡ÄÄ Ã·ÄºÄ‘ÄºÃ§ Ã¡Å•Ã§Ã®Ã¢Å±Ã© Ã³Ä™Å•Ã§Å•ÅˆÄºÃ«Ã¼: " << basePtr->getPlayerType() << std::endl;
 }
 
 void Game::demonstrateCloning() {
-    std::cout << "\n--- Äåìîíñòðàöèÿ êëîíèðîâàíèÿ ---" << std::endl;
+    std::cout << "\n--- Ã„ÄºÄ›Ã®Ã­Å„ÅˆÄ‘Å•Ã¶ÄË™ Ä™Ã«Ã®Ã­ÄÄ‘Ã®Ã¢Å•Ã­ÄË™ ---" << std::endl;
 
-    Ship originalShip(3, Coordinate(0, 0), Orientation::Horizontal, "Òåñòîâûé êîðàáëü");
+    Ship originalShip(3, Coordinate(0, 0), Orientation::Horizontal, "Å‡ÄºÅ„ÅˆÃ®Ã¢Å±Ã© Ä™Ã®Ä‘Å•Ã¡Ã«Ã¼");
 
     Ship* clonedShip = originalShip.clone();
-    std::cout << "Êëîíèðîâàíèå: " << clonedShip->getDescription() << std::endl;
+    std::cout << "Ä˜Ã«Ã®Ã­ÄÄ‘Ã®Ã¢Å•Ã­ÄÄº: " << clonedShip->getDescription() << std::endl;
 
     delete clonedShip;
 }
 
 void Game::demonstrateAbstractClass() {
-    std::cout << "\n--- Äåìîíñòðàöèÿ àáñòðàêòíîãî êëàññà ---" << std::endl;
+    std::cout << "\n--- Ã„ÄºÄ›Ã®Ã­Å„ÅˆÄ‘Å•Ã¶ÄË™ Å•Ã¡Å„ÅˆÄ‘Å•Ä™ÅˆÃ­Ã®ÄƒÃ® Ä™Ã«Å•Å„Å„Å• ---" << std::endl;
 
-    Ship concreteShip(2, Coordinate(1, 1), Orientation::Vertical, "Èíòåðôåéñíûé êîðàáëü");
+    Ship concreteShip(2, Coordinate(1, 1), Orientation::Vertical, "ÄŒÃ­ÅˆÄºÄ‘Ã´ÄºÃ©Å„Ã­Å±Ã© Ä™Ã®Ä‘Å•Ã¡Ã«Ã¼");
     IShip* shipPtr = &concreteShip;
 
-    std::cout << "Èñïîëüçîâàíèå ÷åðåç àáñòðàêòíûé èíòåðôåéñ:" << std::endl;
-    std::cout << "Èìÿ: " << shipPtr->getName() << std::endl;
-    std::cout << "Ðàçìåð: " << shipPtr->getSize() << std::endl;
-    std::cout << "Òèï: " << shipPtr->getType() << std::endl;
-    std::cout << "Ïîëíàÿ èíôîðìàöèÿ: " << shipPtr->getFullInfo() << std::endl;
+    std::cout << "ÄŒÅ„ÄÃ®Ã«Ã¼Ã§Ã®Ã¢Å•Ã­ÄÄº Ã·ÄºÄ‘ÄºÃ§ Å•Ã¡Å„ÅˆÄ‘Å•Ä™ÅˆÃ­Å±Ã© ÄÃ­ÅˆÄºÄ‘Ã´ÄºÃ©Å„:" << std::endl;
+    std::cout << "ÄŒÄ›Ë™: " << shipPtr->getName() << std::endl;
+    std::cout << "ÄÅ•Ã§Ä›ÄºÄ‘: " << shipPtr->getSize() << std::endl;
+    std::cout << "Å‡ÄÄ: " << shipPtr->getType() << std::endl;
+    std::cout << "ÄŽÃ®Ã«Ã­Å•Ë™ ÄÃ­Ã´Ã®Ä‘Ä›Å•Ã¶ÄË™: " << shipPtr->getFullInfo() << std::endl;
 }
