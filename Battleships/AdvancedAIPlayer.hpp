@@ -15,6 +15,8 @@ protected:
     int difficultyLevel;
 
 public:
+    AdvancedAIPlayer(const AdvancedAIPlayer&) = delete;
+
     AdvancedAIPlayer(const std::string& name = "Advanced Computer", int difficulty = 2)
         : AIPlayer(name), difficultyLevel(difficulty)
     {

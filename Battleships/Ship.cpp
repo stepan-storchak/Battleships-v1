@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 Ship::Ship(int size, const Coordinate& start, Orientation orientation, const std::string& name)
-    : size(size), name(name) {
+    : size(size), name(name), shipId(std::make_shared<int>(0)) {
 
     coordinates.resize(size);
     hits.resize(size, false);
@@ -18,7 +18,9 @@ Ship::Ship(int size, const Coordinate& start, Orientation orientation, const std
 }
 
 Ship::Ship(const Ship& other)
-    : size(other.size), coordinates(other.coordinates), hits(other.hits), name(other.name) {
+    : size(other.size), coordinates(other.coordinates),
+    hits(other.hits), name(other.name),
+    shipId(std::make_shared<int>(*(other.shipId))) {
 }
 
 Ship& Ship::operator=(const Ship& other) {
@@ -27,6 +29,7 @@ Ship& Ship::operator=(const Ship& other) {
         coordinates = other.coordinates;
         hits = other.hits;
         name = other.name;
+        shipId = std::make_shared<int>(*(other.shipId));
     }
     return *this;
 }
@@ -53,10 +56,26 @@ bool Ship::takeHit(const Coordinate& coord) {
     return false;
 }
 
-Ship* Ship::clone() const {
-    return new Ship(*this);
+
+Ship* Ship::shallowClone() const {
+    Ship* clone = new Ship(*this);
+
+    clone->shipId = this->shipId;
+    return clone;
+}
+
+Ship* Ship::deepClone() const {
+    return new Ship(*this); 
 }
 
 std::string Ship::getFullInfo() const {
-    return getDescription();
+    return getDescription() + " [ID: " + std::to_string(*shipId) + "]";
+}
+
+void Ship::setShipId(int id) {
+    *shipId = id;
+}
+
+int Ship::getShipId() const {
+    return *shipId;
 }

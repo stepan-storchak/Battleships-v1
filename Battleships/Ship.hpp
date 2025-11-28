@@ -4,6 +4,7 @@
 #include "IShip.hpp"
 #include <vector>
 #include <string>
+#include <memory>
 
 class Ship : public IShip {
 private:
@@ -11,11 +12,15 @@ private:
     std::vector<Coordinate> coordinates;
     std::vector<bool> hits;
     std::string name;
+    std::shared_ptr<int> shipId; 
 
 public:
     Ship(int size, const Coordinate& start, Orientation orientation, const std::string& name = "");
 
+   
     Ship(const Ship& other);
+
+    ~Ship() = default;
 
     Ship& operator=(const Ship& other);
 
@@ -32,7 +37,10 @@ public:
 
     std::string getType() const override { return "Standard Ship"; }
 
-    Ship* clone() const;
+    Ship* shallowClone() const; 
+    Ship* deepClone() const;    
+    void setShipId(int id);
+    int getShipId() const;
 
     std::string getDescription() const {
         return name + " (размер: " + std::to_string(size) + ", тип: " + getType() + ")";

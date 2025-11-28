@@ -297,14 +297,17 @@ void Game::demonstrateVirtualFunctions() {
 }
 
 void Game::demonstrateCloning() {
-    std::cout << "\n--- Демонстрация клонирования ---" << std::endl;
-
     Ship originalShip(3, Coordinate(0, 0), Orientation::Horizontal, "Тестовый корабль");
+    originalShip.setShipId(100);
 
-    Ship* clonedShip = originalShip.clone();
-    std::cout << "Клонирование: " << clonedShip->getDescription() << std::endl;
+    Ship* shallowCopy = originalShip.shallowClone();
+    Ship* deepCopy = originalShip.deepClone();
 
-    delete clonedShip;
+    shallowCopy->setShipId(200);
+    deepCopy->setShipId(300);
+
+    delete shallowCopy;
+    delete deepCopy;
 }
 
 void Game::demonstrateAbstractClass() {
