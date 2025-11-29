@@ -2,20 +2,18 @@ using System;
 
 namespace SeaBattleCSharp
 {
-    public class Coordinate
+    public class Coordinate : ICloneable
     {
-        // Приватные поля
         private int x;
         private int y;
 
-        // Свойства с get и set
         public int X
         {
             get { return x; }
             set
             {
                 if (value < 0)
-                    throw new ArgumentException("Координата X не может быть отрицательной");
+                    throw new ArgumentException("ГЉГ®Г®Г°Г¤ГЁГ­Г ГІГ  X Г­ГҐ Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј Г®ГІГ°ГЁГ¶Г ГІГҐГ«ГјГ­Г®Г©");
                 x = value;
             }
         }
@@ -26,7 +24,7 @@ namespace SeaBattleCSharp
             set
             {
                 if (value < 0)
-                    throw new ArgumentException("Координата Y не может быть отрицательной");
+                    throw new ArgumentException("ГЉГ®Г®Г°Г¤ГЁГ­Г ГІГ  Y Г­ГҐ Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј Г®ГІГ°ГЁГ¶Г ГІГҐГ«ГјГ­Г®Г©");
                 y = value;
             }
         }
@@ -47,6 +45,16 @@ namespace SeaBattleCSharp
         public override int GetHashCode()
         {
             return HashCode.Combine(X, Y);
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        public Coordinate DeepClone()
+        {
+            return new Coordinate(X, Y);
         }
     }
 }

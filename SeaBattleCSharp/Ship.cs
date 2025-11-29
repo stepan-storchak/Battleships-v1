@@ -4,14 +4,12 @@ using System.Linq;
 
 namespace SeaBattleCSharp
 {
-    public class Ship
+    public class Ship : ICloneable
     {
-        // Приватные поля
         private int size;
         private Coordinate start;
         private Orientation orientation;
 
-        // Свойства с get и private set
         public int Size
         {
             get { return size; }
@@ -89,6 +87,22 @@ namespace SeaBattleCSharp
         public bool IsSunk()
         {
             return Hits.Count == Size;
+        }
+
+        public object Clone()
+        {
+            var cloned = (Ship)this.MemberwiseClone();
+            cloned.Start = (Coordinate)this.Start.Clone();
+            cloned.Coordinates = new List<Coordinate>(this.Coordinates.Select(c => (Coordinate)c.Clone()));
+            return cloned;
+        }
+
+        public object DeepClone()
+        {
+            var cloned = (Ship)this.MemberwiseClone();
+            cloned.Start = this.Start.DeepClone();
+            cloned.Coordinates = new List<Coordinate>(this.Coordinates.Select(c => c.DeepClone()));
+            return cloned;
         }
     }
 }

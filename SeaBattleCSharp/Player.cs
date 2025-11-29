@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SeaBattleCSharp
 {
-    public abstract class Player
+    public abstract class Player : IPlayer, ICloneableEntity
     {
         protected string name;
         protected GameBoard myBoard;
@@ -23,6 +23,20 @@ namespace SeaBattleCSharp
         public abstract void MakeMove(Player enemy);
         public abstract bool MakeMoveWithResult(Player enemy);
         public abstract void MarkAreaAroundDestroyedShip(Player enemy, Coordinate hitCoord);
+
+        public virtual void DisplayPlayerInfo()
+        {
+            Console.WriteLine($"Игрок: {name}");
+        }
+
+        public virtual void DisplayPlayerInfo(bool showShips)
+        {
+            Console.WriteLine($"Игрок: {name}");
+            if (showShips)
+            {
+                myBoard.Display(true);
+            }
+        }
 
         public bool AllShipsSunk()
         {
@@ -44,17 +58,13 @@ namespace SeaBattleCSharp
             {
                 foreach (var ship in ships)
                 {
-                    // Проверяем, принадлежит ли координата этому кораблю
                     if (ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y))
                     {
-                        // Попадание в корабль
                         bool wasHit = ship.TakeHit(coord);
 
-                        // Проверяем, был ли корабль уничтожен этим попаданием
                         if (wasHit && ship.IsSunk())
                         {
                             result = ShotResult.Sunk;
-                            // Помечаем область вокруг уничтоженного корабля на СВОЕМ поле
                             myBoard.MarkAreaAroundSunkShip(ship);
                         }
                         break;
@@ -75,10 +85,27 @@ namespace SeaBattleCSharp
         public GameBoard GetEnemyBoard() => enemyBoard;
         public List<Ship> GetShips() => ships;
 
-        // Метод для поиска корабля по координате
         protected Ship FindShipByCoordinate(Coordinate coord)
         {
             return ships.FirstOrDefault(ship => ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y));
+        }
+
+        public virtual object Clone()
+        {
+            var cloned = (Player)this.MemberwiseClone();
+            cloned.myBoard = (GameBoard)myBoard.Clone();
+            cloned.enemyBoard = (GameBoard)enemyBoard.Clone();
+            cloned.ships = new List<Ship>(ships.Select(s => (Ship)s.Clone()));
+            return cloned;
+        }
+
+        public virtual object DeepClone()
+        {
+            var cloned = (Player)this.MemberwiseClone();
+            cloned.myBoard = (GameBoard)myBoard.DeepClone();
+            cloned.enemyBoard = (GameBoard)enemyBoard.DeepClone();
+            cloned.ships = new List<Ship>(ships.Select(s => (Ship)s.DeepClone()));
+            return cloned;
         }
     }
 }
