@@ -13,7 +13,7 @@ namespace SeaBattleCSharp
             set
             {
                 if (value < 0)
-                    throw new ArgumentException("Êîîðäèíàòà X íå ìîæåò áûòü îòðèöàòåëüíîé");
+                    throw new ArgumentException("ÃŠÃ®Ã®Ã°Ã¤Ã¨Ã­Ã Ã²Ã  X Ã­Ã¥ Ã¬Ã®Ã¦Ã¥Ã² Ã¡Ã»Ã²Ã¼ Ã®Ã²Ã°Ã¨Ã¶Ã Ã²Ã¥Ã«Ã¼Ã­Ã®Ã©");
                 x = value;
             }
         }
@@ -24,7 +24,7 @@ namespace SeaBattleCSharp
             set
             {
                 if (value < 0)
-                    throw new ArgumentException("Êîîðäèíàòà Y íå ìîæåò áûòü îòðèöàòåëüíîé");
+                    throw new ArgumentException("ÃŠÃ®Ã®Ã°Ã¤Ã¨Ã­Ã Ã²Ã  Y Ã­Ã¥ Ã¬Ã®Ã¦Ã¥Ã² Ã¡Ã»Ã²Ã¼ Ã®Ã²Ã°Ã¨Ã¶Ã Ã²Ã¥Ã«Ã¼Ã­Ã®Ã©");
                 y = value;
             }
         }

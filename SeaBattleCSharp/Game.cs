@@ -63,7 +63,7 @@ namespace SeaBattleCSharp
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"Успех! {currentPlayer.GetName()} продолжает ход.");
+                                    Console.WriteLine($"Г“Е„ДЏДєЕ‘! {currentPlayer.GetName()} ДЏД‘Г®Г¤Г®Г«Д‡Е•ДєЕ€ Е‘Г®Г¤.");
                                 }
                             }
                             break;
@@ -76,9 +76,9 @@ namespace SeaBattleCSharp
             catch (Exception ex)
             {
                 Color.Red();
-                Console.WriteLine($"Непредвиденная ошибка в игре: {ex.Message}");
+                Console.WriteLine($"ГЌДєДЏД‘ДєГ¤ГўДЌГ¤ДєГ­Г­Е•Л™ Г®Е™ДЌГЎД™Е• Гў ДЌДѓД‘Дє: {ex.Message}");
                 Color.ResetColor();
-                Console.WriteLine("Нажмите Enter для продолжения...");
+                Console.WriteLine("ГЌЕ•Д‡Д›ДЌЕ€Дє Enter Г¤Г«Л™ ДЏД‘Г®Г¤Г®Г«Д‡ДєГ­ДЌЛ™...");
                 Console.ReadLine();
             }
         }
@@ -91,13 +91,13 @@ namespace SeaBattleCSharp
         private void ShowMainMenu()
         {
             Color.Green();
-            Console.WriteLine("\n=== Морской бой ===");
+            Console.WriteLine("\n=== ДљГ®Д‘Е„Д™Г®Г© ГЎГ®Г© ===");
             Color.ResetColor();
-            Console.WriteLine("1. Начать новую игру");
-            Console.WriteLine("2. Показать таблицу лидеров");
-            Console.WriteLine("3. Демонстрация возможностей ООП");
-            Console.WriteLine("4. Выход");
-            Console.Write("Выберите пункт: ");
+            Console.WriteLine("1. ГЌЕ•Г·Е•Е€Гј Г­Г®ГўГіЕЈ ДЌДѓД‘Гі");
+            Console.WriteLine("2. ДЋГ®Д™Е•Г§Е•Е€Гј Е€Е•ГЎГ«ДЌГ¶Гі Г«ДЌГ¤ДєД‘Г®Гў");
+            Console.WriteLine("3. Г„ДєД›Г®Г­Е„Е€Д‘Е•Г¶ДЌЛ™ ГўГ®Г§Д›Г®Д‡Г­Г®Е„Е€ДєГ© ГЋГЋДЋ");
+            Console.WriteLine("4. Г‚Е±Е‘Г®Г¤");
+            Console.Write("Г‚Е±ГЎДєД‘ДЌЕ€Дє ДЏГіГ­Д™Е€: ");
 
             try
             {
@@ -107,13 +107,13 @@ namespace SeaBattleCSharp
                 }
                 else
                 {
-                    throw new FormatException("Неверный формат ввода");
+                    throw new FormatException("ГЌДєГўДєД‘Г­Е±Г© ГґГ®Д‘Д›Е•Е€ ГўГўГ®Г¤Е•");
                 }
             }
             catch (FormatException ex)
             {
                 Color.Red();
-                Console.WriteLine($"Ошибка ввода: {ex.Message}");
+                Console.WriteLine($"ГЋЕ™ДЌГЎД™Е• ГўГўГ®Г¤Е•: {ex.Message}");
                 Color.ResetColor();
             }
         }
@@ -122,20 +122,20 @@ namespace SeaBattleCSharp
         {
             Console.WriteLine();
             Color.Green();
-            Console.WriteLine("=== Игра завершена ===");
+            Console.WriteLine("=== ДЊДѓД‘Е• Г§Е•ГўДєД‘Е™ДєГ­Е• ===");
             Color.ResetColor();
             Color.Yellow();
-            Console.WriteLine($"Победитель: {winnerName}!");
+            Console.WriteLine($"ДЋГ®ГЎДєГ¤ДЌЕ€ДєГ«Гј: {winnerName}!");
             Color.ResetColor();
-            Console.WriteLine("\nДоступные действия:");
+            Console.WriteLine("\nГ„Г®Е„Е€ГіДЏГ­Е±Дє Г¤ДєГ©Е„Е€ГўДЌЛ™:");
             Color.Green();
-            Console.WriteLine("1. Сохранить результат в таблицу лидеров");
+            Console.WriteLine("1. ЕѓГ®Е‘Д‘Е•Г­ДЌЕ€Гј Д‘ДєГ§ГіГ«ГјЕ€Е•Е€ Гў Е€Е•ГЎГ«ДЌГ¶Гі Г«ДЌГ¤ДєД‘Г®Гў");
             Color.Blue();
-            Console.WriteLine("2. Начать новую игру (тот же режим)");
+            Console.WriteLine("2. ГЌЕ•Г·Е•Е€Гј Г­Г®ГўГіЕЈ ДЌДѓД‘Гі (Е€Г®Е€ Д‡Дє Д‘ДєД‡ДЌД›)");
             Color.Red();
-            Console.WriteLine("3. Выход в меню");
+            Console.WriteLine("3. Г‚Е±Е‘Г®Г¤ Гў Д›ДєГ­ЕЈ");
             Color.ResetColor();
-            Console.Write("Ваш выбор: ");
+            Console.Write("Г‚Е•Е™ ГўЕ±ГЎГ®Д‘: ");
 
             try
             {
@@ -145,13 +145,13 @@ namespace SeaBattleCSharp
                 }
                 else
                 {
-                    throw new FormatException("Неверный формат ввода");
+                    throw new FormatException("ГЌДєГўДєД‘Г­Е±Г© ГґГ®Д‘Д›Е•Е€ ГўГўГ®Г¤Е•");
                 }
             }
             catch (FormatException ex)
             {
                 Color.Red();
-                Console.WriteLine($"Ошибка ввода: {ex.Message}");
+                Console.WriteLine($"ГЋЕ™ДЌГЎД™Е• ГўГўГ®Г¤Е•: {ex.Message}");
                 Color.ResetColor();
             }
         }
@@ -167,7 +167,7 @@ namespace SeaBattleCSharp
                     break;
                 case 2:
                     Color.Blue();
-                    Console.WriteLine("Начинаем новую игру!");
+                    Console.WriteLine("ГЌЕ•Г·ДЌГ­Е•ДєД› Г­Г®ГўГіЕЈ ДЌДѓД‘Гі!");
                     Color.ResetColor();
                     ResetGame();
                     StartNewGame();
@@ -175,11 +175,11 @@ namespace SeaBattleCSharp
                 case 3:
                     gameState = GameState.GameOver;
                     Color.Red();
-                    Console.WriteLine("Выход в меню...");
+                    Console.WriteLine("Г‚Е±Е‘Г®Г¤ Гў Д›ДєГ­ЕЈ...");
                     Color.ResetColor();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Выбранный пункт не существует");
+                    throw new ArgumentOutOfRangeException("Г‚Е±ГЎД‘Е•Г­Г­Е±Г© ДЏГіГ­Д™Е€ Г­Дє Е„ГіЕЇДєЕ„Е€ГўГіДєЕ€");
             }
         }
 
@@ -209,26 +209,26 @@ namespace SeaBattleCSharp
         {
             Console.WriteLine();
             Color.Green();
-            Console.WriteLine("=== Игра завершена ===");
+            Console.WriteLine("=== ДЊДѓД‘Е• Г§Е•ГўДєД‘Е™ДєГ­Е• ===");
             Color.ResetColor();
             if (winner == "Computer" || winner == "Advanced Computer")
             {
                 Color.Red();
-                Console.WriteLine("Компьютер победил!");
+                Console.WriteLine("ДГ®Д›ДЏГјЕЈЕ€ДєД‘ ДЏГ®ГЎДєГ¤ДЌГ«!");
             }
             else
             {
                 Color.Green();
-                Console.WriteLine($"Победил {winner}!");
+                Console.WriteLine($"ДЋГ®ГЎДєГ¤ДЌГ« {winner}!");
             }
             Color.ResetColor();
-            Console.WriteLine("\nФинальное состояние доски:");
+            Console.WriteLine("\nГ”ДЌГ­Е•Г«ГјГ­Г®Дє Е„Г®Е„Е€Г®Л™Г­ДЌДє Г¤Г®Е„Д™ДЌ:");
             Color.Green();
-            Console.WriteLine("Ваша доска:");
+            Console.WriteLine("Г‚Е•Е™Е• Г¤Г®Е„Д™Е•:");
             Color.ResetColor();
             player1.GetMyBoard().Display(true);
             Color.Blue();
-            Console.WriteLine("\nДоска противника:");
+            Console.WriteLine("\nГ„Г®Е„Д™Е• ДЏД‘Г®Е€ДЌГўГ­ДЌД™Е•:");
             Color.ResetColor();
             player1.GetEnemyBoard().Display(false);
         }
@@ -248,29 +248,29 @@ namespace SeaBattleCSharp
                     break;
                 case 4:
                     gameState = GameState.GameOver;
-                    Console.WriteLine("Выход...");
+                    Console.WriteLine("Г‚Е±Е‘Г®Г¤...");
                     Color.ResetColor();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Выбранный пункт не существует");
+                    throw new ArgumentOutOfRangeException("Г‚Е±ГЎД‘Е•Г­Г­Е±Г© ДЏГіГ­Д™Е€ Г­Дє Е„ГіЕЇДєЕ„Е€ГўГіДєЕ€");
             }
         }
 
         private void StartNewGame()
         {
             ResetGame();
-            Console.Write("Введите ваше имя: ");
+            Console.Write("Г‚ГўДєГ¤ДЌЕ€Дє ГўЕ•Е™Дє ДЌД›Л™: ");
             string playerName = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(playerName))
             {
-                throw new ArgumentException("Имя не может быть пустым");
+                throw new ArgumentException("ДЊД›Л™ Г­Дє Д›Г®Д‡ДєЕ€ ГЎЕ±Е€Гј ДЏГіЕ„Е€Е±Д›");
             }
 
-            Console.WriteLine("\nВыберите тип противника:");
-            Console.WriteLine("1 - Обычный компьютер");
-            Console.WriteLine("2 - Продвинутый компьютер");
-            Console.Write("Ваш выбор: ");
+            Console.WriteLine("\nГ‚Е±ГЎДєД‘ДЌЕ€Дє Е€ДЌДЏ ДЏД‘Г®Е€ДЌГўГ­ДЌД™Е•:");
+            Console.WriteLine("1 - ГЋГЎЕ±Г·Г­Е±Г© Д™Г®Д›ДЏГјЕЈЕ€ДєД‘");
+            Console.WriteLine("2 - ДЋД‘Г®Г¤ГўДЌГ­ГіЕ€Е±Г© Д™Г®Д›ДЏГјЕЈЕ€ДєД‘");
+            Console.Write("Г‚Е•Е™ ГўЕ±ГЎГ®Д‘: ");
 
             if (int.TryParse(Console.ReadLine(), out int aiType))
             {
@@ -298,7 +298,7 @@ namespace SeaBattleCSharp
             winnerName = "";
 
             Color.Green();
-            Console.WriteLine($"\nИгра началась! Удачи, {playerName}!");
+            Console.WriteLine($"\nДЊДѓД‘Е• Г­Е•Г·Е•Г«Е•Е„Гј! Г“Г¤Е•Г·ДЌ, {playerName}!");
             Color.ResetColor();
         }
 
@@ -313,44 +313,44 @@ namespace SeaBattleCSharp
         private void ShowLeaderboard()
         {
             leaderboard.Display();
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nГЌЕ•Д‡Д›ДЌЕ€Дє Enter Г¤Г«Л™ ДЏД‘Г®Г¤Г®Г«Д‡ДєГ­ДЌЛ™...");
             Console.ReadLine();
         }
 
         private void DemonstrateOOPFeatures()
         {
-            Console.WriteLine("\n=== Демонстрация возможностей ООП ===");
+            Console.WriteLine("\n=== Г„ДєД›Г®Г­Е„Е€Д‘Е•Г¶ДЌЛ™ ГўГ®Г§Д›Г®Д‡Г­Г®Е„Е€ДєГ© ГЋГЋДЋ ===");
 
-            // 1. Демонстрация клонирования
-            Console.WriteLine("\n--- Клонирование ---");
+            // 1. Г„ДєД›Г®Г­Е„Е€Д‘Е•Г¶ДЌЛ™ Д™Г«Г®Г­ДЌД‘Г®ГўЕ•Г­ДЌЛ™
+            Console.WriteLine("\n--- ДГ«Г®Г­ДЌД‘Г®ГўЕ•Г­ДЌДє ---");
             var originalCoord = new Coordinate(5, 5);
             var shallowClone = (Coordinate)originalCoord.Clone();
             var deepClone = originalCoord.DeepClone();
 
-            Console.WriteLine($"Оригинал: X={originalCoord.X}, Y={originalCoord.Y}");
-            Console.WriteLine($"Поверхностный клон: X={shallowClone.X}, Y={shallowClone.Y}");
-            Console.WriteLine($"Глубокий клон: X={deepClone.X}, Y={deepClone.Y}");
+            Console.WriteLine($"ГЋД‘ДЌДѓДЌГ­Е•Г«: X={originalCoord.X}, Y={originalCoord.Y}");
+            Console.WriteLine($"ДЋГ®ГўДєД‘Е‘Г­Г®Е„Е€Г­Е±Г© Д™Г«Г®Г­: X={shallowClone.X}, Y={shallowClone.Y}");
+            Console.WriteLine($"Д‚Г«ГіГЎГ®Д™ДЌГ© Д™Г«Г®Г­: X={deepClone.X}, Y={deepClone.Y}");
 
-            // 2. Демонстрация виртуальных функций
-            Console.WriteLine("\n--- Виртуальные функции ---");
-            Player human = new HumanPlayer("Тестовый игрок");
+            // 2. Г„ДєД›Г®Г­Е„Е€Д‘Е•Г¶ДЌЛ™ ГўДЌД‘Е€ГіЕ•Г«ГјГ­Е±Е‘ ГґГіГ­Д™Г¶ДЌГ©
+            Console.WriteLine("\n--- Г‚ДЌД‘Е€ГіЕ•Г«ГјГ­Е±Дє ГґГіГ­Д™Г¶ДЌДЌ ---");
+            Player human = new HumanPlayer("Е‡ДєЕ„Е€Г®ГўЕ±Г© ДЌДѓД‘Г®Д™");
             Player ai = new AIPlayer();
             Player advancedAI = new AdvancedAIPlayer();
 
-            Console.WriteLine("\nИнформация об игроках:");
+            Console.WriteLine("\nДЊГ­ГґГ®Д‘Д›Е•Г¶ДЌЛ™ Г®ГЎ ДЌДѓД‘Г®Д™Е•Е‘:");
             human.DisplayPlayerInfo();
             ai.DisplayPlayerInfo();
             advancedAI.DisplayPlayerInfo();
 
-            // 3. Демонстрация наследования и полиморфизма
-            Console.WriteLine("\n--- Наследование и полиморфизм ---");
+            // 3. Г„ДєД›Г®Г­Е„Е€Д‘Е•Г¶ДЌЛ™ Г­Е•Е„Г«ДєГ¤Г®ГўЕ•Г­ДЌЛ™ ДЌ ДЏГ®Г«ДЌД›Г®Д‘ГґДЌГ§Д›Е•
+            Console.WriteLine("\n--- ГЌЕ•Е„Г«ДєГ¤Г®ГўЕ•Г­ДЌДє ДЌ ДЏГ®Г«ДЌД›Г®Д‘ГґДЌГ§Д› ---");
             Player[] players = { human, ai, advancedAI };
             foreach (var player in players)
             {
-                Console.WriteLine($"Тип: {player.GetType().Name}, Имя: {player.GetName()}");
+                Console.WriteLine($"Е‡ДЌДЏ: {player.GetType().Name}, ДЊД›Л™: {player.GetName()}");
             }
 
-            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.WriteLine("\nГЌЕ•Д‡Д›ДЌЕ€Дє Enter Г¤Г«Л™ ДЏД‘Г®Г¤Г®Г«Д‡ДєГ­ДЌЛ™...");
             Console.ReadLine();
         }
     }

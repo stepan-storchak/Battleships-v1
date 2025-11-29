@@ -15,10 +15,10 @@ namespace SeaBattleCSharp
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Непредвиденная ошибка: {ex.Message}");
+                Console.WriteLine($"ГЌГҐГЇГ°ГҐГ¤ГўГЁГ¤ГҐГ­Г­Г Гї Г®ГёГЁГЎГЄГ : {ex.Message}");
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 Console.ResetColor();
-                Console.WriteLine("Нажмите Enter для выхода...");
+                Console.WriteLine("ГЌГ Г¦Г¬ГЁГІГҐ Enter Г¤Г«Гї ГўГ»ГµГ®Г¤Г ...");
                 Console.ReadLine();
             }
         }
