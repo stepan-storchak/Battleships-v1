@@ -7,9 +7,6 @@
 #include <thread>
 #include <chrono>
 
-/**
- * @brief Конструктор ИИ-игрока - инициализирует генератор случайных чисел
- */
 AIPlayer::AIPlayer(const std::string& name) : Player(name), huntMode(false) {
     std::srand(std::time(0));
 }
@@ -25,21 +22,25 @@ namespace {
     const int AROUND_OFFSET = 1;
     const int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
 }
-/**
- * @brief Реализация алгоритма автоматической расстановки кораблей
- *
- * Использует алгоритм проб и ошибок с ограничением попыток.
- * Демонстрирует принцип инкапсуляции - скрывает сложность
- * алгоритма за простым интерфейсом.
- */
-void AIPlayer::placeShips() {
-    
 
+AIPlayer& AIPlayer::operator=(const AIPlayer& other) {
+    if (this != &other) {
+        this->name = other.name;
+        this->myBoard = other.myBoard;
+        this->enemyBoard = other.enemyBoard;
+        this->ships = other.ships;
+
+        this->lastHit = other.lastHit;
+        this->huntMode = other.huntMode;
+        this->possibleTargets = other.possibleTargets;
+    }
+    return *this;
+}
+
+void AIPlayer::placeShips() {
     while (attempts < MAX_ATTEMPTS) {
-        // Очищаем доску и корабли
         myBoard.clearBoard();
         ships.clear();
-
 
         bool success = true;
 
@@ -75,29 +76,16 @@ void AIPlayer::placeShips() {
         attempts++;
     }
 
-    // Если не удалось расставить, используем простой метод
     std::cout << "Компьютер не смог расставить корабли оптимально." << std::endl;
 }
 
-/**
- * @brief Делегирует выполнение хода методу с возвратом результата
- */
 void AIPlayer::makeMove(Player& enemy) {
     makeMoveWithResult(enemy);
 }
 
-/**
- * @brief Реализация интеллектуального хода компьютера
- *
- * Сочетает два режима поведения:
- * - Hunt Mode: случайные выстрелы по непроверенным клеткам
- * - Target Mode: прицельная стрельба вокруг раненого корабля
- * Реализует конечный автомат для управления стратегией.
- */
 bool AIPlayer::makeMoveWithResult(Player& enemy) {
     std::cout << "\n=== Ход компьютера ===" << std::endl;
 
-    // Имитация "размышления" компьютера
     Color::setColor(Color::YELLOW);
     std::cout << "Компьютер думает";
     for (int i = 0; i < THINKING_DOTS; ++i) {
@@ -113,7 +101,6 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
         target = generateSmartMove();
     }
     else {
-        // Случайный выстрел
         do {
             target.x = std::rand() % BOARD_SIZE;
             target.y = std::rand() % BOARD_SIZE;
@@ -129,7 +116,6 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
 
     bool wasHit = false;
 
-    // Обновляем поле противника
     switch (result) {
     case ShotResult::Miss:
         enemyBoard.setCellState(target, CellState::Miss);
@@ -152,7 +138,6 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
         Color::resetColor();
         wasHit = true;
 
-        // Закрашиваем область вокруг уничтоженного корабля на поле противника
         markAreaAroundDestroyedShip(enemy, target);
         break;
     }
@@ -160,19 +145,11 @@ bool AIPlayer::makeMoveWithResult(Player& enemy) {
     return wasHit;
 }
 
-/**
- * @brief Обновляет внутреннее представление поля после уничтожения корабля
- *
- * Реализует логику исключения бесперспективных целей из
- дальнейшего рассмотрения.
- */
 void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) {
-    // Находим уничтоженный корабль и закрашиваем область вокруг него
     for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
         for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
             Coordinate around(hitCoord.x + dx, hitCoord.y + dy);
             if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
-                // Помечаем клетку как промах на поле противника
                 if (enemyBoard.getCellState(around) == CellState::Empty) {
                     enemyBoard.setCellState(around, CellState::Miss);
                 }
@@ -180,7 +157,6 @@ void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitC
         }
     }
 
-    // Дополнительно ищем все клетки уничтоженного корабля и закрашиваем вокруг них
     for (int radius = 1; radius <= MARK_RADIUS; radius++) {
         for (int dy = -radius; dy <= radius; ++dy) {
             for (int dx = -radius; dx <= radius; ++dx) {
@@ -188,7 +164,6 @@ void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitC
                 if (around.x >= 0 && around.x < BOARD_SIZE && around.y >= 0 && around.y < BOARD_SIZE) {
                     CellState state = enemyBoard.getCellState(around);
                     if (state == CellState::Hit) {
-                        // Нашли часть корабля, закрашиваем вокруг нее
                         for (int dy2 = -AROUND_OFFSET; dy2 <= AROUND_OFFSET; ++dy2) {
                             for (int dx2 = -AROUND_OFFSET; dx2 <= AROUND_OFFSET; ++dx2) {
                                 Coordinate around2(around.x + dx2, around.y + dy2);
@@ -206,17 +181,8 @@ void AIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitC
     }
 }
 
-/**
- * @brief Генерирует координаты для интеллектуальной атаки
- * @return Координата для выстрела
- *
- * Реализует стратегию приоритетного выбора целей:
- * - Сначала цели из очереди приоритетов
- * - Затем случайные непроверенные клетки
- */
 Coordinate AIPlayer::generateSmartMove() {
     if (possibleTargets.empty()) {
-        // Если нет приоритетных целей, возвращаем случайную
         Coordinate target;
         do {
             target.x = std::rand() % BOARD_SIZE;
@@ -225,19 +191,11 @@ Coordinate AIPlayer::generateSmartMove() {
         return target;
     }
 
-    // Берем первую цель из списка и удаляем ее
     Coordinate target = possibleTargets.front();
     possibleTargets.erase(possibleTargets.begin());
     return target;
 }
 
-/**
- * @brief Адаптирует стратегию ИИ на основе результатов стрельбы
- *
- * Реализует конечный автомат с двумя состояниями:
- * - Hunt: поиск кораблей случайными выстрелами
- * - Target: прицельное уничтожение найденного корабля
- */
 void AIPlayer::updateStrategy(const ShotResult& result, const Coordinate& coord) {
     if (result == ShotResult::Hit || result == ShotResult::Sunk) {
         huntMode = true;
@@ -249,7 +207,6 @@ void AIPlayer::updateStrategy(const ShotResult& result, const Coordinate& coord)
         huntMode = false;
         possibleTargets.clear();
 
-        // Помечаем область вокруг уничтоженного корабля
         for (int dy = -AROUND_OFFSET; dy <= AROUND_OFFSET; ++dy) {
             for (int dx = -AROUND_OFFSET; dx <= AROUND_OFFSET; ++dx) {
                 Coordinate around(coord.x + dx, coord.y + dy);
@@ -263,14 +220,7 @@ void AIPlayer::updateStrategy(const ShotResult& result, const Coordinate& coord)
     }
 }
 
-/**
- * @brief Генерирует кандидатов для прицельной стрельбы
- *
- * Создает очередь целей в четырех направлениях от попадания
- * для определения ориентации и продолжения корабля.
- */
 void AIPlayer::generatePossibleTargets(const Coordinate& hitCoord) {
-    // Генерируем возможные цели вокруг попадания
     std::vector<Coordinate> directions = {
         Coordinate(1, 0), Coordinate(-1, 0), Coordinate(0, 1), Coordinate(0, -1)
     };

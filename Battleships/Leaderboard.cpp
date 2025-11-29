@@ -5,19 +5,10 @@
 #include <algorithm>
 #include <vector>
 
-/**
- * @brief Конструктор - автоматически загружает данные из файла
- */
 Leaderboard::Leaderboard() {
     loadFromFile();
 }
 
-/**
- * @brief Загрузка данных из файлового хранилища
- *
- * Реализует устойчивость к ошибкам - если файл не существует,
- * создается пустая таблица лидеров.
- */
 void Leaderboard::loadFromFile() {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -31,16 +22,10 @@ void Leaderboard::loadFromFile() {
     file.close();
 }
 
-/**
- * @brief Сохранение данных в файловое хранилище
- *
- * Обеспечивает сохранение состояния между сеансами игры.
- * Реализует принцип инкапсуляции - скрывает формат хранения.
- */
 void Leaderboard::saveToFile() {
     std::ofstream file(filename);
     if (!file.is_open()) {
-        std::cout << "Ошибка сохранения таблицы лидеров!" << std::endl;
+        std::cout << "ГЋГёГЁГЎГЄГ  Г±Г®ГµГ°Г Г­ГҐГ­ГЁГї ГІГ ГЎГ«ГЁГ¶Г» Г«ГЁГ¤ГҐГ°Г®Гў!" << std::endl;
         return;
     }
     for (const auto& record : records) {
@@ -49,43 +34,29 @@ void Leaderboard::saveToFile() {
     file.close();
 }
 
-/**
- * @brief Добавление записи о победе с автоматическим обновлением файла
- * @param playerName Имя победителя для обновления статистики
- *
- * Реализует инкрементальное обновление статистики и
- * обеспечивает согласованность данных в памяти и в хранилище.
- */
 void Leaderboard::addWin(const std::string& playerName) {
     records[playerName]++;
     saveToFile();
     Color::setColor(Color::GREEN);
-    std::cout << "Победа игрока " << playerName << " сохранена в таблице лидеров!" << std::endl;
+    std::cout << "ГЏГ®ГЎГҐГ¤Г  ГЁГЈГ°Г®ГЄГ  " << playerName << " Г±Г®ГµГ°Г Г­ГҐГ­Г  Гў ГІГ ГЎГ«ГЁГ¶ГҐ Г«ГЁГ¤ГҐГ°Г®Гў!" << std::endl;
     Color::resetColor();
     display();
 }
 
-/**
- * @brief Отображение таблицы лидеров с цветовым оформлением
- *
- * Сортирует игроков по количеству побед и применяет цветовое
- * кодирование для первых трех мест (золото, серебро, бронза).
- */
+
 void Leaderboard::display() const {
     std::cout << "\n";
     Color::setColor(Color::YELLOW);
-    std::cout << "=== ТАБЛИЦА ЛИДЕРОВ ===" << std::endl;
+    std::cout << "=== Г’ГЂГЃГ‹Г€Г–ГЂ Г‹Г€Г„Г…ГђГЋГ‚ ===" << std::endl;
     Color::resetColor();
     if (records.empty()) {
-        std::cout << "Пока нет записей." << std::endl;
+        std::cout << "ГЏГ®ГЄГ  Г­ГҐГІ Г§Г ГЇГЁГ±ГҐГ©." << std::endl;
         return;
     }
-    // Создаем вектор для сортировки
     std::vector<std::pair<std::string, int>> sortedRecords;
     for (const auto& record : records) {
         sortedRecords.push_back(record);
     }
-    // Сортируем по количеству побед (по убыванию)
     for (size_t i = 0; i < sortedRecords.size() - 1; ++i) {
         for (size_t j = i + 1; j < sortedRecords.size(); ++j) {
             if (sortedRecords[i].second < sortedRecords[j].second) {
@@ -94,22 +65,21 @@ void Leaderboard::display() const {
         }
     }
     std::cout << "------------------------------" << std::endl;
-    std::cout << "Игрок\t\tПобеды" << std::endl;
+    std::cout << "Г€ГЈГ°Г®ГЄ\t\tГЏГ®ГЎГҐГ¤Г»" << std::endl;
     std::cout << "------------------------------" << std::endl;
     for (size_t i = 0; i < sortedRecords.size(); ++i) {
         const auto& record = sortedRecords[i];
-        // Разные цвета для первых трех мест
         if (i == 0) {
-            Color::setColor(Color::YELLOW);  // Золото
+            Color::setColor(Color::YELLOW);  
         }
         else if (i == 1) {
-            Color::setColor(Color::GRAY);    // Серебро
+            Color::setColor(Color::GRAY);    
         }
         else if (i == 2) {
-            Color::setColor(Color::RED);     // Бронза
+            Color::setColor(Color::RED);     
         }
         else {
-            Color::setColor(Color::WHITE);   // Обычный
+            Color::setColor(Color::WHITE);   
         }
         std::cout << record.first;
         if (record.first.length() < 8) {

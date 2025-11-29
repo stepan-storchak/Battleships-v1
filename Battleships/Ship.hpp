@@ -1,51 +1,44 @@
 #pragma once
 #include "Coordinate.hpp"
 #include "Orientation.hpp"
+#include "IShip.hpp"
 #include <vector>
 #include <string>
 
-/**
- * @class Ship
- * @brief Класс для представления корабля в игре
- *
- * Инкапсулирует логику корабля: размер, координаты, состояние попаданий.
- * Демонстрирует перегрузку операторов и конструктор копирования.
- */
-class Ship {
+class Ship : public IShip {
 private:
-    int size;                           ///< Размер корабля (1-4)
-    std::vector<Coordinate> coordinates; ///< Координаты всех палуб корабля
-    std::vector<bool> hits;             ///< Состояние попаданий в палубы
-    std::string name;                   ///< Имя корабля (используем std::string)
+    int size;
+    std::vector<Coordinate> coordinates;
+    std::vector<bool> hits;
+    std::string name;
 
 public:
     Ship(int size, const Coordinate& start, Orientation orientation, const std::string& name = "");
 
-    // Конструктор копирования (требование лабораторной)
     Ship(const Ship& other);
 
-    // Перегрузка операторов (требование лабораторной)
-    bool operator==(const Ship& other) const;
     Ship& operator=(const Ship& other);
 
-    // Дружественная функция (требование лабораторной)
+    Ship& operator=(const IShip& other);
+
     friend std::string getShipInfo(const Ship& ship);
 
-    // Геттеры
-    const std::vector<Coordinate>& getCoordinates() const { return coordinates; }
-    int getSize() const { return size; }
-    const std::string& getName() const { return name; }
+    const std::vector<Coordinate>& getCoordinates() const override { return coordinates; }
+    int getSize() const override { return size; }
+    const std::string& getName() const override { return name; }
+    bool isSunk() const override;
+    bool takeHit(const Coordinate& coord) override;
+    std::string getFullInfo() const override;
 
-    bool isSunk() const;
-    bool takeHit(const Coordinate& coord);
+    std::string getType() const override { return "Standard Ship"; }
 
-    // Работа со std::string - конкатенация (требование лабораторной)
-    std::string getFullInfo() const {
-        return name + " (размер: " + std::to_string(size) + ")";
+    Ship* clone() const;
+
+    std::string getDescription() const {
+        return name + " (Г°Г Г§Г¬ГҐГ°: " + std::to_string(size) + ", ГІГЁГЇ: " + getType() + ")";
     }
 };
 
-// Дружественная функция для вывода информации о корабле
 inline std::string getShipInfo(const Ship& ship) {
-    return ship.getFullInfo();
+    return ship.getDescription();
 }

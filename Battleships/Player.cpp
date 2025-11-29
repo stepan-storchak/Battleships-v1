@@ -2,23 +2,12 @@
 #include <iostream>
 #include <stdexcept>
 
-// Инициализация статического поля (требование лабораторной)
 int Player::playerCount = 0;
 
-/**
- * @brief Конструктор игрока - инициализирует имя и игровые поля
- * @param name Имя игрока
- *
- * Увеличивает статический счетчик игроков (требование лабораторной)
- */
 Player::Player(const std::string& name) : name(name), myBoard(), enemyBoard() {
-    playerCount++;  // Увеличиваем счетчик игроков
+    playerCount++;
 }
 
-/**
- * @brief Проверяет состояние флота игрока
- * @return true если все корабли имеют статус "уничтожен"
- */
 bool Player::allShipsSunk() const {
     for (const auto& ship : this->ships) {
         if (!ship.isSunk()) {
@@ -28,31 +17,17 @@ bool Player::allShipsSunk() const {
     return true;
 }
 
-/**
- * @brief Обрабатывает входящую атаку противника
- * @param coord Координата атаки
- * @return Результат выстрела (промах/попадание/уничтожение)
- *
- * Реализует полный цикл обработки выстрела: обновление поля,
- * проверка попадания в корабли, обработка уничтожения корабля.
- * Демонстрирует обработку исключений (требование лабораторной).
- */
 ShotResult Player::getShotResult(const Coordinate& coord) {
     try {
-        // Получаем результат выстрела от доски
         ShotResult result = this->myBoard.receiveShot(coord);
 
-        // Если было попадание, проверяем какой корабль был поражен
         if (result == ShotResult::Hit) {
             for (auto& ship : this->ships) {
-                // Проверяем, принадлежит ли координата этому кораблю
                 for (const auto& shipCoord : ship.getCoordinates()) {
-                    if (shipCoord == coord) {  // Используем перегруженный оператор ==
-                        // Попадание в корабль
+                    if (shipCoord == coord) {
                         bool wasSunk = ship.takeHit(coord);
                         if (wasSunk) {
                             result = ShotResult::Sunk;
-                            // Помечаем область вокруг уничтоженного корабля на СВОЕМ поле
                             this->myBoard.markAreaAroundSunkShip(ship);
                         }
                         break;
@@ -64,15 +39,25 @@ ShotResult Player::getShotResult(const Coordinate& coord) {
         return result;
     }
     catch (const std::exception& e) {
-        std::cerr << "Ошибка при обработке выстрела: " << e.what() << std::endl;
+        std::cerr << "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ РІС‹СЃС‚СЂРµР»Р°: " << e.what() << std::endl;
         return ShotResult::Miss;
     }
 }
 
-/**
- * @brief Добавляет корабль в коллекцию игрока
- * @param ship Корабль для добавления
- */
 void Player::addShip(const Ship& ship) {
     this->ships.push_back(ship);
+}
+
+void Player::displayInfo() const {
+    std::cout << "РРЅС„РѕСЂРјР°С†РёСЏ РѕР± РёРіСЂРѕРєРµ:" << std::endl;
+    std::cout << "РРјСЏ: " << this->name << std::endl;
+    std::cout << "РўРёРї: " << getPlayerType() << std::endl;
+    std::cout << "РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕСЂР°Р±Р»РµР№: " << this->ships.size() << std::endl;
+    std::cout << "РЈРЅРёС‡С‚РѕР¶РµРЅРѕ РєРѕСЂР°Р±Р»РµР№: " << [this]() {
+        int count = 0;
+        for (const auto& ship : this->ships) {
+            if (ship.isSunk()) count++;
+        }
+        return count;
+        }() << std::endl;
 }
