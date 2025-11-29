@@ -39,7 +39,7 @@ ShotResult Player::getShotResult(const Coordinate& coord) {
         return result;
     }
     catch (const std::exception& e) {
-        std::cerr << "Îøèáêà ïðè îáðàáîòêå âûñòðåëà: " << e.what() << std::endl;
+        std::cerr << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐµ Ð²Ñ‹ÑÑ‚Ñ€ÐµÐ»Ð°: " << e.what() << std::endl;
         return ShotResult::Miss;
     }
 }
@@ -49,11 +49,11 @@ void Player::addShip(const Ship& ship) {
 }
 
 void Player::displayInfo() const {
-    std::cout << "Èíôîðìàöèÿ îá èãðîêå:" << std::endl;
-    std::cout << "Èìÿ: " << this->name << std::endl;
-    std::cout << "Òèï: " << getPlayerType() << std::endl;
-    std::cout << "Êîëè÷åñòâî êîðàáëåé: " << this->ships.size() << std::endl;
-    std::cout << "Óíè÷òîæåíî êîðàáëåé: " << [this]() {
+    std::cout << "Ð˜Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¾Ð± Ð¸Ð³Ñ€Ð¾ÐºÐµ:" << std::endl;
+    std::cout << "Ð˜Ð¼Ñ: " << this->name << std::endl;
+    std::cout << "Ð¢Ð¸Ð¿: " << getPlayerType() << std::endl;
+    std::cout << "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐºÐ¾Ñ€Ð°Ð±Ð»ÐµÐ¹: " << this->ships.size() << std::endl;
+    std::cout << "Ð£Ð½Ð¸Ñ‡Ñ‚Ð¾Ð¶ÐµÐ½Ð¾ ÐºÐ¾Ñ€Ð°Ð±Ð»ÐµÐ¹: " << [this]() {
         int count = 0;
         for (const auto& ship : this->ships) {
             if (ship.isSunk()) count++;

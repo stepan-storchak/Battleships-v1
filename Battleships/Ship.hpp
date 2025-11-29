@@ -43,7 +43,7 @@ public:
     int getShipId() const;
 
     std::string getDescription() const {
-        return name + " (πΰημεπ: " + std::to_string(size) + ", ςθο: " + getType() + ")";
+        return name + " (Γ°Γ Γ§Γ¬Γ₯Γ°: " + std::to_string(size) + ", Γ²Γ¨Γ―: " + getType() + ")";
     }
 };
 
