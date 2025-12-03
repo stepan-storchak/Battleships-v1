@@ -5,18 +5,18 @@
 #include <ctime>
 #include <algorithm>
 
-
-GameBoard::GameBoard() : grid(BOARD_SIZE, std::vector<CellState>(BOARD_SIZE, CellState::Empty)) {}
-
+GameBoard::GameBoard() {
+    for (auto& row : grid) {
+        row.fill(CellState::Empty);
+    }
+}
 
 bool GameBoard::isValidPlacement(const Ship& ship) const {
     const auto& coords = ship.getCoordinates();
-
     for (const auto& coord : coords) {
         if (coord.x < 0 || coord.x >= BOARD_SIZE || coord.y < 0 || coord.y >= BOARD_SIZE) {
             return false;
         }
-
         if (!isCellEmpty(coord)) {
             return false;
         }
@@ -41,7 +41,6 @@ bool GameBoard::placeShip(const Ship& ship) {
     for (const auto& coord : ship.getCoordinates()) {
         grid[coord.y][coord.x] = shipState;
     }
-
     return true;
 }
 
@@ -51,32 +50,26 @@ ShotResult GameBoard::receiveShot(const Coordinate& coord) {
     }
 
     CellState& cell = grid[coord.y][coord.x];
-
     switch (cell) {
     case CellState::Empty:
         cell = CellState::Miss;
         return ShotResult::Miss;
-
     case CellState::Ship1:
     case CellState::Ship2:
     case CellState::Ship3:
     case CellState::Ship4:
         cell = CellState::Hit;
         return ShotResult::Hit;
-
     default:
         return ShotResult::Miss;
     }
 }
 
-
 bool GameBoard::isCellEmpty(const Coordinate& coord) const {
- 
     for (int dy = -1; dy <= 1; ++dy) {
         for (int dx = -1; dx <= 1; ++dx) {
             int nx = coord.x + dx;
             int ny = coord.y + dy;
-
             if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
                 CellState state = grid[ny][nx];
                 if (state != CellState::Empty && state != CellState::Miss) {
@@ -88,16 +81,13 @@ bool GameBoard::isCellEmpty(const Coordinate& coord) const {
     return true;
 }
 
-
 void GameBoard::markAreaAroundSunkShip(const Ship& ship) {
     const auto& coords = ship.getCoordinates();
-
     for (const auto& coord : coords) {
         for (int dy = -1; dy <= 1; ++dy) {
             for (int dx = -1; dx <= 1; ++dx) {
                 int nx = coord.x + dx;
                 int ny = coord.y + dy;
-
                 if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
                     CellState currentState = grid[ny][nx];
                     if (currentState == CellState::Empty) {
@@ -182,11 +172,8 @@ void GameBoard::setCellState(const Coordinate& coord, CellState state) {
     }
 }
 
-
 void GameBoard::clearBoard() {
-    for (int y = 0; y < BOARD_SIZE; ++y) {
-        for (int x = 0; x < BOARD_SIZE; ++x) {
-            grid[y][x] = CellState::Empty;
-        }
+    for (auto& row : grid) {
+        row.fill(CellState::Empty);
     }
 }
