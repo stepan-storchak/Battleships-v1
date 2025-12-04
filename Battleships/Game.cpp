@@ -1,6 +1,8 @@
 #include "Game.hpp"
 #include "Color.hpp"
 #include "IShip.hpp"
+#include "ShipContainer.hpp"
+#include "GameUtils.hpp"
 #include <iostream>
 #include <limits>
 #include <thread>
@@ -8,6 +10,7 @@
 #include <stdexcept>
 #include <memory>
 #include <vector>
+#include <stdexcept>
 
 Game::Game() : player1(nullptr), player2(nullptr), currentPlayer(nullptr),
 gameState(GameState::Menu), winnerName("") {
@@ -24,8 +27,8 @@ Player* Game::getOpponent() const {
 
 void Game::run() {
     try {
-        demonstrateOOPFeatures();
-
+        
+        demonstrateSTLFeatures();
         while (gameState != GameState::GameOver) {
             switch (gameState) {
             case GameState::Menu:
@@ -321,4 +324,31 @@ void Game::demonstrateAbstractClass() {
     std::cout << "Размер: " << shipPtr->getSize() << std::endl;
     std::cout << "Тип: " << shipPtr->getType() << std::endl;
     std::cout << "Полная информация: " << shipPtr->getFullInfo() << std::endl;
+}
+
+void Game:: demonstrateSTLFeatures() {
+    std::cout << "\n=== Демонстрация STL возможностей ===" << std::endl;
+
+    std::vector<int> numbers = { 5, 2, 8, 1, 9, 3, 7, 4, 6 };
+
+    int max = findMax(numbers);
+    int min = findMin(numbers);
+    int avg = calculateAverage(numbers);
+
+    std::cout << "Числа: ";
+    for (auto n : numbers) std::cout << n << " ";
+    std::cout << "\nМаксимум: " << max << std::endl;
+    std::cout << "Минимум: " << min << std::endl;
+    std::cout << "Среднее: " << avg << std::endl;
+
+    std::sort(numbers.begin(), numbers.end());
+    std::cout << "Отсортированные числа: ";
+    for (auto n : numbers) std::cout << n << " ";
+    std::cout << std::endl;
+
+    int target = 7;
+    bool found = contains(numbers, target);
+    std::cout << "Число " << target << (found ? " найдено" : " не найдено") << std::endl;
+
+    std::cout << "Пример альтернативы variant: использование union или класса-обертки" << std::endl;
 }

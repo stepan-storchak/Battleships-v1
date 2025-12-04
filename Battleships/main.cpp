@@ -6,39 +6,14 @@
 #include <memory>
 #include <stdexcept>
 
-void demonstrateSTLFeatures() {
-    std::cout << "\n=== Демонстрация STL возможностей ===" << std::endl;
 
-    std::vector<int> numbers = { 5, 2, 8, 1, 9, 3, 7, 4, 6 };
-
-    int max = findMax(numbers);
-    int min = findMin(numbers);
-    int avg = calculateAverage(numbers);
-
-    std::cout << "Числа: ";
-    for (auto n : numbers) std::cout << n << " ";
-    std::cout << "\nМаксимум: " << max << std::endl;
-    std::cout << "Минимум: " << min << std::endl;
-    std::cout << "Среднее: " << avg << std::endl;
-
-    std::sort(numbers.begin(), numbers.end());
-    std::cout << "Отсортированные числа: ";
-    for (auto n : numbers) std::cout << n << " ";
-    std::cout << std::endl;
-
-    int target = 7;
-    bool found = contains(numbers, target);
-    std::cout << "Число " << target << (found ? " найдено" : " не найдено") << std::endl;
-
-    std::cout << "Пример альтернативы variant: использование union или класса-обертки" << std::endl;
-}
 
 int main() {
     try {
         SetConsoleCP(1251);
         SetConsoleOutputCP(1251);
 
-        demonstrateSTLFeatures();
+        
 
         auto game = std::make_unique<Game>();
         game->run();

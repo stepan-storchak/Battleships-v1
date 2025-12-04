@@ -38,4 +38,5 @@ public:
     void demonstrateVirtualFunctions();
     void demonstrateCloning();
     void demonstrateAbstractClass();
+    void demonstrateSTLFeatures();
 };
