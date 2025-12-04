@@ -19,7 +19,7 @@ namespace SeaBattleCSharp
             grid = (CellState[,])sourceGrid.Clone();
         }
 
-        public bool IsValidPlacement(Ship ship)
+        public bool IsValidPlacement(ShipBase ship)
         {
             foreach (var coord in ship.Coordinates)
             {
@@ -27,7 +27,6 @@ namespace SeaBattleCSharp
                 {
                     return false;
                 }
-
                 if (!IsCellEmpty(coord))
                 {
                     return false;
@@ -36,7 +35,7 @@ namespace SeaBattleCSharp
             return true;
         }
 
-        public bool PlaceShip(Ship ship)
+        public bool PlaceShip(ShipBase ship)
         {
             if (!IsValidPlacement(ship))
             {
@@ -91,7 +90,6 @@ namespace SeaBattleCSharp
                 {
                     int nx = coord.X + dx;
                     int ny = coord.Y + dy;
-
                     if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE)
                     {
                         CellState state = grid[ny, nx];
@@ -105,7 +103,7 @@ namespace SeaBattleCSharp
             return true;
         }
 
-        public void MarkAreaAroundSunkShip(Ship ship)
+        public void MarkAreaAroundSunkShip(ShipBase ship)
         {
             foreach (var coord in ship.Coordinates)
             {
@@ -115,7 +113,6 @@ namespace SeaBattleCSharp
                     {
                         int nx = coord.X + dx;
                         int ny = coord.Y + dy;
-
                         if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE)
                         {
                             if (grid[ny, nx] == CellState.Empty)

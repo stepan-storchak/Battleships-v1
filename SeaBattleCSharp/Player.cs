@@ -9,14 +9,14 @@ namespace SeaBattleCSharp
         protected string name;
         protected GameBoard myBoard;
         protected GameBoard enemyBoard;
-        protected List<Ship> ships;
+        protected Container<ShipBase> ships;
 
         public Player(string name)
         {
             this.name = name;
             myBoard = new GameBoard();
             enemyBoard = new GameBoard();
-            ships = new List<Ship>();
+            ships = new Container<ShipBase>();
         }
 
         public abstract void PlaceShips();
@@ -40,7 +40,7 @@ namespace SeaBattleCSharp
 
         public bool AllShipsSunk()
         {
-            foreach (var ship in ships)
+            foreach (var ship in ships.ToList())
             {
                 if (!ship.IsSunk())
                 {
@@ -53,15 +53,13 @@ namespace SeaBattleCSharp
         public ShotResult GetShotResult(Coordinate coord)
         {
             ShotResult result = myBoard.ReceiveShot(coord);
-
             if (result == ShotResult.Hit)
             {
-                foreach (var ship in ships)
+                foreach (var ship in ships.ToList())
                 {
                     if (ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y))
                     {
                         bool wasHit = ship.TakeHit(coord);
-
                         if (wasHit && ship.IsSunk())
                         {
                             result = ShotResult.Sunk;
@@ -71,11 +69,10 @@ namespace SeaBattleCSharp
                     }
                 }
             }
-
             return result;
         }
 
-        public void AddShip(Ship ship)
+        public void AddShip(ShipBase ship)
         {
             ships.Add(ship);
         }
@@ -83,11 +80,42 @@ namespace SeaBattleCSharp
         public string GetName() => name;
         public GameBoard GetMyBoard() => myBoard;
         public GameBoard GetEnemyBoard() => enemyBoard;
-        public List<Ship> GetShips() => ships;
+        public List<ShipBase> GetShips() => ships.ToList();
 
-        protected Ship FindShipByCoordinate(Coordinate coord)
+        protected ShipBase FindShipByCoordinate(Coordinate coord)
         {
-            return ships.FirstOrDefault(ship => ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y));
+            return ships.Find(ship => ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y));
+        }
+
+        public void DisplayShipStatistics()
+        {
+            Console.WriteLine($"\nСтатистика кораблей игрока {name}:");
+            Console.WriteLine($"Всего кораблей: {ships.Count}");
+
+            if (ships.Count > 0)
+            {
+                ships.SortBySize();
+
+                var aliveShips = ships.FindAll(s => !s.IsSunk());
+                var destroyedShips = ships.FindAll(s => s.IsSunk());
+
+                Console.WriteLine($"Живых кораблей: {aliveShips.Count}");
+                Console.WriteLine($"Уничтоженных кораблей: {destroyedShips.Count}");
+
+                var minSizeShip = ships.Min(s => s.Size);
+                var maxSizeShip = ships.Max(s => s.Size);
+                var averageSize = ships.Average(s => s.Size);
+
+                Console.WriteLine($"Минимальный размер корабля: {minSizeShip}");
+                Console.WriteLine($"Максимальный размер корабля: {maxSizeShip}");
+                Console.WriteLine($"Средний размер корабля: {averageSize:F1}");
+
+                var shipTypes = ships.Select(s => s.GetShipType()).Distinct();
+                Console.WriteLine($"Типы кораблей: {string.Join(", ", shipTypes)}");
+
+                var shipDictionary = ships.ToDictionary();
+                Console.WriteLine($"Корабли в словаре: {shipDictionary.Count}");
+            }
         }
 
         public virtual object Clone()
@@ -95,7 +123,11 @@ namespace SeaBattleCSharp
             var cloned = (Player)this.MemberwiseClone();
             cloned.myBoard = (GameBoard)myBoard.Clone();
             cloned.enemyBoard = (GameBoard)enemyBoard.Clone();
-            cloned.ships = new List<Ship>(ships.Select(s => (Ship)s.Clone()));
+            cloned.ships = new Container<ShipBase>();
+            foreach (var ship in ships.ToList())
+            {
+                cloned.ships.Add((ShipBase)ship.Clone());
+            }
             return cloned;
         }
 
@@ -104,7 +136,11 @@ namespace SeaBattleCSharp
             var cloned = (Player)this.MemberwiseClone();
             cloned.myBoard = (GameBoard)myBoard.DeepClone();
             cloned.enemyBoard = (GameBoard)enemyBoard.DeepClone();
-            cloned.ships = new List<Ship>(ships.Select(s => (Ship)s.DeepClone()));
+            cloned.ships = new Container<ShipBase>();
+            foreach (var ship in ships.ToList())
+            {
+                cloned.ships.Add((ShipBase)ship.DeepClone());
+            }
             return cloned;
         }
     }
