@@ -1,8 +1,5 @@
 #include "Game.hpp"
 #include "Color.hpp"
-#include "IShip.hpp"
-#include "ShipContainer.hpp"
-#include "GameUtils.hpp"
 #include <iostream>
 #include <limits>
 #include <thread>
@@ -28,7 +25,6 @@ Player* Game::getOpponent() const {
 void Game::run() {
     try {
         
-        demonstrateSTLFeatures();
         while (gameState != GameState::GameOver) {
             switch (gameState) {
             case GameState::Menu:
@@ -89,8 +85,7 @@ void Game::showMainMenu() {
     Color::resetColor();
     std::cout << "1. Начать новую игру" << std::endl;
     std::cout << "2. Показать таблицу лидеров" << std::endl;
-    std::cout << "3. Демонстрация ООП функций" << std::endl;
-    std::cout << "4. Выход" << std::endl;
+    std::cout << "3. Выход" << std::endl;
     std::cout << "Выберите опцию: ";
     int choice;
     std::cin >> choice;
@@ -211,9 +206,6 @@ void Game::processMenuInput(int choice) {
         showLeaderboard();
         break;
     case 3:
-        demonstrateOOPFeatures();
-        break;
-    case 4:
         gameState = GameState::GameOver;
         std::cout << "Выход из игры..." << std::endl;
         break;
@@ -268,87 +260,6 @@ void Game::showLeaderboard() {
     std::cin.get();
 }
 
-void Game::demonstrateOOPFeatures() {
-    std::cout << "\n=== ДЕМОНСТРАЦИЯ ООП ВОЗМОЖНОСТЕЙ ===" << std::endl;
 
-    demonstrateVirtualFunctions();
-    demonstrateCloning();
-    demonstrateAbstractClass();
 
-    std::cout << "\nНажмите Enter для продолжения...";
-    std::cin.ignore();
-    std::cin.get();
-}
 
-void Game::demonstrateVirtualFunctions() {
-    std::cout << "\n--- Демонстрация виртуальных функций ---" << std::endl;
-
-    HumanPlayer human("Тестовый Игрок");
-    AIPlayer ai("Тестовый ИИ");
-    AdvancedAIPlayer advancedAI("Продвинутый ИИ", 2);
-
-    std::vector<Player*> players = { &human, &ai, &advancedAI };
-
-    for (Player* player : players) {
-        player->displayInfo();
-        std::cout << "---" << std::endl;
-    }
-
-    std::cout << "Демонстрация присваивания указателей:" << std::endl;
-    Player* basePtr = &advancedAI;
-    std::cout << "Тип через базовый указатель: " << basePtr->getPlayerType() << std::endl;
-}
-
-void Game::demonstrateCloning() {
-    Ship originalShip(3, Coordinate(0, 0), Orientation::Horizontal, "Тестовый корабль");
-    originalShip.setShipId(100);
-
-    Ship* shallowCopy = originalShip.shallowClone();
-    Ship* deepCopy = originalShip.deepClone();
-
-    shallowCopy->setShipId(200);
-    deepCopy->setShipId(300);
-
-    delete shallowCopy;
-    delete deepCopy;
-}
-
-void Game::demonstrateAbstractClass() {
-    std::cout << "\n--- Демонстрация абстрактного класса ---" << std::endl;
-
-    Ship concreteShip(2, Coordinate(1, 1), Orientation::Vertical, "Интерфейсный корабль");
-    IShip* shipPtr = &concreteShip;
-
-    std::cout << "Использование через абстрактный интерфейс:" << std::endl;
-    std::cout << "Имя: " << shipPtr->getName() << std::endl;
-    std::cout << "Размер: " << shipPtr->getSize() << std::endl;
-    std::cout << "Тип: " << shipPtr->getType() << std::endl;
-    std::cout << "Полная информация: " << shipPtr->getFullInfo() << std::endl;
-}
-
-void Game:: demonstrateSTLFeatures() {
-    std::cout << "\n=== Демонстрация STL возможностей ===" << std::endl;
-
-    std::vector<int> numbers = { 5, 2, 8, 1, 9, 3, 7, 4, 6 };
-
-    int max = findMax(numbers);
-    int min = findMin(numbers);
-    int avg = calculateAverage(numbers);
-
-    std::cout << "Числа: ";
-    for (auto n : numbers) std::cout << n << " ";
-    std::cout << "\nМаксимум: " << max << std::endl;
-    std::cout << "Минимум: " << min << std::endl;
-    std::cout << "Среднее: " << avg << std::endl;
-
-    std::sort(numbers.begin(), numbers.end());
-    std::cout << "Отсортированные числа: ";
-    for (auto n : numbers) std::cout << n << " ";
-    std::cout << std::endl;
-
-    int target = 7;
-    bool found = contains(numbers, target);
-    std::cout << "Число " << target << (found ? " найдено" : " не найдено") << std::endl;
-
-    std::cout << "Пример альтернативы variant: использование union или класса-обертки" << std::endl;
-}
