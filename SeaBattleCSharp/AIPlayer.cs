@@ -11,7 +11,6 @@ namespace SeaBattleCSharp
         private bool huntMode;
         private List<Coordinate> possibleTargets;
         private Random random;
-
         private static int aiInstanceCount = 0;
 
         public static int AiInstanceCount
@@ -45,11 +44,11 @@ namespace SeaBattleCSharp
                 ships.Clear();
                 bool success = true;
 
+                int shipIndex = 0;
                 foreach (int size in shipSizes)
                 {
                     bool placed = false;
                     int placementAttempts = 0;
-
                     while (!placed && placementAttempts < MAX_SINGLE_PLACEMENT_TRIES)
                     {
                         int x = random.Next(GameBoard.GetBoardSize());
@@ -57,7 +56,15 @@ namespace SeaBattleCSharp
                         Orientation orientation = (random.Next(2) == 0) ?
                             Orientation.Horizontal : Orientation.Vertical;
 
-                        Ship ship = new Ship(size, new Coordinate(x, y), orientation);
+                        ShipBase ship;
+                        if (shipIndex == 0)
+                        {
+                            ship = new SpecialShip(size, new Coordinate(x, y), orientation, 1);
+                        }
+                        else
+                        {
+                            ship = new Ship(size, new Coordinate(x, y), orientation);
+                        }
 
                         if (myBoard.IsValidPlacement(ship))
                         {
@@ -75,6 +82,7 @@ namespace SeaBattleCSharp
                         success = false;
                         break;
                     }
+                    shipIndex++;
                 }
 
                 if (success)
@@ -187,8 +195,7 @@ namespace SeaBattleCSharp
             try
             {
                 var enemyShips = enemy.GetShips();
-                Ship destroyedShip = null;
-
+                ShipBase destroyedShip = null;
                 foreach (var ship in enemyShips)
                 {
                     if (ship.Coordinates.Exists(c => c.X == hitCoord.X && c.Y == hitCoord.Y) && ship.IsSunk())

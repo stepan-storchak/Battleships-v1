@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace SeaBattleCSharp
 {
@@ -35,6 +36,10 @@ namespace SeaBattleCSharp
                         case GameState.Placement:
                             player1.PlaceShips();
                             player2.PlaceShips();
+
+                            player1.DisplayShipStatistics();
+                            player2.DisplayShipStatistics();
+
                             gameState = GameState.Battle;
                             currentPlayer = player1;
                             break;
@@ -47,7 +52,6 @@ namespace SeaBattleCSharp
                             {
                                 Player opponent = GetOpponent();
                                 bool wasHit = false;
-
                                 if (currentPlayer is HumanPlayer human)
                                 {
                                     wasHit = human.MakeMoveWithResult(opponent);
@@ -63,7 +67,7 @@ namespace SeaBattleCSharp
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"Óńďĺő! {currentPlayer.GetName()} ďđîäîëćŕĺň őîä.");
+                                    Console.WriteLine($"Успех! {currentPlayer.GetName()} продолжает ход.");
                                 }
                             }
                             break;
@@ -76,161 +80,53 @@ namespace SeaBattleCSharp
             catch (Exception ex)
             {
                 Color.Red();
-                Console.WriteLine($"Íĺďđĺäâčäĺííŕ˙ îřčáęŕ â čăđĺ: {ex.Message}");
+                Console.WriteLine($"Непредвиденная ошибка в игре: {ex.Message}");
                 Color.ResetColor();
-                Console.WriteLine("Íŕćěčňĺ Enter äë˙ ďđîäîëćĺíč˙...");
+                Console.WriteLine("Нажмите Enter для продолжения...");
                 Console.ReadLine();
             }
         }
 
-        private Player GetOpponent()
+        private void DemonstrateCollections()
         {
-            return (currentPlayer == player1) ? player2 : player1;
-        }
+            Console.WriteLine("\n=== Демонстрация коллекций ===");
 
-        private void ShowMainMenu()
-        {
-            Color.Green();
-            Console.WriteLine("\n=== Ěîđńęîé áîé ===");
-            Color.ResetColor();
-            Console.WriteLine("1. Íŕ÷ŕňü íîâóţ čăđó");
-            Console.WriteLine("2. Ďîęŕçŕňü ňŕáëčöó ëčäĺđîâ");
-            Console.WriteLine("3. Äĺěîíńňđŕöč˙ âîçěîćíîńňĺé ÎÎĎ");
-            Console.WriteLine("4. Âűőîä");
-            Console.Write("Âűáĺđčňĺ ďóíęň: ");
+            Container<ShipBase> shipCollection = new Container<ShipBase>();
 
-            try
-            {
-                if (int.TryParse(Console.ReadLine(), out int choice))
-                {
-                    ProcessMenuInput(choice);
-                }
-                else
-                {
-                    throw new FormatException("Íĺâĺđíűé ôîđěŕň ââîäŕ");
-                }
-            }
-            catch (FormatException ex)
-            {
-                Color.Red();
-                Console.WriteLine($"Îřčáęŕ ââîäŕ: {ex.Message}");
-                Color.ResetColor();
-            }
-        }
+            shipCollection.Add(new Ship(4, new Coordinate(0, 0), Orientation.Horizontal));
+            shipCollection.Add(new SpecialShip(3, new Coordinate(5, 5), Orientation.Vertical, 2));
+            shipCollection.Add(new Ship(2, new Coordinate(2, 2), Orientation.Horizontal));
+            shipCollection.Add(new SpecialShip(1, new Coordinate(8, 8), Orientation.Horizontal, 1));
 
-        private void ShowAfterGameMenu()
-        {
-            Console.WriteLine();
-            Color.Green();
-            Console.WriteLine("=== Čăđŕ çŕâĺđřĺíŕ ===");
-            Color.ResetColor();
-            Color.Yellow();
-            Console.WriteLine($"Ďîáĺäčňĺëü: {winnerName}!");
-            Color.ResetColor();
-            Console.WriteLine("\nÄîńňóďíűĺ äĺéńňâč˙:");
-            Color.Green();
-            Console.WriteLine("1. Ńîőđŕíčňü đĺçóëüňŕň â ňŕáëčöó ëčäĺđîâ");
-            Color.Blue();
-            Console.WriteLine("2. Íŕ÷ŕňü íîâóţ čăđó (ňîň ćĺ đĺćčě)");
-            Color.Red();
-            Console.WriteLine("3. Âűőîä â ěĺíţ");
-            Color.ResetColor();
-            Console.Write("Âŕř âűáîđ: ");
+            Console.WriteLine($"Всего кораблей в коллекции: {shipCollection.Count}");
 
-            try
-            {
-                if (int.TryParse(Console.ReadLine(), out int choice))
-                {
-                    ProcessAfterGameInput(choice);
-                }
-                else
-                {
-                    throw new FormatException("Íĺâĺđíűé ôîđěŕň ââîäŕ");
-                }
-            }
-            catch (FormatException ex)
-            {
-                Color.Red();
-                Console.WriteLine($"Îřčáęŕ ââîäŕ: {ex.Message}");
-                Color.ResetColor();
-            }
-        }
+            shipCollection.SortBySize();
+            Console.WriteLine("Корабли отсортированы по размеру:");
+            shipCollection.ForEach(s => Console.WriteLine($"- {s.GetShipType()}, размер: {s.Size}"));
 
-        private void ProcessAfterGameInput(int choice)
-        {
-            switch (choice)
-            {
-                case 1:
-                    leaderboard.AddWin(winnerName);
-                    ResetGame();
-                    gameState = GameState.Menu;
-                    break;
-                case 2:
-                    Color.Blue();
-                    Console.WriteLine("Íŕ÷číŕĺě íîâóţ čăđó!");
-                    Color.ResetColor();
-                    ResetGame();
-                    StartNewGame();
-                    break;
-                case 3:
-                    gameState = GameState.GameOver;
-                    Color.Red();
-                    Console.WriteLine("Âűőîä â ěĺíţ...");
-                    Color.ResetColor();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("Âűáđŕííűé ďóíęň íĺ ńóůĺńňâóĺň");
-            }
-        }
+            var largeShips = shipCollection.FindAll(s => s.Size >= 3);
+            Console.WriteLine($"Больших кораблей (>=3): {largeShips.Count}");
 
-        private void SwitchTurn()
-        {
-            currentPlayer = (currentPlayer == player1) ? player2 : player1;
-        }
+            var shipTypes = shipCollection.Select(s => s.GetShipType()).Distinct();
+            Console.WriteLine($"Уникальные типы кораблей: {string.Join(", ", shipTypes)}");
 
-        private bool CheckWinCondition()
-        {
-            if (player1.AllShipsSunk())
-            {
-                ShowGameOver(player2.GetName());
-                winnerName = player2.GetName();
-                return true;
-            }
-            else if (player2.AllShipsSunk())
-            {
-                ShowGameOver(player1.GetName());
-                winnerName = player1.GetName();
-                return true;
-            }
-            return false;
-        }
+            var hasSpecialShips = shipCollection.Any(s => s is SpecialShip);
+            Console.WriteLine($"Есть ли специальные корабли: {hasSpecialShips}");
 
-        private void ShowGameOver(string winner)
-        {
-            Console.WriteLine();
-            Color.Green();
-            Console.WriteLine("=== Čăđŕ çŕâĺđřĺíŕ ===");
-            Color.ResetColor();
-            if (winner == "Computer" || winner == "Advanced Computer")
-            {
-                Color.Red();
-                Console.WriteLine("Ęîěďüţňĺđ ďîáĺäčë!");
-            }
-            else
-            {
-                Color.Green();
-                Console.WriteLine($"Ďîáĺäčë {winner}!");
-            }
-            Color.ResetColor();
-            Console.WriteLine("\nÔčíŕëüíîĺ ńîńňî˙íčĺ äîńęč:");
-            Color.Green();
-            Console.WriteLine("Âŕřŕ äîńęŕ:");
-            Color.ResetColor();
-            player1.GetMyBoard().Display(true);
-            Color.Blue();
-            Console.WriteLine("\nÄîńęŕ ďđîňčâíčęŕ:");
-            Color.ResetColor();
-            player1.GetEnemyBoard().Display(false);
+            var shipArray = shipCollection.ToArray();
+            Console.WriteLine($"Корабли в массиве: {shipArray.Length}");
+
+            var shipDict = shipCollection.ToDictionary();
+            Console.WriteLine($"Корабли в словаре: {shipDict.Count}");
+
+            var minSize = shipCollection.Min(s => s.Size);
+            var maxSize = shipCollection.Max(s => s.Size);
+            var avgSize = shipCollection.Average(s => s.Size);
+
+            Console.WriteLine($"Статистика размеров: мин={minSize}, макс={maxSize}, сред={avgSize:F1}");
+
+            int totalSize = GenericHelper.CalculateTotalSize(shipCollection.ToList());
+            Console.WriteLine($"Общий размер всех кораблей: {totalSize}");
         }
 
         private void ProcessMenuInput(int choice)
@@ -245,32 +141,86 @@ namespace SeaBattleCSharp
                     break;
                 case 3:
                     DemonstrateOOPFeatures();
+                    DemonstrateCollections();
+                    DemonstrateGenericFunctions();
                     break;
                 case 4:
                     gameState = GameState.GameOver;
-                    Console.WriteLine("Âűőîä...");
+                    Console.WriteLine("Выход...");
                     Color.ResetColor();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Âűáđŕííűé ďóíęň íĺ ńóůĺńňâóĺň");
+                    throw new ArgumentOutOfRangeException("Выбранный пункт не существует");
+            }
+        }
+
+        private void DemonstrateGenericFunctions()
+        {
+            Console.WriteLine("\n=== Демонстрация шаблонных функций ===");
+
+            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            double[] doubles = { 1.5, 2.5, 3.5, 4.5, 5.5 };
+
+            int maxNumber = GenericHelper.FindMax(numbers);
+            int minNumber = GenericHelper.FindMin(numbers);
+
+            double maxDouble = GenericHelper.FindMax(doubles);
+            double minDouble = GenericHelper.FindMin(doubles);
+
+            Console.WriteLine($"Максимальное число: {maxNumber}");
+            Console.WriteLine($"Минимальное число: {minNumber}");
+            Console.WriteLine($"Максимальное double: {maxDouble}");
+            Console.WriteLine($"Минимальное double: {minDouble}");
+
+            int totalNumbers = GenericHelper.CalculateTotal(numbers, n => n);
+            Console.WriteLine($"Сумма чисел: {totalNumbers}");
+        }
+
+        private void ShowMainMenu()
+        {
+            Color.Green();
+            Console.WriteLine("\n=== Морской бой ===");
+            Color.ResetColor();
+            Console.WriteLine("1. Начать новую игру");
+            Console.WriteLine("2. Показать таблицу лидеров");
+            Console.WriteLine("3. Демонстрация возможностей ООП и коллекций");
+            Console.WriteLine("4. Выход");
+            Console.Write("Выберите пункт: ");
+
+            try
+            {
+                if (int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    ProcessMenuInput(choice);
+                }
+                else
+                {
+                    throw new FormatException("Неверный формат ввода");
+                }
+            }
+            catch (FormatException ex)
+            {
+                Color.Red();
+                Console.WriteLine($"Ошибка ввода: {ex.Message}");
+                Color.ResetColor();
             }
         }
 
         private void StartNewGame()
         {
             ResetGame();
-            Console.Write("Ââĺäčňĺ âŕřĺ čě˙: ");
+            Console.Write("Введите ваше имя: ");
             string playerName = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(playerName))
             {
-                throw new ArgumentException("Čě˙ íĺ ěîćĺň áűňü ďóńňűě");
+                throw new ArgumentException("Имя не может быть пустым");
             }
 
-            Console.WriteLine("\nÂűáĺđčňĺ ňčď ďđîňčâíčęŕ:");
-            Console.WriteLine("1 - Îáű÷íűé ęîěďüţňĺđ");
-            Console.WriteLine("2 - Ďđîäâčíóňűé ęîěďüţňĺđ");
-            Console.Write("Âŕř âűáîđ: ");
+            Console.WriteLine("\nВыберите тип противника:");
+            Console.WriteLine("1 - Обычный компьютер");
+            Console.WriteLine("2 - Продвинутый компьютер");
+            Console.Write("Ваш выбор: ");
 
             if (int.TryParse(Console.ReadLine(), out int aiType))
             {
@@ -298,7 +248,7 @@ namespace SeaBattleCSharp
             winnerName = "";
 
             Color.Green();
-            Console.WriteLine($"\nČăđŕ íŕ÷ŕëŕńü! Óäŕ÷č, {playerName}!");
+            Console.WriteLine($"\nИгра началась! Удачи, {playerName}!");
             Color.ResetColor();
         }
 
@@ -310,47 +260,163 @@ namespace SeaBattleCSharp
             winnerName = "";
         }
 
+        private Player GetOpponent() => (currentPlayer == player1) ? player2 : player1;
+        private void SwitchTurn() => currentPlayer = (currentPlayer == player1) ? player2 : player1;
+
+        private bool CheckWinCondition()
+        {
+            if (player1.AllShipsSunk())
+            {
+                ShowGameOver(player2.GetName());
+                winnerName = player2.GetName();
+                return true;
+            }
+            else if (player2.AllShipsSunk())
+            {
+                ShowGameOver(player1.GetName());
+                winnerName = player1.GetName();
+                return true;
+            }
+            return false;
+        }
+
+        private void ShowGameOver(string winner)
+        {
+            Console.WriteLine();
+            Color.Green();
+            Console.WriteLine("=== Игра завершена ===");
+            Color.ResetColor();
+
+            if (winner == "Computer" || winner == "Advanced Computer")
+            {
+                Color.Red();
+                Console.WriteLine("Компьютер победил!");
+            }
+            else
+            {
+                Color.Green();
+                Console.WriteLine($"Победил {winner}!");
+            }
+            Color.ResetColor();
+
+            Console.WriteLine("\nФинальное состояние доски:");
+            Color.Green();
+            Console.WriteLine("Ваша доска:");
+            Color.ResetColor();
+            player1.GetMyBoard().Display(true);
+
+            Color.Blue();
+            Console.WriteLine("\nДоска противника:");
+            Color.ResetColor();
+            player1.GetEnemyBoard().Display(false);
+        }
+
+        private void ShowAfterGameMenu()
+        {
+            Console.WriteLine();
+            Color.Green();
+            Console.WriteLine("=== Игра завершена ===");
+            Color.ResetColor();
+            Color.Yellow();
+            Console.WriteLine($"Победитель: {winnerName}!");
+            Color.ResetColor();
+
+            Console.WriteLine("\nДоступные действия:");
+            Color.Green();
+            Console.WriteLine("1. Сохранить результат в таблицу лидеров");
+            Color.Blue();
+            Console.WriteLine("2. Начать новую игру (тот же режим)");
+            Color.Red();
+            Console.WriteLine("3. Выход в меню");
+            Color.ResetColor();
+            Console.Write("Ваш выбор: ");
+
+            try
+            {
+                if (int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    ProcessAfterGameInput(choice);
+                }
+                else
+                {
+                    throw new FormatException("Неверный формат ввода");
+                }
+            }
+            catch (FormatException ex)
+            {
+                Color.Red();
+                Console.WriteLine($"Ошибка ввода: {ex.Message}");
+                Color.ResetColor();
+            }
+        }
+
+        private void ProcessAfterGameInput(int choice)
+        {
+            switch (choice)
+            {
+                case 1:
+                    leaderboard.AddWin(winnerName);
+                    ResetGame();
+                    gameState = GameState.Menu;
+                    break;
+                case 2:
+                    Color.Blue();
+                    Console.WriteLine("Начинаем новую игру!");
+                    Color.ResetColor();
+                    ResetGame();
+                    StartNewGame();
+                    break;
+                case 3:
+                    gameState = GameState.GameOver;
+                    Color.Red();
+                    Console.WriteLine("Выход в меню...");
+                    Color.ResetColor();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Выбранный пункт не существует");
+            }
+        }
+
         private void ShowLeaderboard()
         {
             leaderboard.Display();
-            Console.WriteLine("\nÍŕćěčňĺ Enter äë˙ ďđîäîëćĺíč˙...");
+            Console.WriteLine("\nНажмите Enter для продолжения...");
             Console.ReadLine();
         }
 
         private void DemonstrateOOPFeatures()
         {
-            Console.WriteLine("\n=== Äĺěîíńňđŕöč˙ âîçěîćíîńňĺé ÎÎĎ ===");
+            Console.WriteLine("\n=== Демонстрация возможностей ООП ===");
+            Console.WriteLine("\n--- Клонирование ---");
 
-            // 1. Äĺěîíńňđŕöč˙ ęëîíčđîâŕíč˙
-            Console.WriteLine("\n--- Ęëîíčđîâŕíčĺ ---");
             var originalCoord = new Coordinate(5, 5);
             var shallowClone = (Coordinate)originalCoord.Clone();
             var deepClone = originalCoord.DeepClone();
 
-            Console.WriteLine($"Îđčăčíŕë: X={originalCoord.X}, Y={originalCoord.Y}");
-            Console.WriteLine($"Ďîâĺđőíîńňíűé ęëîí: X={shallowClone.X}, Y={shallowClone.Y}");
-            Console.WriteLine($"Ăëóáîęčé ęëîí: X={deepClone.X}, Y={deepClone.Y}");
+            Console.WriteLine($"Оригинал: X={originalCoord.X}, Y={originalCoord.Y}");
+            Console.WriteLine($"Поверхностный клон: X={shallowClone.X}, Y={shallowClone.Y}");
+            Console.WriteLine($"Глубокий клон: X={deepClone.X}, Y={deepClone.Y}");
 
-            // 2. Äĺěîíńňđŕöč˙ âčđňóŕëüíűő ôóíęöčé
-            Console.WriteLine("\n--- Âčđňóŕëüíűĺ ôóíęöčč ---");
-            Player human = new HumanPlayer("Ňĺńňîâűé čăđîę");
+            Console.WriteLine("\n--- Виртуальные функции ---");
+
+            Player human = new HumanPlayer("Тестовый игрок");
             Player ai = new AIPlayer();
             Player advancedAI = new AdvancedAIPlayer();
 
-            Console.WriteLine("\nČíôîđěŕöč˙ îá čăđîęŕő:");
+            Console.WriteLine("\nИнформация об игроках:");
             human.DisplayPlayerInfo();
             ai.DisplayPlayerInfo();
             advancedAI.DisplayPlayerInfo();
 
-            // 3. Äĺěîíńňđŕöč˙ íŕńëĺäîâŕíč˙ č ďîëčěîđôčçěŕ
-            Console.WriteLine("\n--- Íŕńëĺäîâŕíčĺ č ďîëčěîđôčçě ---");
+            Console.WriteLine("\n--- Наследование и полиморфизм ---");
+
             Player[] players = { human, ai, advancedAI };
             foreach (var player in players)
             {
-                Console.WriteLine($"Ňčď: {player.GetType().Name}, Čě˙: {player.GetName()}");
+                Console.WriteLine($"Тип: {player.GetType().Name}, Имя: {player.GetName()}");
             }
 
-            Console.WriteLine("\nÍŕćěčňĺ Enter äë˙ ďđîäîëćĺíč˙...");
+            Console.WriteLine("\nНажмите Enter для продолжения...");
             Console.ReadLine();
         }
     }
