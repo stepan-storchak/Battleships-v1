@@ -27,48 +27,5 @@ public:
 
     static int getBoardSize() { return BOARD_SIZE; }
 
-    std::array<CellState, BOARD_SIZE> getRow(int y) const {
-        if (y >= 0 && y < BOARD_SIZE) {
-            return grid[y];
-        }
-        return std::array<CellState, BOARD_SIZE>();
-    }
-
-    std::array<CellState, BOARD_SIZE> getColumn(int x) const {
-        std::array<CellState, BOARD_SIZE> column;
-        for (int y = 0; y < BOARD_SIZE; ++y) {
-            column[y] = grid[y][x];
-        }
-        return column;
-    }
-
-    int countCells(CellState state) const {
-        int count = 0;
-        for (const auto& row : grid) {
-            count += std::count(row.begin(), row.end(), state);
-        }
-        return count;
-    }
-
-    std::vector<Coordinate> findCells(CellState state) const {
-        std::vector<Coordinate> result;
-        for (int y = 0; y < BOARD_SIZE; ++y) {
-            for (int x = 0; x < BOARD_SIZE; ++x) {
-                if (grid[y][x] == state) {
-                    result.push_back(Coordinate(x, y));
-                }
-            }
-        }
-        return result;
-    }
-
-    bool anyHit() const {
-        for (const auto& row : grid) {
-            if (std::any_of(row.begin(), row.end(),
-                [](CellState state) { return state == CellState::Hit; })) {
-                return true;
-            }
-        }
-        return false;
-    }
+   
 };

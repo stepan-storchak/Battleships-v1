@@ -34,9 +34,4 @@ public:
     void showAfterGameMenu();
     void processAfterGameInput(int choice);
 
-    void demonstrateOOPFeatures();
-    void demonstrateVirtualFunctions();
-    void demonstrateCloning();
-    void demonstrateAbstractClass();
-    void demonstrateSTLFeatures();
 };

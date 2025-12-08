@@ -6,7 +6,7 @@
 class HumanPlayer : public Player {
 public:
     HumanPlayer(const std::string& name) : Player(name) {}
-
+    bool isHuman() const override { return true; }
     void placeShips() override;
     void makeMove(Player& enemy) override;
     bool makeMoveWithResult(Player& enemy) override;

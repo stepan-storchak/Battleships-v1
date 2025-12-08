@@ -43,19 +43,8 @@ void Game::run() {
                 else {
                     Player* opponent = getOpponent();
                     bool wasHit = false;
-
-                    if (dynamic_cast<HumanPlayer*>(currentPlayer)) {
-                        HumanPlayer* human = dynamic_cast<HumanPlayer*>(currentPlayer);
-                        wasHit = human->makeMoveWithResult(*opponent);
-                    }
-                    else if (dynamic_cast<AdvancedAIPlayer*>(currentPlayer)) {
-                        AdvancedAIPlayer* advancedAI = dynamic_cast<AdvancedAIPlayer*>(currentPlayer);
-                        wasHit = advancedAI->makeMoveWithResult(*opponent);
-                    }
-                    else {
-                        AIPlayer* ai = dynamic_cast<AIPlayer*>(currentPlayer);
-                        wasHit = ai->makeMoveWithResult(*opponent);
-                    }
+                    
+                    wasHit = currentPlayer->makeMoveWithResult(*opponent);
 
                     if (!wasHit) {
                         switchTurn();
@@ -233,7 +222,7 @@ void Game::startNewGame() {
         player1 = std::make_unique<HumanPlayer>(playerName);
 
         if (gameType == 2) {
-            player2 = std::make_unique<AdvancedAIPlayer>("Advanced AI", 3);
+            player2 = std::make_unique<AdvancedAIPlayer>("Advanced AI");
         }
         else {
             player2 = std::make_unique<AIPlayer>();

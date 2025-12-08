@@ -2,7 +2,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <memory>
-#include <stdexcept>
+
 
 
 
@@ -13,10 +13,6 @@ int main() {
  
         auto game = std::make_unique<Game>();
         game->run();
-
-        std::cout << "\nСтатистика игры:" << std::endl;
-        std::cout << "Количество игроков: " << Player::getPlayerCount() << std::endl;
-        std::cout << "Использование цветов: " << Color::getUsageCount() << " раз" << std::endl;
 
         return 0;
     }

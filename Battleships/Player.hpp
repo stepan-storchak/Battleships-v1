@@ -21,7 +21,8 @@ public:
     virtual ~Player() = default;
     
     static int getPlayerCount() { return playerCount; }
-    
+    virtual bool isHuman() const = 0;  
+    virtual bool isAdvancedAI() const { return false; } 
     virtual bool makeMoveWithResult(Player& enemy) = 0;
     virtual void placeShips() = 0;
     virtual void makeMove(Player& enemy) = 0;

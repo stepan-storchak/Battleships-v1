@@ -24,8 +24,4 @@ public:
     bool isSunk() const;
     bool takeHit(const Coordinate& coord);
 
- 
-    std::string getDescription() const {
-        return name + " (размер: " + std::to_string(size) + ")";
-    }
 };
