@@ -1,25 +1,25 @@
 using System;
 
+
 namespace SeaBattleCSharp
 {
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
             try
             {
                 Console.OutputEncoding = System.Text.Encoding.UTF8;
+                Console.InputEncoding = System.Text.Encoding.UTF8;
+                
                 Game game = new Game();
                 game.Run();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Íåïðåäâèäåííàÿ îøèáêà: {ex.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                Console.WriteLine($"Критическая ошибка: {e.Message}");
                 Console.ResetColor();
-                Console.WriteLine("Íàæìèòå Enter äëÿ âûõîäà...");
-                Console.ReadLine();
             }
         }
     }

@@ -1,108 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SeaBattleCSharp
 {
-    public class Ship : ShipBase
+    public class Ship
     {
-        private int size;
-        private Coordinate start;
-        private Orientation orientation;
+        public int Size { get; private set; }
+        public List<Coordinate> Coordinates { get; private set; }
+        public bool[] Hits { get; private set; }
+        public string Name { get; private set; }
 
-        public override int Size
-        {
-            get { return size; }
-            protected set
-            {
-                if (value <= 0 || value > 4)
-                    throw new ArgumentException("Размер корабля должен быть от 1 до 4");
-                size = value;
-            }
-        }
-
-        public override Coordinate Start
-        {
-            get { return start; }
-            protected set
-            {
-                start = value ?? throw new ArgumentNullException("Начальная координата не может быть null");
-            }
-        }
-
-        public override Orientation Orientation
-        {
-            get { return orientation; }
-            protected set { orientation = value; }
-        }
-
-        public override List<Coordinate> Coordinates { get; protected set; }
-        public override List<Coordinate> Hits { get; } = new List<Coordinate>();
-
-        public Ship(int size, Coordinate start, Orientation orientation)
+        public Ship(int size, Coordinate start, Orientation orientation, string name = "")
         {
             Size = size;
-            Start = start;
-            Orientation = orientation;
-            Coordinates = CalculateCoordinates();
+            Name = name;
+            Coordinates = new List<Coordinate>();
+            Hits = new bool[size];
+
+            int dx = (orientation == Orientation.Horizontal) ? 1 : 0;
+            int dy = (orientation == Orientation.Vertical) ? 1 : 0;
+
+            for (int i = 0; i < size; i++)
+            {
+                Coordinates.Add(new Coordinate(start.X + dx * i, start.Y + dy * i));
+            }
         }
 
-        private List<Coordinate> CalculateCoordinates()
+        public bool IsSunk()
         {
-            var coords = new List<Coordinate>();
-            try
+            return Hits.All(hit => hit);
+        }
+
+        public bool TakeHit(Coordinate coord)
+        {
+            for (int i = 0; i < Coordinates.Count; i++)
             {
-                for (int i = 0; i < Size; i++)
+                if (Coordinates[i].Equals(coord))
                 {
-                    if (Orientation == Orientation.Horizontal)
-                    {
-                        coords.Add(new Coordinate(Start.X + i, Start.Y));
-                    }
-                    else
-                    {
-                        coords.Add(new Coordinate(Start.X, Start.Y + i));
-                    }
+                    Hits[i] = true;
+                    return IsSunk();
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Ошибка при расчете координат корабля: {ex.Message}");
-            }
-            return coords;
-        }
-
-        public override bool TakeHit(Coordinate coord)
-        {
-            if (Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y) &&
-                !Hits.Any(c => c.X == coord.X && c.Y == coord.Y))
-            {
-                Hits.Add(coord);
-                return true;
             }
             return false;
         }
-
-        public override bool IsSunk()
-        {
-            return Hits.Count == Size;
-        }
-
-        public override object Clone()
-        {
-            var cloned = (Ship)this.MemberwiseClone();
-            cloned.Start = (Coordinate)this.Start.Clone();
-            cloned.Coordinates = new List<Coordinate>(this.Coordinates.Select(c => (Coordinate)c.Clone()));
-            return cloned;
-        }
-
-        public override object DeepClone()
-        {
-            var cloned = (Ship)this.MemberwiseClone();
-            cloned.Start = this.Start.DeepClone();
-            cloned.Coordinates = new List<Coordinate>(this.Coordinates.Select(c => c.DeepClone()));
-            return cloned;
-        }
-
-        public override string GetShipType() => "Standard Ship";
     }
 }

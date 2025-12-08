@@ -1,33 +1,9 @@
-using System;
-
 namespace SeaBattleCSharp
 {
-    public class Coordinate : ICloneable
+    public class Coordinate
     {
-        private int x;
-        private int y;
-
-        public int X
-        {
-            get { return x; }
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Êîîðäèíàòà X íå ìîæåò áûòü îòðèöàòåëüíîé");
-                x = value;
-            }
-        }
-
-        public int Y
-        {
-            get { return y; }
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Êîîðäèíàòà Y íå ìîæåò áûòü îòðèöàòåëüíîé");
-                y = value;
-            }
-        }
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public Coordinate(int x = 0, int y = 0)
         {
@@ -37,24 +13,39 @@ namespace SeaBattleCSharp
 
         public override bool Equals(object obj)
         {
-            return obj is Coordinate coordinate &&
-                   X == coordinate.X &&
-                   Y == coordinate.Y;
+            if (obj is Coordinate other)
+                return X == other.X && Y == other.Y;
+            return false;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(X, Y);
+            return (X << 16) | Y;
         }
 
-        public object Clone()
+        public static bool operator ==(Coordinate a, Coordinate b)
         {
-            return this.MemberwiseClone();
+            return a?.X == b?.X && a?.Y == b?.Y;
         }
 
-        public Coordinate DeepClone()
+        public static bool operator !=(Coordinate a, Coordinate b)
         {
-            return new Coordinate(X, Y);
+            return !(a == b);
+        }
+
+        public static Coordinate operator +(Coordinate a, Coordinate b)
+        {
+            return new Coordinate(a.X + b.X, a.Y + b.Y);
+        }
+
+        public static Coordinate operator -(Coordinate a, Coordinate b)
+        {
+            return new Coordinate(a.X - b.X, a.Y - b.Y);
+        }
+
+        public override string ToString()
+        {
+            return $"{(char)('A' + X)}{Y + 1}";
         }
     }
 }
