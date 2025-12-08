@@ -1,89 +1,176 @@
 #include "AdvancedAIPlayer.hpp"
 #include "Color.hpp"
 #include <iostream>
-#include <algorithm>
 #include <thread>
 #include <chrono>
+
+AdvancedAIPlayer::AdvancedAIPlayer(const std::string& name)
+    : AIPlayer(name), isTrackingShip(false), currentTargetShip(nullptr) {
+}
+
+AdvancedAIPlayer::~AdvancedAIPlayer() {
+    currentTargetShip = nullptr;
+}
 
 AdvancedAIPlayer& AdvancedAIPlayer::operator=(const AdvancedAIPlayer& other) {
     if (this != &other) {
         AIPlayer::operator=(other);
-
         this->priorityTargets = other.priorityTargets;
-        this->difficultyLevel = other.difficultyLevel;
+        this->isTrackingShip = other.isTrackingShip;
+        this->firstHit = other.firstHit;
+        this->shipDirectionCandidates = other.shipDirectionCandidates;
+        this->currentTargetShip = other.currentTargetShip;
     }
     return *this;
 }
 
 void AdvancedAIPlayer::placeShips() {
     AIPlayer::placeShips();
-
-    if (difficultyLevel >= 2) {
-        std::cout << "Продвинутый ИИ использует улучшенную стратегию размещения кораблей" << std::endl;
-    }
 }
 
 bool AdvancedAIPlayer::makeMoveWithResult(Player& enemy) {
-    bool result = AIPlayer::makeMoveWithResult(enemy);
+    std::cout << "\n=== Ход продвинутого ИИ ===" << std::endl;
 
-    if (result && difficultyLevel >= 2) {
-        analyzeEnemyPattern(enemy);
+    Color::setColor(Color::YELLOW);
+    std::cout << "Продвинутый ИИ анализирует поле...";
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::cout << std::endl;
+    Color::resetColor();
+
+    Coordinate target;
+
+    if (!priorityTargets.empty()) {
+        target = priorityTargets.front();
+        priorityTargets.pop_front();
+    }
+    else {
+        target = calculateOptimalShot();
     }
 
-    return result;
+    Color::setColor(Color::BLUE);
+    std::cout << "Продвинутый ИИ стреляет в " << static_cast<char>('A' + target.x) << target.y + 1 << std::endl;
+    Color::resetColor();
+
+    ShotResult result = enemy.getShotResult(target);
+
+    if (result == ShotResult::Hit || result == ShotResult::Sunk) {
+        enemyBoard.setCellState(target, CellState::Hit);
+
+        if (!isTrackingShip) {
+            isTrackingShip = true;
+            firstHit = target;
+            findAndSetCurrentShip(enemy, target);
+
+            if (currentTargetShip) {
+                generateShipCompletionTargets();
+            }
+        }
+        else if (currentTargetShip) {
+            generateShipCompletionTargets();
+        }
+
+        if (result == ShotResult::Sunk) {
+            Color::setColor(Color::RED);
+            std::cout << "Уничтожен корабль!" << std::endl;
+            Color::resetColor();
+            markAreaAroundDestroyedShip(enemy, target);
+            clearTrackingData();
+            return true;
+        }
+        else {
+            Color::setColor(Color::YELLOW);
+            std::cout << "Попадание!" << std::endl;
+            Color::resetColor();
+            return true;
+        }
+    }
+    else {
+        enemyBoard.setCellState(target, CellState::Miss);
+        Color::setColor(Color::BLUE);
+        std::cout << "Промах!" << std::endl;
+        Color::resetColor();
+
+        if (isTrackingShip && currentTargetShip) {
+            generateShipCompletionTargets();
+        }
+
+        return false;
+    }
 }
 
 void AdvancedAIPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& hitCoord) {
-    AIPlayer::markAreaAroundDestroyedShip(enemy, hitCoord);
+    for (int dy = -1; dy <= 1; ++dy) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            Coordinate around(hitCoord.x + dx, hitCoord.y + dy);
+            if (around.x >= 0 && around.x < 10 && around.y >= 0 && around.y < 10) {
+                if (enemyBoard.getCellState(around) == CellState::Empty) {
+                    enemyBoard.setCellState(around, CellState::Miss);
+                }
+            }
+        }
+    }
 
-    updatePriorityTargets(hitCoord);
+    priorityTargets.clear();
 }
 
 std::string AdvancedAIPlayer::getPlayerType() const {
-    std::string baseType = AIPlayer::getPlayerType();
-    return baseType + " (Advanced, Level: " + std::to_string(difficultyLevel) + ")";
-}
-
-void AdvancedAIPlayer::displayAdvancedInfo() const {
-    std::cout << "=== Расширенная информация о продвинутом ИИ ===" << std::endl;
-    std::cout << "Уровень сложности: " << difficultyLevel << std::endl;
-    std::cout << "Приоритетных целей: " << priorityTargets.size() << std::endl;
-    std::cout << "Режим охоты: " << (huntMode ? "Активен" : "Не активен") << std::endl;
-}
-
-void AdvancedAIPlayer::analyzeEnemyPattern(Player& enemy) {
-    if (difficultyLevel >= 3) {
-        std::cout << "Продвинутый ИИ анализирует стратегию противника..." << std::endl;
-    }
+    return "Advanced AI Player";
 }
 
 Coordinate AdvancedAIPlayer::calculateOptimalShot() {
-    if (!priorityTargets.empty()) {
-        Coordinate target = priorityTargets.back();
-        priorityTargets.pop_back();
-        return target;
-    }
+    Coordinate target;
+    do {
+        target.x = std::rand() % 10;
+        target.y = std::rand() % 10;
+    } while (enemyBoard.getCellState(target) != CellState::Empty);
 
-    return AIPlayer::generateSmartMove();
+    return target;
 }
 
-void AdvancedAIPlayer::updatePriorityTargets(const Coordinate& hitCoord) {
-    std::vector<Coordinate> directions = {
-        Coordinate(2, 0), Coordinate(-2, 0), Coordinate(0, 2), Coordinate(0, -2),
-        Coordinate(1, 1), Coordinate(1, -1), Coordinate(-1, 1), Coordinate(-1, -1)
-    };
+void AdvancedAIPlayer::findAndSetCurrentShip(Player& enemy, const Coordinate& hitCoord) {
+    const std::vector<Ship>& enemyShips = enemy.getShips();
 
-    for (const auto& dir : directions) {
-        Coordinate newTarget = hitCoord + dir;
-        if (newTarget.x >= 0 && newTarget.x < 10 && newTarget.y >= 0 && newTarget.y < 10) {
-            if (isHighPriorityTarget(newTarget)) {
-                priorityTargets.push_back(newTarget);
+    for (const Ship& ship : enemyShips) {
+        const std::vector<Coordinate>& shipCoords = ship.getCoordinates();
+
+        for (const Coordinate& coord : shipCoords) {
+            if (coord == hitCoord && !ship.isSunk()) {
+                currentTargetShip = const_cast<Ship*>(&ship);
+                return;
+            }
+        }
+    }
+
+    currentTargetShip = nullptr;
+}
+
+void AdvancedAIPlayer::generateShipCompletionTargets() {
+    if (!currentTargetShip || currentTargetShip->isSunk()) {
+        return;
+    }
+
+    const std::vector<Coordinate>& shipCoords = currentTargetShip->getCoordinates();
+
+    for (const Coordinate& coord : shipCoords) {
+        if (enemyBoard.getCellState(coord) == CellState::Empty) {
+            bool alreadyInList = false;
+            for (const Coordinate& existing : priorityTargets) {
+                if (existing == coord) {
+                    alreadyInList = true;
+                    break;
+                }
+            }
+
+            if (!alreadyInList) {
+                priorityTargets.push_back(coord);
             }
         }
     }
 }
 
-bool AdvancedAIPlayer::isHighPriorityTarget(const Coordinate& coord) const {
-    CellState state = enemyBoard.getCellState(coord);
-    return state == CellState::Empty;
+void AdvancedAIPlayer::clearTrackingData() {
+    isTrackingShip = false;
+    currentTargetShip = nullptr;
+    priorityTargets.clear();
 }
+
