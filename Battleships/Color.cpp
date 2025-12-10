@@ -1,9 +1,7 @@
 #include "Color.hpp"
-#include <iostream>
-#include <stdexcept>
+
 
 int Color::usageCount = 0;
-
 void Color::setColor(int color) {
     try {
 #ifdef _WIN32
@@ -22,7 +20,7 @@ void Color::setColor(int color) {
         usageCount++;
     }
     catch (const std::exception& e) {
-        std::cerr << "Îøèáêà ïðè óñòàíîâêå öâåòà: " << e.what() << std::endl;
+        std::cerr << "������ ��� ��������� �����: " << e.what() << std::endl;
     }
 }
 
@@ -37,19 +35,8 @@ void Color::resetColor() {
 #endif
     }
     catch (const std::exception& e) {
-        std::cerr << "Îøèáêà ïðè ñáðîñå öâåòà: " << e.what() << std::endl;
+        std::cerr << "������ ��� ������ �����: " << e.what() << std::endl;
     }
 }
 
 
-std::string Color::getColorName(int color) {
-    switch (color) {
-    case RED: return "Êðàñíûé";
-    case GREEN: return "Çåëåíûé";
-    case BLUE: return "Ñèíèé";
-    case YELLOW: return "Æåëòûé";
-    case WHITE: return "Áåëûé";
-    case GRAY: return "Ñåðûé";
-    default: return "Íåèçâåñòíûé";
-    }
-}

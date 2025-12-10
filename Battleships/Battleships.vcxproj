@@ -123,6 +123,7 @@
 		</Link>
 	</ItemDefinitionGroup>
 	<ItemGroup>
+		<ClInclude Include="AdvancedAIPlayer.hpp" />
 		<ClInclude Include="AIPlayer.hpp" />
 		<ClInclude Include="CellState.hpp" />
 		<ClInclude Include="Color.hpp" />
@@ -136,6 +137,7 @@
 		<ClInclude Include="ShotResult.hpp" />
 	</ItemGroup>
 	<ItemGroup>
+		<ClCompile Include="AdvancedAIPlayer.cpp" />
 		<ClCompile Include="AIPlayer.cpp" />
 		<ClCompile Include="Color.cpp" />
 		<ClCompile Include="Game.cpp" />

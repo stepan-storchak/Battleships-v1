@@ -1,9 +1,8 @@
 #include "Leaderboard.hpp"
 #include "Color.hpp"
-#include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <vector>
+
+
 
 Leaderboard::Leaderboard() {
     loadFromFile();
@@ -25,7 +24,7 @@ void Leaderboard::loadFromFile() {
 void Leaderboard::saveToFile() {
     std::ofstream file(filename);
     if (!file.is_open()) {
-        std::cout << "ÃŽÃ¸Ã¨Ã¡ÃªÃ  Ã±Ã®ÃµÃ°Ã Ã­Ã¥Ã­Ã¨Ã¿ Ã²Ã Ã¡Ã«Ã¨Ã¶Ã» Ã«Ã¨Ã¤Ã¥Ã°Ã®Ã¢!" << std::endl;
+        std::cout << "Îøèáêà ñîõðàíåíèÿ òàáëèöû ëèäåðîâ!" << std::endl;
         return;
     }
     for (const auto& record : records) {
@@ -38,7 +37,7 @@ void Leaderboard::addWin(const std::string& playerName) {
     records[playerName]++;
     saveToFile();
     Color::setColor(Color::GREEN);
-    std::cout << "ÃÃ®Ã¡Ã¥Ã¤Ã  Ã¨Ã£Ã°Ã®ÃªÃ  " << playerName << " Ã±Ã®ÃµÃ°Ã Ã­Ã¥Ã­Ã  Ã¢ Ã²Ã Ã¡Ã«Ã¨Ã¶Ã¥ Ã«Ã¨Ã¤Ã¥Ã°Ã®Ã¢!" << std::endl;
+    std::cout << "Ïîáåäà èãðîêà " << playerName << " ñîõðàíåíà â òàáëèöå ëèäåðîâ!" << std::endl;
     Color::resetColor();
     display();
 }
@@ -47,10 +46,10 @@ void Leaderboard::addWin(const std::string& playerName) {
 void Leaderboard::display() const {
     std::cout << "\n";
     Color::setColor(Color::YELLOW);
-    std::cout << "=== Ã’Ã€ÃÃ‹ÃˆÃ–Ã€ Ã‹ÃˆÃ„Ã…ÃÃŽÃ‚ ===" << std::endl;
+    std::cout << "=== ÒÀÁËÈÖÀ ËÈÄÅÐÎÂ ===" << std::endl;
     Color::resetColor();
     if (records.empty()) {
-        std::cout << "ÃÃ®ÃªÃ  Ã­Ã¥Ã² Ã§Ã Ã¯Ã¨Ã±Ã¥Ã©." << std::endl;
+        std::cout << "Ïîêà íåò çàïèñåé." << std::endl;
         return;
     }
     std::vector<std::pair<std::string, int>> sortedRecords;
@@ -65,7 +64,7 @@ void Leaderboard::display() const {
         }
     }
     std::cout << "------------------------------" << std::endl;
-    std::cout << "ÃˆÃ£Ã°Ã®Ãª\t\tÃÃ®Ã¡Ã¥Ã¤Ã»" << std::endl;
+    std::cout << "Èãðîê\t\tÏîáåäû" << std::endl;
     std::cout << "------------------------------" << std::endl;
     for (size_t i = 0; i < sortedRecords.size(); ++i) {
         const auto& record = sortedRecords[i];

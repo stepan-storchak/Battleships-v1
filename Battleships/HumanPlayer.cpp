@@ -1,10 +1,5 @@
 #include "HumanPlayer.hpp"
 #include "Color.hpp"
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <thread>
-#include <stdexcept>
 
 namespace {
     const int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
@@ -14,16 +9,16 @@ namespace {
 }
 
 void HumanPlayer::placeShips() {
-    std::cout << "ÃÃ Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ  ÃªÃ®Ã°Ã Ã¡Ã«Ã¥Ã© Ã¤Ã«Ã¿ Ã¨Ã£Ã°Ã®ÃªÃ : " << this->name << std::endl;
+    std::cout << "Ðàññòàíîâêà êîðàáëåé äëÿ èãðîêà: " << this->name << std::endl;
     int choice;
     while (true) {
-        std::cout << "Ã‚Ã»Ã¡Ã¥Ã°Ã¨Ã²Ã¥ Ã±Ã¯Ã®Ã±Ã®Ã¡ Ã°Ã Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ¨:\n";
+        std::cout << "Âûáåðèòå ñïîñîá ðàññòàíîâêè:\n";
         Color::setColor(Color::GREEN);
-        std::cout << "1 - Ã€Ã¢Ã²Ã®Ã¬Ã Ã²Ã¨Ã·Ã¥Ã±ÃªÃ Ã¿ Ã°Ã Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ \n";
+        std::cout << "1 - Àâòîìàòè÷åñêàÿ ðàññòàíîâêà\n";
         Color::setColor(Color::YELLOW);
-        std::cout << "2 - ÃÃ³Ã·Ã­Ã Ã¿ Ã°Ã Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ \n";
+        std::cout << "2 - Ðó÷íàÿ ðàññòàíîâêà\n";
         Color::resetColor();
-        std::cout << "Ã‚Ã Ã¸ Ã¢Ã»Ã¡Ã®Ã°: ";
+        std::cout << "Âàø âûáîð: ";
         std::cin >> choice;
         if (choice == 1) {
             if (automaticPlacement()) {
@@ -31,7 +26,7 @@ void HumanPlayer::placeShips() {
             }
             else {
                 Color::setColor(Color::RED);
-                std::cout << "Ã€Ã¢Ã²Ã®Ã¬Ã Ã²Ã¨Ã·Ã¥Ã±ÃªÃ Ã¿ Ã°Ã Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ  Ã­Ã¥ Ã³Ã¤Ã Ã«Ã Ã±Ã¼. ÃÃ®Ã¯Ã°Ã®Ã¡Ã³Ã©Ã²Ã¥ Ã°Ã³Ã·Ã­Ã³Ã¾ Ã°Ã Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ³.\n";
+                std::cout << "Àâòîìàòè÷åñêàÿ ðàññòàíîâêà íå óäàëàñü. Ïîïðîáóéòå ðó÷íóþ ðàññòàíîâêó.\n";
                 Color::resetColor();
             }
         }
@@ -41,7 +36,7 @@ void HumanPlayer::placeShips() {
         }
         else {
             Color::setColor(Color::RED);
-            std::cout << "ÃÃ¥Ã¢Ã¥Ã°Ã­Ã»Ã© Ã¢Ã»Ã¡Ã®Ã°! ÃÃ®Ã¯Ã°Ã®Ã¡Ã³Ã©Ã²Ã¥ Ã±Ã­Ã®Ã¢Ã .\n";
+            std::cout << "Íåâåðíûé âûáîð! Ïîïðîáóéòå ñíîâà.\n";
             Color::resetColor();
         }
     }
@@ -53,15 +48,15 @@ void HumanPlayer::makeMove(Player& enemy) {
 
 
 bool HumanPlayer::makeMoveWithResult(Player& enemy) {
-    std::cout << "\n=== Ã•Ã®Ã¤ Ã¨Ã£Ã°Ã®ÃªÃ  " << this->name << " ===" << std::endl;
+    std::cout << "\n=== Õîä èãðîêà. " << this->name << " ===" << std::endl;
 
     Color::setColor(Color::GREEN);
-    std::cout << "Ã‚Ã Ã¸Ã¥ Ã¯Ã®Ã«Ã¥:" << std::endl;
+    std::cout << "Âàøå ïîëå:" << std::endl;
     Color::resetColor();
     this->myBoard.display(true);
 
     Color::setColor(Color::BLUE);
-    std::cout << "\nÃÃ®Ã«Ã¥ Ã¯Ã°Ã®Ã²Ã¨Ã¢Ã­Ã¨ÃªÃ :" << std::endl;
+    std::cout << "\nÏîëå ïðîòèâíèêà:" << std::endl;
     Color::resetColor();
     this->enemyBoard.display(false);
 
@@ -73,21 +68,21 @@ bool HumanPlayer::makeMoveWithResult(Player& enemy) {
     case ShotResult::Miss:
         this->enemyBoard.setCellState(target, CellState::Miss);
         Color::setColor(Color::BLUE);
-        std::cout << "ÃÃ°Ã®Ã¬Ã Ãµ!" << std::endl;
+        std::cout << "Ïðîìàõ!" << std::endl;
         Color::resetColor();
         wasHit = false;
         break;
     case ShotResult::Hit:
         this->enemyBoard.setCellState(target, CellState::Hit);
         Color::setColor(Color::YELLOW);
-        std::cout << "ÃÃ®Ã¯Ã Ã¤Ã Ã­Ã¨Ã¥!" << std::endl;
+        std::cout << "Ïîïàäàíèå!" << std::endl;
         Color::resetColor();
         wasHit = true;
         break;
     case ShotResult::Sunk:
         this->enemyBoard.setCellState(target, CellState::Hit);
         Color::setColor(Color::RED);
-        std::cout << "Ã“Ã­Ã¨Ã·Ã²Ã®Ã¦Ã¥Ã­ ÃªÃ®Ã°Ã Ã¡Ã«Ã¼!" << std::endl;
+        std::cout << "Óíè÷òîæåí êîðàáëü!" << std::endl;
         Color::resetColor();
         wasHit = true;
         markAreaAroundDestroyedShip(enemy, target);
@@ -126,95 +121,138 @@ void HumanPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& h
 }
 
 Coordinate HumanPlayer::inputCoordinate() const {
-    char letter;
-    int number;
+    Coordinate coord;
+    std::string input;
+
     while (true) {
-        std::cout << "Ã‚Ã¢Ã¥Ã¤Ã¨Ã²Ã¥ ÃªÃ®Ã®Ã°Ã¤Ã¨Ã­Ã Ã²Ã» Ã¤Ã«Ã¿ Ã¢Ã»Ã±Ã²Ã°Ã¥Ã«Ã  (Ã­Ã Ã¯Ã°Ã¨Ã¬Ã¥Ã°, A1): ";
-        std::cin >> letter >> number;
-        int x = toupper(letter) - 'A';
-        int y = number - 1;
-        if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE) {
-            Coordinate coord(x, y);
-            CellState state = this->enemyBoard.getCellState(coord);
-            if (state == CellState::Empty) {
-                return coord;
+        try {
+            std::cout << "Ââåäèòå êîîðäèíàòû äëÿ âûñòðåëà (íàïðèìåð, A1): ";
+            input = getSafeInput();
+
+            if (parseCoordinate(input, coord)) {
+
+                CellState state = this->enemyBoard.getCellState(coord);
+                if (state == CellState::Empty) {
+                    return coord;
+                }
+                else {
+                    Color::setColor(Color::RED);
+                    std::cout << "Âû óæå ñòðåëÿëè â ýòó êëåòêó!" << std::endl;
+                    Color::resetColor();
+                }
             }
-            else {
-                Color::setColor(Color::RED);
-                std::cout << "Ã‚Ã» Ã³Ã¦Ã¥ Ã±Ã²Ã°Ã¥Ã«Ã¿Ã«Ã¨ Ã¢ Ã½Ã²Ã³ ÃªÃ«Ã¥Ã²ÃªÃ³!" << std::endl;
-                Color::resetColor();
-            }
+            
         }
-        else {
+        catch (const std::exception& e) {
             Color::setColor(Color::RED);
-            std::cout << "ÃÃ¥Ã¢Ã¥Ã°Ã­Ã»Ã¥ ÃªÃ®Ã®Ã°Ã¤Ã¨Ã­Ã Ã²Ã»! ÃˆÃ±Ã¯Ã®Ã«Ã¼Ã§Ã³Ã©Ã²Ã¥ Ã´Ã®Ã°Ã¬Ã Ã² A1-J10." << std::endl;
+            std::cout << "Îøèáêà ââîäà: " << e.what() << std::endl;
             Color::resetColor();
         }
     }
 }
 
+
 void HumanPlayer::manualPlacement() {
-    const char* shipNames[] = { "Ã·Ã¥Ã²Ã»Ã°Ã¥ÃµÃ¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©", "Ã²Ã°Ã¥ÃµÃ¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©", "Ã²Ã°Ã¥ÃµÃ¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©",
-                              "Ã¤Ã¢Ã³ÃµÃ¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©", "Ã¤Ã¢Ã³ÃµÃ¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©", "Ã¤Ã¢Ã³ÃµÃ¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©",
-                              "Ã®Ã¤Ã­Ã®Ã¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©", "Ã®Ã¤Ã­Ã®Ã¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©", "Ã®Ã¤Ã­Ã®Ã¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©", "Ã®Ã¤Ã­Ã®Ã¯Ã Ã«Ã³Ã¡Ã­Ã»Ã©" };
+    const char* shipNames[] = { "÷åòûðåõïàëóáíûé", "òðåõïàëóáíûé", "òðåõïàëóáíûé",
+                              "äâóõïàëóáíûé", "äâóõïàëóáíûé", "äâóõïàëóáíûé",
+                              "îäíîïàëóáíûé", "îäíîïàëóáíûé", "îäíîïàëóáíûé", "îäíîïàëóáíûé" };
 
     for (int i = 0; i < BOARD_SIZE; ++i) {
         int size = shipSizes[i];
         bool placed = false;
 
         while (!placed) {
-            Color::setColor(Color::YELLOW);
-            std::cout << "\nÃÃ Ã§Ã¬Ã¥Ã¹Ã¥Ã­Ã¨Ã¥ " << shipNames[i] << " ÃªÃ®Ã°Ã Ã¡Ã«Ã¿ (" << size << " Ã¯Ã Ã«Ã³Ã¡Ã»)" << std::endl;
-            Color::resetColor();
-            myBoard.display(true);
+            try {
+                Color::setColor(Color::YELLOW);
+                std::cout << "\nÐàçìåùåíèå " << shipNames[i] << " êîðàáëÿ (" << size << " ïàëóáû)" << std::endl;
+                Color::resetColor();
 
-            std::cout << "Ã‚Ã¢Ã¥Ã¤Ã¨Ã²Ã¥ Ã­Ã Ã·Ã Ã«Ã¼Ã­Ã³Ã¾ ÃªÃ®Ã®Ã°Ã¤Ã¨Ã­Ã Ã²Ã³ (Ã­Ã Ã¯Ã°Ã¨Ã¬Ã¥Ã°, A1): ";
-            char letter;
-            int number;
-            std::cin >> letter >> number;
+                myBoard.display(true);
 
-            int x = toupper(letter) - 'A';
-            int y = number - 1;
+                Coordinate startCoord;
+                bool validStart = false;
 
-            if (size > 1) {
-                char orient;
-                std::cout << "Ã‚Ã»Ã¡Ã¥Ã°Ã¨Ã²Ã¥ Ã®Ã°Ã¨Ã¥Ã­Ã²Ã Ã¶Ã¨Ã¾ (H - Ã£Ã®Ã°Ã¨Ã§Ã®Ã­Ã²Ã Ã«Ã¼Ã­Ã®, V - Ã¢Ã¥Ã°Ã²Ã¨ÃªÃ Ã«Ã¼Ã­Ã®): ";
-                std::cin >> orient;
+                while (!validStart) {
+                    std::cout << "Ââåäèòå íà÷àëüíóþ êîîðäèíàòó (íàïðèìåð, A1): ";
+                    std::string input = getSafeInput();
 
-                Orientation orientation = (toupper(orient) == 'H') ? Orientation::Horizontal : Orientation::Vertical;
+                    if (parseCoordinate(input, startCoord)) {
+                        validStart = true;
+                    }
+                    else {
+                        Color::setColor(Color::RED);
+                        std::cout << "Íåâåðíûé ôîðìàò êîîðäèíàò! Èñïîëüçóéòå ôîðìàò A1-J10." << std::endl;
+                        Color::resetColor();
+                    }
+                }
 
-                Ship ship(size, Coordinate(x, y), orientation);
-                if (isValidShipPlacement(size, Coordinate(x, y), orientation)) {
-                    if (myBoard.placeShip(ship)) {
-                        ships.push_back(ship);
-                        placed = true;
-                        Color::setColor(Color::GREEN);
-                        std::cout << "ÃŠÃ®Ã°Ã Ã¡Ã«Ã¼ Ã°Ã Ã§Ã¬Ã¥Ã¹Ã¥Ã­ Ã³Ã±Ã¯Ã¥Ã¸Ã­Ã®!" << std::endl;
+                if (size > 1) {
+                    char orient;
+                    bool validOrientation = false;
+
+                    while (!validOrientation) {
+                        std::cout << "Âûáåðèòå îðèåíòàöèþ (H - ãîðèçîíòàëüíî, V - âåðòèêàëüíî): ";
+                        std::string orientInput = getSafeInput();
+
+                        if (!orientInput.empty()) {
+                            orient = toupper(orientInput[0]);
+                            if (orient == 'H' || orient == 'V') {
+                                validOrientation = true;
+                            }
+                            else {
+                                Color::setColor(Color::RED);
+                                std::cout << "Ââåäèòå H èëè V!" << std::endl;
+                                Color::resetColor();
+                            }
+                        }
+                    }
+
+                    Orientation orientation = (orient == 'H') ? Orientation::Horizontal : Orientation::Vertical;
+                    Ship ship(size, startCoord, orientation);
+
+                    if (isValidShipPlacement(size, startCoord, orientation)) {
+                        if (myBoard.placeShip(ship)) {
+                            ships.push_back(ship);
+                            placed = true;
+                            Color::setColor(Color::GREEN);
+                            std::cout << "Êîðàáëü ðàçìåùåí óñïåøíî!" << std::endl;
+                            Color::resetColor();
+                        }
+                        else {
+                            Color::setColor(Color::RED);
+                            std::cout << "Îøèáêà ïðè ðàçìåùåíèè êîðàáëÿ!" << std::endl;
+                            Color::resetColor();
+                        }
+                    }
+                    else {
+                        Color::setColor(Color::RED);
+                        std::cout << "Íåâåðíîå ðàçìåùåíèå êîðàáëÿ! Ïîïðîáóéòå ñíîâà." << std::endl;
                         Color::resetColor();
                     }
                 }
                 else {
-                    Color::setColor(Color::RED);
-                    std::cout << "ÃÃ¥Ã¢Ã¥Ã°Ã­Ã®Ã¥ Ã°Ã Ã§Ã¬Ã¥Ã¹Ã¥Ã­Ã¨Ã¥ ÃªÃ®Ã°Ã Ã¡Ã«Ã¿! ÃÃ®Ã¯Ã°Ã®Ã¡Ã³Ã©Ã²Ã¥ Ã±Ã­Ã®Ã¢Ã ." << std::endl;
-                    Color::resetColor();
+                    Ship ship(size, startCoord, Orientation::Horizontal);
+
+                    if (isValidShipPlacement(size, startCoord, Orientation::Horizontal)) {
+                        if (myBoard.placeShip(ship)) {
+                            ships.push_back(ship);
+                            placed = true;
+                            Color::setColor(Color::GREEN);
+                            std::cout << "Êîðàáëü ðàçìåùåí óñïåøíî!" << std::endl;
+                            Color::resetColor();
+                        }
+                    }
+                    else {
+                        Color::setColor(Color::RED);
+                        std::cout << "Íåâåðíîå ðàçìåùåíèå êîðàáëÿ! Ïîïðîáóéòå ñíîâà." << std::endl;
+                        Color::resetColor();
+                    }
                 }
             }
-            else {
-                Ship ship(size, Coordinate(x, y), Orientation::Horizontal);
-                if (isValidShipPlacement(size, Coordinate(x, y), Orientation::Horizontal)) {
-                    if (myBoard.placeShip(ship)) {
-                        ships.push_back(ship);
-                        placed = true;
-                        Color::setColor(Color::GREEN);
-                        std::cout << "ÃŠÃ®Ã°Ã Ã¡Ã«Ã¼ Ã°Ã Ã§Ã¬Ã¥Ã¹Ã¥Ã­ Ã³Ã±Ã¯Ã¥Ã¸Ã­Ã®!" << std::endl;
-                        Color::resetColor();
-                    }
-                }
-                else {
-                    Color::setColor(Color::RED);
-                    std::cout << "ÃÃ¥Ã¢Ã¥Ã°Ã­Ã®Ã¥ Ã°Ã Ã§Ã¬Ã¥Ã¹Ã¥Ã­Ã¨Ã¥ ÃªÃ®Ã°Ã Ã¡Ã«Ã¿! ÃÃ®Ã¯Ã°Ã®Ã¡Ã³Ã©Ã²Ã¥ Ã±Ã­Ã®Ã¢Ã ." << std::endl;
-                    Color::resetColor();
-                }
+            catch (const std::exception& e) {
+                Color::setColor(Color::RED);
+                std::cout << "Îøèáêà: " << e.what() << std::endl;
+                Color::resetColor();
             }
         }
     }
@@ -257,12 +295,12 @@ bool HumanPlayer::automaticPlacement() {
 
         if (success) {
             Color::setColor(Color::GREEN);
-            std::cout << "Ã€Ã¢Ã²Ã®Ã¬Ã Ã²Ã¨Ã·Ã¥Ã±ÃªÃ Ã¿ Ã°Ã Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ  Ã§Ã Ã¢Ã¥Ã°Ã¸Ã¥Ã­Ã !" << std::endl;
+            std::cout << "Àâòîìàòè÷åñêàÿ ðàññòàíîâêà çàâåðøåíà!" << std::endl;
             Color::resetColor();
             myBoard.display(true);
 
             if (attempts > 0) {
-                std::cout << "ÃÃ®Ã²Ã°Ã¥Ã¡Ã®Ã¢Ã Ã«Ã®Ã±Ã¼ " << (attempts + 1) << " Ã¯Ã®Ã¯Ã»Ã²Ã®Ãª Ã¤Ã«Ã¿ Ã³Ã±Ã¯Ã¥Ã¸Ã­Ã®Ã© Ã°Ã Ã±Ã±Ã²Ã Ã­Ã®Ã¢ÃªÃ¨." << std::endl;
+                std::cout << "Ïîòðåáîâàëîñü " << (attempts + 1) << " ïîïûòîê äëÿ óñïåøíîé ðàññòàíîâêè." << std::endl;
             }
 
             return true;
@@ -272,9 +310,86 @@ bool HumanPlayer::automaticPlacement() {
     }
 
     Color::setColor(Color::RED);
-    std::cout << "ÃÃ¥ Ã³Ã¤Ã Ã«Ã®Ã±Ã¼ Ã Ã¢Ã²Ã®Ã¬Ã Ã²Ã¨Ã·Ã¥Ã±ÃªÃ¨ Ã°Ã Ã±Ã±Ã²Ã Ã¢Ã¨Ã²Ã¼ ÃªÃ®Ã°Ã Ã¡Ã«Ã¨ Ã¯Ã®Ã±Ã«Ã¥ " << MAX_ATTEMPTS << " Ã¯Ã®Ã¯Ã»Ã²Ã®Ãª." << std::endl;
+    std::cout << "Íå óäàëîñü àâòîìàòè÷åñêè ðàññòàâèòü êîðàáëè ïîñëå " << MAX_ATTEMPTS << " ïîïûòîê." << std::endl;
     Color::resetColor();
     return false;
+}
+
+bool HumanPlayer::parseCoordinate(const std::string& input, Coordinate& coord) {
+    coord = Coordinate(-1, -1);
+
+    if (input.empty()) {
+        return false;
+    }
+
+    std::string str = input;
+
+    size_t start = str.find_first_not_of(" \t");
+    if (start == std::string::npos) {
+        return false;
+    }
+    size_t end = str.find_last_not_of(" \t");
+    str = str.substr(start, end - start + 1);
+
+    if (str.length() < 2) {
+        return false;
+    }
+
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+
+    std::string cleaned;
+    for (char c : str) {
+        if (c != ' ' && c != '-' && c != ':') {
+            cleaned += c;
+        }
+    }
+
+    if (cleaned.empty()) {
+        return false;
+    }
+
+    char letter = cleaned[0];
+    if (letter < 'A' || letter > 'J') {
+        return false;
+    }
+
+    std::string numberStr = cleaned.substr(1);
+    if (numberStr.empty()) {
+        return false;
+    }
+
+    for (char c : numberStr) {
+        if (!isdigit(c)) {
+            return false;
+        }
+    }
+
+    int number;
+    try {
+        number = std::stoi(numberStr);
+    }
+    catch (const std::exception&) {
+        return false;
+    }
+
+    if (number < 1 || number > 10) {
+        return false;
+    }
+
+    coord.x = letter - 'A';
+    coord.y = number - 1;
+
+    return true;
+}
+
+std::string HumanPlayer::getSafeInput() {
+    std::string input;
+    std::getline(std::cin, input);
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+    }
+    return input;
 }
 
 bool HumanPlayer::isValidShipPlacement(int size, const Coordinate& start, Orientation orientation) const {
