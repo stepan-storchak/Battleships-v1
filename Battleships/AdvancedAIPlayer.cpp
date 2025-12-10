@@ -1,8 +1,7 @@
 #include "AdvancedAIPlayer.hpp"
 #include "Color.hpp"
-#include <iostream>
 #include <thread>
-#include <chrono>
+
 
 AdvancedAIPlayer::AdvancedAIPlayer(const std::string& name)
     : AIPlayer(name), isTrackingShip(false), currentTargetShip(nullptr) {
@@ -25,6 +24,7 @@ AdvancedAIPlayer& AdvancedAIPlayer::operator=(const AdvancedAIPlayer& other) {
 }
 
 void AdvancedAIPlayer::placeShips() {
+    std::cin.clear();
     AIPlayer::placeShips();
 }
 

@@ -1,9 +1,6 @@
 #include "GameBoard.hpp"
 #include "Color.hpp"
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
+
 
 GameBoard::GameBoard() {
     for (auto& row : grid) {
@@ -100,6 +97,9 @@ void GameBoard::markAreaAroundSunkShip(const Ship& ship) {
 }
 
 void GameBoard::display(bool showShips) const {
+    if (!std::cout.good()) {
+        std::cout.clear();
+    }
     std::cout << "   ";
     for (int i = 0; i < BOARD_SIZE; ++i) {
         Color::setColor(Color::YELLOW);

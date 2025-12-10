@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -16,7 +15,7 @@ public:
     static void resetColor();
 
     static int getUsageCount() { return usageCount; }
-    static std::string getColorName(int color);
+
 
     static const int RED = 12;     
     static const int GREEN = 10;   

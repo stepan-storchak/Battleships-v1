@@ -1,9 +1,8 @@
 #include "Leaderboard.hpp"
 #include "Color.hpp"
-#include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <vector>
+
+
 
 Leaderboard::Leaderboard() {
     loadFromFile();

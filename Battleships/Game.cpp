@@ -1,13 +1,23 @@
 #include "Game.hpp"
 #include "Color.hpp"
-#include <iostream>
-#include <limits>
-#include <thread>
-#include <chrono>
-#include <stdexcept>
-#include <memory>
-#include <vector>
-#include <stdexcept>
+
+
+std::string getSafeInputGame() {
+    std::string input;
+    std::getline(std::cin, input);
+
+    if (!input.empty()) {
+        input.erase(std::remove(input.begin(), input.end(), '\n'), input.end());
+        input.erase(std::remove(input.begin(), input.end(), '\r'), input.end());
+    }
+
+    return input;
+}
+
+void clearInputBuffer() {
+    std::cin.clear();
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+}
 
 Game::Game() : player1(nullptr), player2(nullptr), currentPlayer(nullptr),
 gameState(GameState::Menu), winnerName("") {
@@ -24,7 +34,7 @@ Player* Game::getOpponent() const {
 
 void Game::run() {
     try {
-        
+
         while (gameState != GameState::GameOver) {
             switch (gameState) {
             case GameState::Menu:
@@ -35,6 +45,7 @@ void Game::run() {
                 player2->placeShips();
                 gameState = GameState::Battle;
                 currentPlayer = player1.get();
+                clearInputBuffer();
                 break;
             case GameState::Battle:
                 if (checkWinCondition()) {
@@ -43,7 +54,7 @@ void Game::run() {
                 else {
                     Player* opponent = getOpponent();
                     bool wasHit = false;
-                    
+
                     wasHit = currentPlayer->makeMoveWithResult(*opponent);
 
                     if (!wasHit) {
@@ -75,9 +86,32 @@ void Game::showMainMenu() {
     std::cout << "1. Начать новую игру" << std::endl;
     std::cout << "2. Показать таблицу лидеров" << std::endl;
     std::cout << "3. Выход" << std::endl;
-    std::cout << "Выберите опцию: ";
-    int choice;
-    std::cin >> choice;
+
+    int choice = 0;
+    bool validChoice = false;
+
+    while (!validChoice) {
+        std::cout << "Выберите опцию: ";
+        std::string input = getSafeInputGame();
+
+        try {
+            choice = std::stoi(input);
+            if (choice >= 1 && choice <= 3) {
+                validChoice = true;
+            }
+            else {
+                Color::setColor(Color::RED);
+                std::cout << "Неверный выбор! Введите 1, 2 или 3." << std::endl;
+                Color::resetColor();
+            }
+        }
+        catch (const std::exception&) {
+            Color::setColor(Color::RED);
+            std::cout << "Неверный ввод! Введите число от 1 до 3." << std::endl;
+            Color::resetColor();
+        }
+    }
+
     processMenuInput(choice);
 }
 
@@ -86,9 +120,11 @@ void Game::showAfterGameMenu() {
     Color::setColor(Color::GREEN);
     std::cout << "=== ИГРА ЗАВЕРШЕНА ===" << std::endl;
     Color::resetColor();
+
     Color::setColor(Color::YELLOW);
     std::cout << "Победитель: " << winnerName << "!" << std::endl;
     Color::resetColor();
+
     std::cout << "\nВыберите действие:" << std::endl;
     Color::setColor(Color::GREEN);
     std::cout << "1. Сохранить результат и выйти в меню" << std::endl;
@@ -97,9 +133,32 @@ void Game::showAfterGameMenu() {
     Color::setColor(Color::RED);
     std::cout << "3. Выйти из игры" << std::endl;
     Color::resetColor();
-    std::cout << "Ваш выбор: ";
-    int choice;
-    std::cin >> choice;
+
+    int choice = 0;
+    bool validChoice = false;
+
+    while (!validChoice) {
+        std::cout << "Ваш выбор: ";
+        std::string input = getSafeInputGame();
+
+        try {
+            choice = std::stoi(input);
+            if (choice >= 1 && choice <= 3) {
+                validChoice = true;
+            }
+            else {
+                Color::setColor(Color::RED);
+                std::cout << "Неверный выбор! Введите 1, 2 или 3." << std::endl;
+                Color::resetColor();
+            }
+        }
+        catch (const std::exception&) {
+            Color::setColor(Color::RED);
+            std::cout << "Неверный ввод! Введите число от 1 до 3." << std::endl;
+            Color::resetColor();
+        }
+    }
+
     processAfterGameInput(choice);
 }
 
@@ -208,16 +267,43 @@ void Game::processMenuInput(int choice) {
 
 void Game::startNewGame() {
     try {
-        player1.reset();
-        player2.reset();
-
         std::string playerName;
-        std::cout << "Введите ваше имя: ";
-        std::cin >> playerName;
+        while (true) {
+            std::cout << "Введите ваше имя: ";
+            playerName = getSafeInputGame();
 
-        int gameType;
-        std::cout << "Выберите тип игры:\n1. Против обычного ИИ\n2. Против продвинутого ИИ\nВаш выбор: ";
-        std::cin >> gameType;
+            if (!playerName.empty()) {
+                break;
+            }
+            Color::setColor(Color::RED);
+            std::cout << "Имя не может быть пустым!" << std::endl;
+            Color::resetColor();
+        }
+
+        int gameType = 0;
+        bool validGameType = false;
+
+        while (!validGameType) {
+            std::cout << "Выберите тип игры:\n1. Против обычного ИИ\n2. Против продвинутого ИИ\nВаш выбор: ";
+            std::string input = getSafeInputGame();
+
+            try {
+                gameType = std::stoi(input);
+                if (gameType == 1 || gameType == 2) {
+                    validGameType = true;
+                }
+                else {
+                    Color::setColor(Color::RED);
+                    std::cout << "Введите 1 или 2!" << std::endl;
+                    Color::resetColor();
+                }
+            }
+            catch (const std::exception&) {
+                Color::setColor(Color::RED);
+                std::cout << "Неверный ввод! Введите 1 или 2." << std::endl;
+                Color::resetColor();
+            }
+        }
 
         player1 = std::make_unique<HumanPlayer>(playerName);
 
@@ -245,10 +331,6 @@ void Game::startNewGame() {
 void Game::showLeaderboard() {
     leaderboard.display();
     std::cout << "\nНажмите Enter для продолжения...";
-    std::cin.ignore();
+    clearInputBuffer();
     std::cin.get();
 }
-
-
-
-

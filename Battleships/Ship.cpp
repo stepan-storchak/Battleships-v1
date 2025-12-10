@@ -1,6 +1,4 @@
 #include "Ship.hpp"
-#include <algorithm>
-
 
 Ship::Ship(int size, const Coordinate& start, Orientation orientation,
     const std::string& name)

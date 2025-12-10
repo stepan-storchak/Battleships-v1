@@ -1,9 +1,7 @@
 #include "Color.hpp"
-#include <iostream>
-#include <stdexcept>
+
 
 int Color::usageCount = 0;
-
 void Color::setColor(int color) {
     try {
 #ifdef _WIN32

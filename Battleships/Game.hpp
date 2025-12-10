@@ -5,8 +5,6 @@
 #include "AIPlayer.hpp"
 #include "AdvancedAIPlayer.hpp"
 #include "Leaderboard.hpp"
-#include <memory>
-#include <vector>
 
 enum class GameState { Menu, Placement, Battle, GameOver, AfterGame };
 

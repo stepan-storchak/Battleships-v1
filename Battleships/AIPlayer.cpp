@@ -1,14 +1,10 @@
 #include "AIPlayer.hpp"
 #include "Color.hpp"
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
 #include <thread>
-#include <chrono>
+
 
 AIPlayer::AIPlayer(const std::string& name) : Player(name), huntMode(false) {
-    std::srand(std::time(0));
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
 namespace {
@@ -35,6 +31,7 @@ AIPlayer& AIPlayer::operator=(const AIPlayer& other) {
 }
 
 void AIPlayer::placeShips() {
+    std::cin.clear();
     while (attempts < MAX_ATTEMPTS) {
         myBoard.clearBoard();
         ships.clear();

@@ -3,7 +3,6 @@
 #include "Orientation.hpp"
 #include <vector>
 #include <string>
-#include <memory>
 #include <algorithm>
 
 class Ship { 

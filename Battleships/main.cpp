@@ -1,8 +1,5 @@
 #include "Game.hpp"
-#include <iostream>
 #include <Windows.h>
-#include <memory>
-
 
 
 
@@ -10,7 +7,7 @@ int main() {
     try {
         SetConsoleCP(1251);
         SetConsoleOutputCP(1251);
- 
+
         auto game = std::make_unique<Game>();
         game->run();
 

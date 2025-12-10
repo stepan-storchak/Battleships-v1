@@ -3,8 +3,6 @@
 #include "Coordinate.hpp"
 #include "ShotResult.hpp"
 #include "Ship.hpp"
-#include <string>
-#include <vector>
 #include <map>
 
 class Player {

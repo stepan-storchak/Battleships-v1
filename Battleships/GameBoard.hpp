@@ -3,9 +3,8 @@
 #include "Coordinate.hpp"
 #include "Ship.hpp"
 #include "ShotResult.hpp"
-#include <vector>
 #include <array>
-#include <algorithm>
+
 
 class GameBoard {
 private:

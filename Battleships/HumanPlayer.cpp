@@ -1,10 +1,5 @@
 #include "HumanPlayer.hpp"
 #include "Color.hpp"
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <thread>
-#include <stdexcept>
 
 namespace {
     const int shipSizes[] = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
@@ -126,95 +121,138 @@ void HumanPlayer::markAreaAroundDestroyedShip(Player& enemy, const Coordinate& h
 }
 
 Coordinate HumanPlayer::inputCoordinate() const {
-    char letter;
-    int number;
+    Coordinate coord;
+    std::string input;
+
     while (true) {
-        std::cout << "Введите координаты для выстрела (например, A1): ";
-        std::cin >> letter >> number;
-        int x = toupper(letter) - 'A';
-        int y = number - 1;
-        if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE) {
-            Coordinate coord(x, y);
-            CellState state = this->enemyBoard.getCellState(coord);
-            if (state == CellState::Empty) {
-                return coord;
+        try {
+            std::cout << "Введите координаты для выстрела (например, A1): ";
+            input = getSafeInput();
+
+            if (parseCoordinate(input, coord)) {
+
+                CellState state = this->enemyBoard.getCellState(coord);
+                if (state == CellState::Empty) {
+                    return coord;
+                }
+                else {
+                    Color::setColor(Color::RED);
+                    std::cout << "Вы уже стреляли в эту клетку!" << std::endl;
+                    Color::resetColor();
+                }
             }
-            else {
-                Color::setColor(Color::RED);
-                std::cout << "Вы уже стреляли в эту клетку!" << std::endl;
-                Color::resetColor();
-            }
+            
         }
-        else {
+        catch (const std::exception& e) {
             Color::setColor(Color::RED);
-            std::cout << "Неверные координаты! Используйте формат A1-J10." << std::endl;
+            std::cout << "Ошибка ввода: " << e.what() << std::endl;
             Color::resetColor();
         }
     }
 }
 
+
 void HumanPlayer::manualPlacement() {
     const char* shipNames[] = { "четырехпалубный", "трехпалубный", "трехпалубный",
-"двухпалубный", "двухпалубный", "двухпалубный",
-"однопалубный", "однопалубный", "однопалубный", "однопалубный" };
+                              "двухпалубный", "двухпалубный", "двухпалубный",
+                              "однопалубный", "однопалубный", "однопалубный", "однопалубный" };
 
     for (int i = 0; i < BOARD_SIZE; ++i) {
         int size = shipSizes[i];
         bool placed = false;
 
         while (!placed) {
-            Color::setColor(Color::YELLOW);
-            std::cout << "\nРазмещение" << shipNames[i] << " корабля (" << size << " палубы)" << std::endl;
-            Color::resetColor();
-            myBoard.display(true);
+            try {
+                Color::setColor(Color::YELLOW);
+                std::cout << "\nРазмещение " << shipNames[i] << " корабля (" << size << " палубы)" << std::endl;
+                Color::resetColor();
 
-            std::cout << "Введите начальную координату (например, A1): ";
-            char letter;
-            int number;
-            std::cin >> letter >> number;
+                myBoard.display(true);
 
-            int x = toupper(letter) - 'A';
-            int y = number - 1;
+                Coordinate startCoord;
+                bool validStart = false;
 
-            if (size > 1) {
-                char orient;
-                std::cout << "Выберите ориентацию (H - горизонтально, V - вертикально): ";
-                std::cin >> orient;
+                while (!validStart) {
+                    std::cout << "Введите начальную координату (например, A1): ";
+                    std::string input = getSafeInput();
 
-                Orientation orientation = (toupper(orient) == 'H') ? Orientation::Horizontal : Orientation::Vertical;
+                    if (parseCoordinate(input, startCoord)) {
+                        validStart = true;
+                    }
+                    else {
+                        Color::setColor(Color::RED);
+                        std::cout << "Неверный формат координат! Используйте формат A1-J10." << std::endl;
+                        Color::resetColor();
+                    }
+                }
 
-                Ship ship(size, Coordinate(x, y), orientation);
-                if (isValidShipPlacement(size, Coordinate(x, y), orientation)) {
-                    if (myBoard.placeShip(ship)) {
-                        ships.push_back(ship);
-                        placed = true;
-                        Color::setColor(Color::GREEN);
-                        std::cout << "Корабль размещен успешно!" << std::endl;
+                if (size > 1) {
+                    char orient;
+                    bool validOrientation = false;
+
+                    while (!validOrientation) {
+                        std::cout << "Выберите ориентацию (H - горизонтально, V - вертикально): ";
+                        std::string orientInput = getSafeInput();
+
+                        if (!orientInput.empty()) {
+                            orient = toupper(orientInput[0]);
+                            if (orient == 'H' || orient == 'V') {
+                                validOrientation = true;
+                            }
+                            else {
+                                Color::setColor(Color::RED);
+                                std::cout << "Введите H или V!" << std::endl;
+                                Color::resetColor();
+                            }
+                        }
+                    }
+
+                    Orientation orientation = (orient == 'H') ? Orientation::Horizontal : Orientation::Vertical;
+                    Ship ship(size, startCoord, orientation);
+
+                    if (isValidShipPlacement(size, startCoord, orientation)) {
+                        if (myBoard.placeShip(ship)) {
+                            ships.push_back(ship);
+                            placed = true;
+                            Color::setColor(Color::GREEN);
+                            std::cout << "Корабль размещен успешно!" << std::endl;
+                            Color::resetColor();
+                        }
+                        else {
+                            Color::setColor(Color::RED);
+                            std::cout << "Ошибка при размещении корабля!" << std::endl;
+                            Color::resetColor();
+                        }
+                    }
+                    else {
+                        Color::setColor(Color::RED);
+                        std::cout << "Неверное размещение корабля! Попробуйте снова." << std::endl;
                         Color::resetColor();
                     }
                 }
                 else {
-                    Color::setColor(Color::RED);
-                    std::cout << "Неверное размещение корабля! Попробуйте снова." << std::endl;
-                    Color::resetColor();
+                    Ship ship(size, startCoord, Orientation::Horizontal);
+
+                    if (isValidShipPlacement(size, startCoord, Orientation::Horizontal)) {
+                        if (myBoard.placeShip(ship)) {
+                            ships.push_back(ship);
+                            placed = true;
+                            Color::setColor(Color::GREEN);
+                            std::cout << "Корабль размещен успешно!" << std::endl;
+                            Color::resetColor();
+                        }
+                    }
+                    else {
+                        Color::setColor(Color::RED);
+                        std::cout << "Неверное размещение корабля! Попробуйте снова." << std::endl;
+                        Color::resetColor();
+                    }
                 }
             }
-            else {
-                Ship ship(size, Coordinate(x, y), Orientation::Horizontal);
-                if (isValidShipPlacement(size, Coordinate(x, y), Orientation::Horizontal)) {
-                    if (myBoard.placeShip(ship)) {
-                        ships.push_back(ship);
-                        placed = true;
-                        Color::setColor(Color::GREEN);
-                        std::cout << "Корабль размещен успешно!" << std::endl;
-                        Color::resetColor();
-                    }
-                }
-                else {
-                    Color::setColor(Color::RED);
-                    std::cout << "Неверное размещение корабля! Попробуйте снова." << std::endl;
-                    Color::resetColor();
-                }
+            catch (const std::exception& e) {
+                Color::setColor(Color::RED);
+                std::cout << "Ошибка: " << e.what() << std::endl;
+                Color::resetColor();
             }
         }
     }
@@ -275,6 +313,83 @@ bool HumanPlayer::automaticPlacement() {
     std::cout << "Не удалось автоматически расставить корабли после " << MAX_ATTEMPTS << " попыток." << std::endl;
     Color::resetColor();
     return false;
+}
+
+bool HumanPlayer::parseCoordinate(const std::string& input, Coordinate& coord) {
+    coord = Coordinate(-1, -1);
+
+    if (input.empty()) {
+        return false;
+    }
+
+    std::string str = input;
+
+    size_t start = str.find_first_not_of(" \t");
+    if (start == std::string::npos) {
+        return false;
+    }
+    size_t end = str.find_last_not_of(" \t");
+    str = str.substr(start, end - start + 1);
+
+    if (str.length() < 2) {
+        return false;
+    }
+
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+
+    std::string cleaned;
+    for (char c : str) {
+        if (c != ' ' && c != '-' && c != ':') {
+            cleaned += c;
+        }
+    }
+
+    if (cleaned.empty()) {
+        return false;
+    }
+
+    char letter = cleaned[0];
+    if (letter < 'A' || letter > 'J') {
+        return false;
+    }
+
+    std::string numberStr = cleaned.substr(1);
+    if (numberStr.empty()) {
+        return false;
+    }
+
+    for (char c : numberStr) {
+        if (!isdigit(c)) {
+            return false;
+        }
+    }
+
+    int number;
+    try {
+        number = std::stoi(numberStr);
+    }
+    catch (const std::exception&) {
+        return false;
+    }
+
+    if (number < 1 || number > 10) {
+        return false;
+    }
+
+    coord.x = letter - 'A';
+    coord.y = number - 1;
+
+    return true;
+}
+
+std::string HumanPlayer::getSafeInput() {
+    std::string input;
+    std::getline(std::cin, input);
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+    }
+    return input;
 }
 
 bool HumanPlayer::isValidShipPlacement(int size, const Coordinate& start, Orientation orientation) const {
