@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 
 namespace SeaBattleCSharp
 {
@@ -233,7 +231,7 @@ namespace SeaBattleCSharp
                     break;
                 default:
                     Color.SetColor(Color.RED);
-                    Console.WriteLine("Неверный выбор!");
+                    Console.WriteLine("Неверный выбор! Пожалуйста, введите 1, 2 или 3.");
                     Color.ResetColor();
                     break;
             }
@@ -243,31 +241,52 @@ namespace SeaBattleCSharp
         {
             try
             {
-                Console.Write("Введите ваше имя: ");
-                string playerName = Console.ReadLine();
-
-                Console.WriteLine("Выберите тип игры:");
-                Console.WriteLine("1. Против обычного ИИ");
-                Console.WriteLine("2. Против продвинутого ИИ");
-                Console.Write("Ваш выбор: ");
-
-                if (int.TryParse(Console.ReadLine(), out int gameType))
+                string playerName;
+                while (true)
                 {
-                    player1 = new HumanPlayer(playerName);
+                    Console.Write("Введите ваше имя: ");
+                    playerName = Console.ReadLine()?.Trim();
 
-                    if (gameType == 2)
-                        player2 = new AdvancedAIPlayer("Advanced AI");
-                    else
-                        player2 = new AIPlayer();
+                    if (!string.IsNullOrWhiteSpace(playerName))
+                        break;
 
-                    currentPlayer = player1;
-                    gameState = GameState.Placement;
-                    winnerName = "";
-
-                    Color.SetColor(Color.GREEN);
-                    Console.WriteLine($"\nНовая игра началась! Удачи, {playerName}!");
+                    Color.SetColor(Color.RED);
+                    Console.WriteLine("Имя не может быть пустым!");
                     Color.ResetColor();
                 }
+
+                int gameType = 0;
+                while (gameType < 1 || gameType > 2)
+                {
+                    Console.WriteLine("Выберите тип игры:");
+                    Console.WriteLine("1. Против обычного ИИ");
+                    Console.WriteLine("2. Против продвинутого ИИ");
+                    Console.Write("Ваш выбор: ");
+
+                    string input = Console.ReadLine();
+                    if (!int.TryParse(input, out gameType) || (gameType != 1 && gameType != 2))
+                    {
+                        Color.SetColor(Color.RED);
+                        Console.WriteLine("Введите 1 или 2!");
+                        Color.ResetColor();
+                        gameType = 0; 
+                    }
+                }
+
+                player1 = new HumanPlayer(playerName);
+
+                if (gameType == 2)
+                    player2 = new AdvancedAIPlayer("Advanced AI");
+                else
+                    player2 = new AIPlayer();
+
+                currentPlayer = player1;
+                gameState = GameState.Placement;
+                winnerName = "";
+
+                Color.SetColor(Color.GREEN);
+                Console.WriteLine($"\nНовая игра началась! Удачи, {playerName}!");
+                Color.ResetColor();
             }
             catch (Exception e)
             {

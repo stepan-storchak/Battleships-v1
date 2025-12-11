@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace SeaBattleCSharp
 {
@@ -33,7 +29,7 @@ namespace SeaBattleCSharp
             Console.WriteLine("\n=== Ход продвинутого ИИ ===");
             Color.SetColor(Color.YELLOW);
             Console.Write("Продвинутый ИИ анализирует поле...");
-            Thread.Sleep(500);
+            Thread.Sleep(1500);
             Console.WriteLine();
             Color.ResetColor();
 

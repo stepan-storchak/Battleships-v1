@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-
+﻿
 namespace SeaBattleCSharp
 {
     public class HumanPlayer : Player
@@ -157,47 +155,29 @@ namespace SeaBattleCSharp
         {
             while (true)
             {
-                Console.Write("Введите координаты для выстрела (например, A1): ");
-                string input = Console.ReadLine()?.ToUpper();
-
-                if (string.IsNullOrEmpty(input) || input.Length < 2)
+                try
                 {
-                    Color.SetColor(Color.RED);
-                    Console.WriteLine("Неверный формат!");
-                    Color.ResetColor();
-                    continue;
-                }
+                    Console.Write("Введите координаты для выстрела (например, A1): ");
+                    string input = Console.ReadLine();
 
-                char letter = input[0];
-                if (!int.TryParse(input.Substring(1), out int number))
-                {
-                    Color.SetColor(Color.RED);
-                    Console.WriteLine("Неверный формат числа!");
-                    Color.ResetColor();
-                    continue;
-                }
-
-                int x = letter - 'A';
-                int y = number - 1;
-
-                if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE)
-                {
-                    Coordinate coord = new Coordinate(x, y);
-                    CellState state = enemyBoard.GetCellState(coord);
-
-                    if (state == CellState.Empty)
-                        return coord;
-                    else
+                    if (TryParseCoordinate(input, out Coordinate coord))
                     {
-                        Color.SetColor(Color.RED);
-                        Console.WriteLine("Вы уже стреляли в эту клетку!");
-                        Color.ResetColor();
+                        CellState state = enemyBoard.GetCellState(coord);
+
+                        if (state == CellState.Empty)
+                            return coord;
+                        else
+                        {
+                            Color.SetColor(Color.RED);
+                            Console.WriteLine("Вы уже стреляли в эту клетку!");
+                            Color.ResetColor();
+                        }
                     }
                 }
-                else
+                catch (Exception ex)
                 {
                     Color.SetColor(Color.RED);
-                    Console.WriteLine("Неверные координаты! Используйте формат A1-J10.");
+                    Console.WriteLine($"Ошибка ввода: {ex.Message}");
                     Color.ResetColor();
                 }
             }
@@ -206,8 +186,8 @@ namespace SeaBattleCSharp
         private void ManualPlacement()
         {
             string[] shipNames = { "четырехпалубный", "трехпалубный", "трехпалубный",
-                                   "двухпалубный", "двухпалубный", "двухпалубный",
-                                   "однопалубный", "однопалубный", "однопалубный", "однопалубный" };
+                           "двухпалубный", "двухпалубный", "двухпалубный",
+                           "однопалубный", "однопалубный", "однопалубный", "однопалубный" };
 
             for (int i = 0; i < shipSizes.Length; i++)
             {
@@ -216,83 +196,113 @@ namespace SeaBattleCSharp
 
                 while (!placed)
                 {
-                    Color.SetColor(Color.YELLOW);
-                    Console.WriteLine($"\nРазмещение {shipNames[i]} корабля ({size} палубы)");
-                    Color.ResetColor();
-
-                    myBoard.Display(true);
-
-                    Console.Write("Введите начальную координату (например, A1): ");
-                    string input = Console.ReadLine()?.ToUpper();
-
-                    if (string.IsNullOrEmpty(input) || input.Length < 2)
+                    try
                     {
-                        Color.SetColor(Color.RED);
-                        Console.WriteLine("Неверный формат!");
+                        Color.SetColor(Color.YELLOW);
+                        Console.WriteLine($"\nРазмещение {shipNames[i]} корабля ({size} палубы)");
                         Color.ResetColor();
-                        continue;
-                    }
 
-                    char letter = input[0];
-                    if (!int.TryParse(input.Substring(1), out int number))
-                    {
-                        Color.SetColor(Color.RED);
-                        Console.WriteLine("Неверный формат числа!");
-                        Color.ResetColor();
-                        continue;
-                    }
+                        myBoard.Display(true);
 
-                    int x = letter - 'A';
-                    int y = number - 1;
-
-                    if (size > 1)
-                    {
-                        Console.Write("Выберите ориентацию (H - горизонтально, V - вертикально): ");
-                        char orient = char.ToUpper(Console.ReadKey().KeyChar);
-                        Console.WriteLine();
-
-                        Orientation orientation = (orient == 'H') ? Orientation.Horizontal : Orientation.Vertical;
-                        Ship ship = new Ship(size, new Coordinate(x, y), orientation);
-
-                        if (IsValidShipPlacement(size, new Coordinate(x, y), orientation))
+                        Coordinate startCoord = null;
+                        while (startCoord == null)
                         {
-                            if (myBoard.PlaceShip(ship))
+                            Console.Write("Введите начальную координату (например, A1): ");
+                            string input = Console.ReadLine();
+
+                            if (TryParseCoordinate(input, out Coordinate coord))
                             {
-                                ships.Add(ship);
-                                placed = true;
-                                Color.SetColor(Color.GREEN);
-                                Console.WriteLine("Корабль размещен успешно!");
+                                startCoord = coord;
+                            }
+                        }
+
+                        if (size > 1)
+                        {
+                            Orientation orientation = Orientation.Horizontal;
+                            bool validOrientation = false;
+
+                            while (!validOrientation)
+                            {
+                                Console.Write("Выберите ориентацию (H - горизонтально, V - вертикально): ");
+                                string orientInput = Console.ReadLine()?.Trim().ToUpper();
+
+                                if (!string.IsNullOrEmpty(orientInput) && orientInput.Length > 0)
+                                {
+                                    char orientChar = orientInput[0];
+
+                                    if (orientChar == 'H')
+                                    {
+                                        orientation = Orientation.Horizontal;
+                                        validOrientation = true;
+                                    }
+                                    else if (orientChar == 'V')
+                                    {
+                                        orientation = Orientation.Vertical;
+                                        validOrientation = true;
+                                    }
+                                    else
+                                    {
+                                        Color.SetColor(Color.RED);
+                                        Console.WriteLine("Введите H или V!");
+                                        Color.ResetColor();
+                                    }
+                                }
+                            }
+
+                            Ship ship = new Ship(size, startCoord, orientation);
+
+                            if (IsValidShipPlacement(size, startCoord, orientation))
+                            {
+                                if (myBoard.PlaceShip(ship))
+                                {
+                                    ships.Add(ship);
+                                    placed = true;
+                                    Color.SetColor(Color.GREEN);
+                                    Console.WriteLine("Корабль размещен успешно!");
+                                    Color.ResetColor();
+                                }
+                                else
+                                {
+                                    Color.SetColor(Color.RED);
+                                    Console.WriteLine("Ошибка при размещении корабля!");
+                                    Color.ResetColor();
+                                }
+                            }
+                            else
+                            {
+                                Color.SetColor(Color.RED);
+                                Console.WriteLine("Неверное размещение корабля! Попробуйте снова.");
                                 Color.ResetColor();
                             }
                         }
                         else
                         {
-                            Color.SetColor(Color.RED);
-                            Console.WriteLine("Неверное размещение корабля! Попробуйте снова.");
-                            Color.ResetColor();
-                        }
-                    }
-                    else
-                    {
-                        Ship ship = new Ship(size, new Coordinate(x, y), Orientation.Horizontal);
+                            Ship ship = new Ship(size, startCoord, Orientation.Horizontal);
 
-                        if (IsValidShipPlacement(size, new Coordinate(x, y), Orientation.Horizontal))
-                        {
-                            if (myBoard.PlaceShip(ship))
+                            if (IsValidShipPlacement(size, startCoord, Orientation.Horizontal))
                             {
-                                ships.Add(ship);
-                                placed = true;
-                                Color.SetColor(Color.GREEN);
-                                Console.WriteLine("Корабль размещен успешно!");
+                                if (myBoard.PlaceShip(ship))
+                                {
+                                    ships.Add(ship);
+                                    placed = true;
+                                    Color.SetColor(Color.GREEN);
+                                    Console.WriteLine("Корабль размещен успешно!");
+                                    Color.ResetColor();
+                                }
+                            }
+                            else
+                            {
+                                Color.SetColor(Color.RED);
+                                Console.WriteLine("Неверное размещение корабля! Попробуйте снова.");
                                 Color.ResetColor();
                             }
                         }
-                        else
-                        {
-                            Color.SetColor(Color.RED);
-                            Console.WriteLine("Неверное размещение корабля! Попробуйте снова.");
-                            Color.ResetColor();
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Color.SetColor(Color.RED);
+                        Console.WriteLine($"Ошибка: {ex.Message}");
+                        Color.ResetColor();
                     }
                 }
             }
@@ -368,6 +378,88 @@ namespace SeaBattleCSharp
         {
             Ship tempShip = new Ship(size, start, orientation);
             return myBoard.IsValidPlacement(tempShip);
+        }
+
+        private bool TryParseCoordinate(string input, out Coordinate coordinate, bool allowMultiCharLetters = false)
+        {
+            coordinate = null;
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Console.WriteLine("Ошибка: пустой ввод");
+                    return false;
+                }
+
+                input = input.Trim().ToUpper();
+
+                string cleaned = "";
+                foreach (char c in input)
+                {
+                    if (char.IsLetterOrDigit(c) || c == ' ' || c == '-' || c == ':')
+                        cleaned += c;
+                }
+
+                if (string.IsNullOrEmpty(cleaned))
+                {
+                    Console.WriteLine("Ошибка: неверный формат координат");
+                    return false;
+                }
+
+                string letters = "";
+                string numbers = "";
+                bool foundLetter = false;
+
+                foreach (char c in cleaned)
+                {
+                    if (char.IsLetter(c) && !foundLetter)
+                    {
+                        letters += c;
+                    }
+                    else if (char.IsDigit(c))
+                    {
+                        numbers += c;
+                        foundLetter = true; 
+                    }
+                    else if (foundLetter && char.IsLetter(c))
+                    {                   
+                        Console.WriteLine("Ошибка: буква после цифр");
+                        return false;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(letters) || string.IsNullOrEmpty(numbers))
+                {
+                    Console.WriteLine("Ошибка: координаты должны содержать букву и число");
+                    return false;
+                }
+
+                char letter = letters[0];
+                if (letter < 'A' || letter > 'J')
+                {
+                    Console.WriteLine($"Ошибка: буква должна быть от A до J, получено '{letter}'");
+                    return false;
+                }
+
+                if (!int.TryParse(numbers, out int number) || number < 1 || number > 10)
+                {
+                    Console.WriteLine($"Ошибка: число должно быть от 1 до 10, получено '{numbers}'");
+                    return false;
+                }
+
+                int x = letter - 'A';
+                int y = number - 1;
+
+                coordinate = new Coordinate(x, y);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка обработки координат: {ex.Message}");
+                coordinate = null;
+                return false;
+            }
         }
     }
 }

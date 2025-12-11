@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace SeaBattleCSharp
 {
     public class GameBoard
@@ -108,7 +107,7 @@ namespace SeaBattleCSharp
 
         public void Display(bool showShips)
         {
-            Console.Write("  ");
+            Console.Write("   ");
             for (int i = 0; i < BOARD_SIZE; i++)
             {
                 Color.SetColor(Color.YELLOW);
