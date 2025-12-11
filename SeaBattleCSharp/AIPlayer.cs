@@ -1,70 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-
+﻿
 namespace SeaBattleCSharp
 {
     public class AIPlayer : Player
     {
-        private Coordinate lastHit;
-        private bool huntMode;
-        private List<Coordinate> possibleTargets;
-        private Random random;
-        private static int aiInstanceCount = 0;
+        protected Coordinate lastHit;
+        protected bool huntMode;
+        protected List<Coordinate> possibleTargets;
 
-        public static int AiInstanceCount
-        {
-            get { return aiInstanceCount; }
-            private set { aiInstanceCount = value; }
-        }
+        private static Random random = new Random();
+        private readonly int[] shipSizes = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
+        private const int BOARD_SIZE = 10;
+        private const int MAX_ATTEMPTS = 10;
+        private const int MAX_SINGLE_PLACEMENT_TRIES = 100;
+        private const int THINKING_DOTS = 3;
+        private const int THINKING_DELAY_MS = 500;
+        private static int attempts = 0;
 
         public AIPlayer(string name = "Computer") : base(name)
         {
             huntMode = false;
             possibleTargets = new List<Coordinate>();
-            random = new Random();
-            AiInstanceCount++;
         }
 
-        public static void ResetAiInstanceCount()
+        public override bool IsHuman() => false;
+
+        public virtual AIPlayer Copy()
         {
-            AiInstanceCount = 0;
+            var copy = new AIPlayer(name);
+            copy.myBoard = this.myBoard;
+            copy.enemyBoard = this.enemyBoard;
+            copy.ships = new List<Ship>(this.ships);
+            copy.lastHit = this.lastHit;
+            copy.huntMode = this.huntMode;
+            copy.possibleTargets = new List<Coordinate>(this.possibleTargets);
+            return copy;
         }
 
         public override void PlaceShips()
         {
-            int[] shipSizes = { 4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
-            const int MAX_ATTEMPTS = 10;
-            const int MAX_SINGLE_PLACEMENT_TRIES = 100;
+            attempts = 0;
+            Random rand = new Random();
 
-            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
+            while (attempts < MAX_ATTEMPTS)
             {
                 myBoard.ClearBoard();
                 ships.Clear();
                 bool success = true;
 
-                int shipIndex = 0;
                 foreach (int size in shipSizes)
                 {
                     bool placed = false;
                     int placementAttempts = 0;
+
                     while (!placed && placementAttempts < MAX_SINGLE_PLACEMENT_TRIES)
                     {
-                        int x = random.Next(GameBoard.GetBoardSize());
-                        int y = random.Next(GameBoard.GetBoardSize());
-                        Orientation orientation = (random.Next(2) == 0) ?
+                        int x = rand.Next(BOARD_SIZE);
+                        int y = rand.Next(BOARD_SIZE);
+                        Orientation orientation = (rand.Next(2) == 0) ?
                             Orientation.Horizontal : Orientation.Vertical;
 
-                        ShipBase ship;
-                        if (shipIndex == 0)
-                        {
-                            ship = new SpecialShip(size, new Coordinate(x, y), orientation, 1);
-                        }
-                        else
-                        {
-                            ship = new Ship(size, new Coordinate(x, y), orientation);
-                        }
+                        Ship ship = new Ship(size, new Coordinate(x, y), orientation);
 
                         if (myBoard.IsValidPlacement(ship))
                         {
@@ -82,13 +77,12 @@ namespace SeaBattleCSharp
                         success = false;
                         break;
                     }
-                    shipIndex++;
                 }
 
                 if (success)
-                {
                     return;
-                }
+
+                attempts++;
             }
 
             Console.WriteLine("Компьютер не смог расставить корабли оптимально.");
@@ -102,158 +96,96 @@ namespace SeaBattleCSharp
         public override bool MakeMoveWithResult(Player enemy)
         {
             Console.WriteLine("\n=== Ход компьютера ===");
-            Color.Yellow();
+            Color.SetColor(Color.YELLOW);
             Console.Write("Компьютер думает");
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < THINKING_DOTS; i++)
             {
                 Console.Write(".");
                 Console.Out.Flush();
-                Thread.Sleep(500);
+                Thread.Sleep(THINKING_DELAY_MS);
             }
             Console.WriteLine();
             Color.ResetColor();
 
-            Coordinate target;
-
-            if (huntMode && possibleTargets.Count > 0)
-            {
-                target = GenerateSmartMove();
-            }
-            else
-            {
-                do
-                {
-                    target = new Coordinate(
-                        random.Next(GameBoard.GetBoardSize()),
-                        random.Next(GameBoard.GetBoardSize())
-                    );
-                } while (enemyBoard.GetCellState(target) != CellState.Empty);
-            }
-
-            Color.Blue();
-            Console.WriteLine($"Компьютер стреляет в {(char)('A' + target.X)}{target.Y + 1}");
+            Coordinate target = GenerateSmartMove();
+            Color.SetColor(Color.BLUE);
+            Console.WriteLine($"Компьютер стреляет в {target}");
             Color.ResetColor();
 
-            try
-            {
-                if (target.X < 0 || target.X >= GameBoard.GetBoardSize() ||
-                    target.Y < 0 || target.Y >= GameBoard.GetBoardSize())
-                {
-                    throw new ArgumentOutOfRangeException("Недопустимые координаты выстрела");
-                }
+            ShotResult result = enemy.GetShotResult(target);
+            UpdateStrategy(result, target);
+            bool wasHit = false;
 
-                ShotResult result = enemy.GetShotResult(target);
-                UpdateStrategy(result, target);
-                bool wasHit = false;
+            switch (result)
+            {
+                case ShotResult.Miss:
+                    enemyBoard.SetCellState(target, CellState.Miss);
+                    Color.SetColor(Color.BLUE);
+                    Console.WriteLine("Промах!");
+                    Color.ResetColor();
+                    wasHit = false;
+                    break;
 
-                switch (result)
-                {
-                    case ShotResult.Miss:
-                        enemyBoard.SetCellState(target, CellState.Miss);
-                        Color.Blue();
-                        Console.WriteLine("Промах!");
-                        Color.ResetColor();
-                        wasHit = false;
-                        break;
-                    case ShotResult.Hit:
-                        enemyBoard.SetCellState(target, CellState.Hit);
-                        Color.Yellow();
-                        Console.WriteLine("Попадание!");
-                        Color.ResetColor();
-                        wasHit = true;
-                        break;
-                    case ShotResult.Sunk:
-                        enemyBoard.SetCellState(target, CellState.Hit);
-                        Color.Red();
-                        Console.WriteLine("Уничтожен корабль!");
-                        Color.ResetColor();
-                        wasHit = true;
-                        MarkAreaAroundDestroyedShip(enemy, target);
-                        break;
-                }
-                return wasHit;
+                case ShotResult.Hit:
+                    enemyBoard.SetCellState(target, CellState.Hit);
+                    Color.SetColor(Color.YELLOW);
+                    Console.WriteLine("Попадание!");
+                    Color.ResetColor();
+                    wasHit = true;
+                    break;
+
+                case ShotResult.Sunk:
+                    enemyBoard.SetCellState(target, CellState.Hit);
+                    Color.SetColor(Color.RED);
+                    Console.WriteLine("Уничтожен корабль!");
+                    Color.ResetColor();
+                    wasHit = true;
+                    MarkAreaAroundDestroyedShip(enemy, target);
+                    break;
             }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                Color.Red();
-                Console.WriteLine($"Ошибка: {ex.Message}");
-                Color.ResetColor();
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Color.Red();
-                Console.WriteLine($"Неожиданная ошибка: {ex.Message}");
-                Color.ResetColor();
-                return false;
-            }
+
+            return wasHit;
         }
 
         public override void MarkAreaAroundDestroyedShip(Player enemy, Coordinate hitCoord)
         {
-            try
+            for (int dy = -1; dy <= 1; dy++)
             {
-                var enemyShips = enemy.GetShips();
-                ShipBase destroyedShip = null;
-                foreach (var ship in enemyShips)
+                for (int dx = -1; dx <= 1; dx++)
                 {
-                    if (ship.Coordinates.Exists(c => c.X == hitCoord.X && c.Y == hitCoord.Y) && ship.IsSunk())
+                    Coordinate around = new Coordinate(hitCoord.X + dx, hitCoord.Y + dy);
+                    if (around.X >= 0 && around.X < BOARD_SIZE &&
+                        around.Y >= 0 && around.Y < BOARD_SIZE)
                     {
-                        destroyedShip = ship;
-                        break;
-                    }
-                }
-
-                if (destroyedShip != null)
-                {
-                    foreach (var shipCoord in destroyedShip.Coordinates)
-                    {
-                        for (int dy = -1; dy <= 1; dy++)
+                        if (enemyBoard.GetCellState(around) == CellState.Empty)
                         {
-                            for (int dx = -1; dx <= 1; dx++)
-                            {
-                                Coordinate around = new Coordinate(shipCoord.X + dx, shipCoord.Y + dy);
-                                if (around.X >= 0 && around.X < GameBoard.GetBoardSize() &&
-                                    around.Y >= 0 && around.Y < GameBoard.GetBoardSize())
-                                {
-                                    if (enemyBoard.GetCellState(around) == CellState.Empty)
-                                    {
-                                        enemyBoard.SetCellState(around, CellState.Miss);
-                                    }
-                                }
-                            }
+                            enemyBoard.SetCellState(around, CellState.Miss);
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при отметке области вокруг корабля: {ex.Message}");
-            }
         }
 
-        private Coordinate GenerateSmartMove()
+        protected Coordinate GenerateSmartMove()
         {
-            if (possibleTargets.Count == 0)
+            if (possibleTargets.Count > 0)
             {
-                Coordinate target;
-                do
-                {
-                    target = new Coordinate(
-                        random.Next(GameBoard.GetBoardSize()),
-                        random.Next(GameBoard.GetBoardSize())
-                    );
-                } while (enemyBoard.GetCellState(target) != CellState.Empty);
+                Coordinate target = possibleTargets[0];
+                possibleTargets.RemoveAt(0);
                 return target;
             }
 
-            Coordinate smartTarget = possibleTargets[0];
-            possibleTargets.RemoveAt(0);
-            return smartTarget;
+            Coordinate targetCoord;
+            do
+            {
+                targetCoord = new Coordinate(random.Next(BOARD_SIZE), random.Next(BOARD_SIZE));
+            } while (enemyBoard.GetCellState(targetCoord) != CellState.Empty);
+
+            return targetCoord;
         }
 
-        private void UpdateStrategy(ShotResult result, Coordinate coord)
+        protected void UpdateStrategy(ShotResult result, Coordinate coord)
         {
             if (result == ShotResult.Hit || result == ShotResult.Sunk)
             {
@@ -266,10 +198,26 @@ namespace SeaBattleCSharp
             {
                 huntMode = false;
                 possibleTargets.Clear();
+
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        Coordinate around = new Coordinate(coord.X + dx, coord.Y + dy);
+                        if (around.X >= 0 && around.X < BOARD_SIZE &&
+                            around.Y >= 0 && around.Y < BOARD_SIZE)
+                        {
+                            if (enemyBoard.GetCellState(around) == CellState.Empty)
+                            {
+                                enemyBoard.SetCellState(around, CellState.Miss);
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        private void GeneratePossibleTargets(Coordinate hitCoord)
+        protected void GeneratePossibleTargets(Coordinate hitCoord)
         {
             List<Coordinate> directions = new List<Coordinate>
             {
@@ -282,8 +230,8 @@ namespace SeaBattleCSharp
             foreach (var dir in directions)
             {
                 Coordinate newTarget = new Coordinate(hitCoord.X + dir.X, hitCoord.Y + dir.Y);
-                if (newTarget.X >= 0 && newTarget.X < GameBoard.GetBoardSize() &&
-                    newTarget.Y >= 0 && newTarget.Y < GameBoard.GetBoardSize())
+                if (newTarget.X >= 0 && newTarget.X < BOARD_SIZE &&
+                    newTarget.Y >= 0 && newTarget.Y < BOARD_SIZE)
                 {
                     if (enemyBoard.GetCellState(newTarget) == CellState.Empty)
                     {

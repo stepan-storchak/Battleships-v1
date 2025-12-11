@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace SeaBattleCSharp
 {
@@ -16,35 +12,30 @@ namespace SeaBattleCSharp
             LoadFromFile();
         }
 
-        public void LoadFromFile()
+        private void LoadFromFile()
         {
             if (!File.Exists(filename))
-            {
                 return;
-            }
 
             try
             {
-                using (StreamReader file = new StreamReader(filename))
+                string[] lines = File.ReadAllLines(filename);
+                foreach (string line in lines)
                 {
-                    string line;
-                    while ((line = file.ReadLine()) != null)
+                    string[] parts = line.Split(' ');
+                    if (parts.Length >= 2 && int.TryParse(parts[1], out int wins))
                     {
-                        string[] parts = line.Split(' ');
-                        if (parts.Length == 2 && int.TryParse(parts[1], out int wins))
-                        {
-                            records[parts[0]] = wins;
-                        }
+                        records[parts[0]] = wins;
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Ошибка загрузки таблицы лидеров: {ex.Message}");
+                Console.WriteLine("Ошибка загрузки таблицы лидеров!");
             }
         }
 
-        public void SaveToFile()
+        private void SaveToFile()
         {
             try
             {
@@ -56,43 +47,30 @@ namespace SeaBattleCSharp
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw new IOException($"Ошибка сохранения таблицы лидеров: {ex.Message}");
+                Console.WriteLine("Ошибка сохранения таблицы лидеров!");
             }
         }
 
         public void AddWin(string playerName)
         {
-            try
-            {
-                if (records.ContainsKey(playerName))
-                {
-                    records[playerName]++;
-                }
-                else
-                {
-                    records[playerName] = 1;
-                }
-                SaveToFile();
+            if (records.ContainsKey(playerName))
+                records[playerName]++;
+            else
+                records[playerName] = 1;
 
-                Color.Green();
-                Console.WriteLine($"Победа игрока {playerName} сохранена в таблице лидеров!");
-                Color.ResetColor();
-                Display();
-            }
-            catch (Exception ex)
-            {
-                Color.Red();
-                Console.WriteLine($"Ошибка при сохранении победы: {ex.Message}");
-                Color.ResetColor();
-            }
+            SaveToFile();
+            Color.SetColor(Color.GREEN);
+            Console.WriteLine($"Победа игрока {playerName} сохранена в таблице лидеров!");
+            Color.ResetColor();
+            Display();
         }
 
         public void Display()
         {
-            Console.WriteLine();
-            Color.Yellow();
+            Console.WriteLine("\n");
+            Color.SetColor(Color.YELLOW);
             Console.WriteLine("=== ТАБЛИЦА ЛИДЕРОВ ===");
             Color.ResetColor();
 
@@ -102,7 +80,9 @@ namespace SeaBattleCSharp
                 return;
             }
 
-            var sortedRecords = records.OrderByDescending(r => r.Value).ToList();
+            var sortedRecords = records.ToList();
+            sortedRecords.Sort((a, b) => b.Value.CompareTo(a.Value));
+
             Console.WriteLine("------------------------------");
             Console.WriteLine("Игрок\t\tПобеды");
             Console.WriteLine("------------------------------");
@@ -110,35 +90,26 @@ namespace SeaBattleCSharp
             for (int i = 0; i < sortedRecords.Count; i++)
             {
                 var record = sortedRecords[i];
+
                 if (i == 0)
-                {
-                    Color.Yellow();
-                }
+                    Color.SetColor(Color.YELLOW);
                 else if (i == 1)
-                {
-                    Color.Gray();
-                }
+                    Color.SetColor(Color.GRAY);
                 else if (i == 2)
-                {
-                    Color.Red();
-                }
+                    Color.SetColor(Color.RED);
                 else
-                {
-                    Color.White();
-                }
+                    Color.SetColor(Color.WHITE);
 
                 Console.Write(record.Key);
                 if (record.Key.Length < 8)
-                {
                     Console.Write("\t\t");
-                }
                 else
-                {
                     Console.Write("\t");
-                }
+
                 Console.WriteLine(record.Value);
                 Color.ResetColor();
             }
+
             Console.WriteLine("------------------------------");
         }
     }

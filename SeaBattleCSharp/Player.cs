@@ -1,147 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
+﻿
 namespace SeaBattleCSharp
 {
-    public abstract class Player : IPlayer, ICloneableEntity
+    public abstract class Player
     {
         protected string name;
         protected GameBoard myBoard;
         protected GameBoard enemyBoard;
-        protected Container<ShipBase> ships;
+        protected List<Ship> ships;
+        protected Dictionary<string, int> statistics;
+
+        public static int PlayerCount { get; private set; }
 
         public Player(string name)
         {
             this.name = name;
             myBoard = new GameBoard();
             enemyBoard = new GameBoard();
-            ships = new Container<ShipBase>();
+            ships = new List<Ship>();
+            statistics = new Dictionary<string, int>
+            {
+                ["hits"] = 0,
+                ["misses"] = 0,
+                ["ships_destroyed"] = 0
+            };
+            PlayerCount++;
         }
 
+        public abstract bool IsHuman();
+        public virtual bool IsAdvancedAI() => false;
+        public abstract bool MakeMoveWithResult(Player enemy);
         public abstract void PlaceShips();
         public abstract void MakeMove(Player enemy);
-        public abstract bool MakeMoveWithResult(Player enemy);
         public abstract void MarkAreaAroundDestroyedShip(Player enemy, Coordinate hitCoord);
-
-        public virtual void DisplayPlayerInfo()
-        {
-            Console.WriteLine($"Игрок: {name}");
-        }
-
-        public virtual void DisplayPlayerInfo(bool showShips)
-        {
-            Console.WriteLine($"Игрок: {name}");
-            if (showShips)
-            {
-                myBoard.Display(true);
-            }
-        }
+        public virtual string GetPlayerType() => "Base Player";
 
         public bool AllShipsSunk()
         {
-            foreach (var ship in ships.ToList())
-            {
-                if (!ship.IsSunk())
-                {
-                    return false;
-                }
-            }
-            return true;
+            return ships.All(ship => ship.IsSunk());
         }
 
         public ShotResult GetShotResult(Coordinate coord)
         {
             ShotResult result = myBoard.ReceiveShot(coord);
-            if (result == ShotResult.Hit)
+
+            if (result == ShotResult.Hit || result == ShotResult.Sunk)
             {
-                foreach (var ship in ships.ToList())
+                var ship = ships.FirstOrDefault(s =>
+                    s.Coordinates.Any(c => c.Equals(coord)));
+
+                if (ship != null)
                 {
-                    if (ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y))
+                    bool wasSunk = ship.TakeHit(coord);
+                    if (wasSunk)
                     {
-                        bool wasHit = ship.TakeHit(coord);
-                        if (wasHit && ship.IsSunk())
-                        {
-                            result = ShotResult.Sunk;
-                            myBoard.MarkAreaAroundSunkShip(ship);
-                        }
-                        break;
+                        result = ShotResult.Sunk;
+                        myBoard.MarkAreaAroundSunkShip(ship);
+                        statistics["ships_destroyed"]++;
                     }
                 }
             }
             return result;
         }
 
-        public void AddShip(ShipBase ship)
+        public string GetName() => name;
+        public GameBoard GetMyBoard() => myBoard;
+        public GameBoard GetEnemyBoard() => enemyBoard;
+        public List<Ship> GetShips() => ships;
+
+        public void AddShip(Ship ship)
         {
             ships.Add(ship);
         }
 
-        public string GetName() => name;
-        public GameBoard GetMyBoard() => myBoard;
-        public GameBoard GetEnemyBoard() => enemyBoard;
-        public List<ShipBase> GetShips() => ships.ToList();
-
-        protected ShipBase FindShipByCoordinate(Coordinate coord)
+        public void UpdateStatistics(string key, int value)
         {
-            return ships.Find(ship => ship.Coordinates.Any(c => c.X == coord.X && c.Y == coord.Y));
-        }
-
-        public void DisplayShipStatistics()
-        {
-            Console.WriteLine($"\nСтатистика кораблей игрока {name}:");
-            Console.WriteLine($"Всего кораблей: {ships.Count}");
-
-            if (ships.Count > 0)
-            {
-                ships.SortBySize();
-
-                var aliveShips = ships.FindAll(s => !s.IsSunk());
-                var destroyedShips = ships.FindAll(s => s.IsSunk());
-
-                Console.WriteLine($"Живых кораблей: {aliveShips.Count}");
-                Console.WriteLine($"Уничтоженных кораблей: {destroyedShips.Count}");
-
-                var minSizeShip = ships.Min(s => s.Size);
-                var maxSizeShip = ships.Max(s => s.Size);
-                var averageSize = ships.Average(s => s.Size);
-
-                Console.WriteLine($"Минимальный размер корабля: {minSizeShip}");
-                Console.WriteLine($"Максимальный размер корабля: {maxSizeShip}");
-                Console.WriteLine($"Средний размер корабля: {averageSize:F1}");
-
-                var shipTypes = ships.Select(s => s.GetShipType()).Distinct();
-                Console.WriteLine($"Типы кораблей: {string.Join(", ", shipTypes)}");
-
-                var shipDictionary = ships.ToDictionary();
-                Console.WriteLine($"Корабли в словаре: {shipDictionary.Count}");
-            }
-        }
-
-        public virtual object Clone()
-        {
-            var cloned = (Player)this.MemberwiseClone();
-            cloned.myBoard = (GameBoard)myBoard.Clone();
-            cloned.enemyBoard = (GameBoard)enemyBoard.Clone();
-            cloned.ships = new Container<ShipBase>();
-            foreach (var ship in ships.ToList())
-            {
-                cloned.ships.Add((ShipBase)ship.Clone());
-            }
-            return cloned;
-        }
-
-        public virtual object DeepClone()
-        {
-            var cloned = (Player)this.MemberwiseClone();
-            cloned.myBoard = (GameBoard)myBoard.DeepClone();
-            cloned.enemyBoard = (GameBoard)enemyBoard.DeepClone();
-            cloned.ships = new Container<ShipBase>();
-            foreach (var ship in ships.ToList())
-            {
-                cloned.ships.Add((ShipBase)ship.DeepClone());
-            }
-            return cloned;
+            if (statistics.ContainsKey(key))
+                statistics[key] += value;
         }
     }
 }
